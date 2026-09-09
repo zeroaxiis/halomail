@@ -4,3 +4,4 @@ packages:
 allowBuilds:
   '@biomejs/biome': true
   sharp: true
+  unrs-resolver: true

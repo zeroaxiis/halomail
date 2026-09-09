@@ -1,6 +1,3 @@
-// Command server is the HaloMail gateway. In monolith mode (default) it hosts
-// every service in one process on one port — the single container used for
-// cheap/free deployment. It also provides the public edge: CORS and health.
 package main
 
 import (
@@ -8,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/aashishrajdev/halomail/services/shared/config"
 	"github.com/aashishrajdev/halomail/services/shared/connectutil"
@@ -88,6 +86,7 @@ func main() {
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
 	mux.HandleFunc("/", root)
+	mux.HandleFunc("/health", healthHandler)
 
 	// Host every service in-process.
 	identity.Mount(mux, identity.Deps{
@@ -139,5 +138,13 @@ func withCORS(next http.Handler) http.Handler {
 			return
 		}
 		next.ServeHTTP(w, r)
+	})
+}
+
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]string{
+		"status":    "ok",
+		"timestamp": time.Now().UTC().Format(time.RFC3339),
 	})
 }
