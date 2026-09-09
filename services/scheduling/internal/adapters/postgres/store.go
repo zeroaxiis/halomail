@@ -251,6 +251,22 @@ func (r *Bookings) Update(ctx context.Context, b *domain.Booking) error {
 	return err
 }
 
+func (r *Bookings) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
+	var stats domain.UsageStats
+	err := r.pool.QueryRow(ctx, `
+		SELECT 
+			COUNT(*),
+			COALESCE(COUNT(*) FILTER (WHERE status = 'confirmed' AND start_at > NOW()), 0),
+			COALESCE(COUNT(*) FILTER (WHERE status = 'cancelled'), 0)
+		FROM bookings 
+		WHERE owner_id = $1
+	`, ownerID).Scan(&stats.TotalBookings, &stats.UpcomingBookings, &stats.CancelledBookings)
+	if err != nil {
+		return nil, err
+	}
+	return &stats, nil
+}
+
 func collectBookings(rows pgx.Rows) ([]domain.Booking, error) {
 	var out []domain.Booking
 	for rows.Next() {

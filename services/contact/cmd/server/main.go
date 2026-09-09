@@ -14,6 +14,7 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/config"
 	"github.com/aashishrajdev/halomail/services/shared/connectutil"
 	contactv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1/contactv1connect"
+	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
 	"github.com/aashishrajdev/halomail/services/shared/health"
 	"github.com/aashishrajdev/halomail/services/shared/log"
 	"github.com/aashishrajdev/halomail/services/shared/observability"
@@ -98,7 +99,9 @@ func main() {
 		Messages: cpg.NewMessages(pool),
 	}, limiter, logForwarder{logger: logger})
 
-	handlers := rpc.NewHandlers(svc, authn.NewVerifier(cfg.Auth.JWTSecret))
+	identityURL := cfg.App.PublicAPIURL
+	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, identityURL)
+	handlers := rpc.NewHandlers(svc, authn.NewVerifier(cfg.Auth.JWTSecret), identClient)
 
 	interceptors, err := connectutil.Default(logger)
 	if err != nil {

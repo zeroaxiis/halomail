@@ -193,6 +193,22 @@ func (r *Messages) Delete(ctx context.Context, id, ownerID string) error {
 	return nil
 }
 
+func (r *Messages) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
+	var stats domain.UsageStats
+	err := r.pool.QueryRow(ctx, `
+		SELECT 
+			COUNT(*),
+			COALESCE(COUNT(*) FILTER (WHERE read = false), 0),
+			COALESCE(COUNT(*) FILTER (WHERE is_spam = true), 0)
+		FROM messages 
+		WHERE owner_id = $1
+	`, ownerID).Scan(&stats.TotalMessages, &stats.UnreadMessages, &stats.SpamPrevented)
+	if err != nil {
+		return nil, err
+	}
+	return &stats, nil
+}
+
 func scanMessage(row pgx.Row) (*domain.Message, error) {
 	var (
 		m    domain.Message

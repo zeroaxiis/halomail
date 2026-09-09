@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	contactv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1/contactv1connect"
+	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
 	"github.com/aashishrajdev/halomail/services/shared/authn"
 	"github.com/aashishrajdev/halomail/services/shared/config"
 	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
@@ -30,6 +31,7 @@ type Deps struct {
 	Rate         config.Rate
 	Logger       *slog.Logger
 	Interceptors []connect.Interceptor
+	IdentityURL  string
 }
 
 func Mount(mux *http.ServeMux, d Deps) {
@@ -42,7 +44,8 @@ func Mount(mux *http.ServeMux, d Deps) {
 		Messages: postgres.NewMessages(d.Pool),
 	}, limiter, logForwarder{logger: d.Logger})
 
-	h := rpc.NewHandlers(svc, authn.NewVerifier(d.JWTSecret))
+	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, d.IdentityURL)
+	h := rpc.NewHandlers(svc, authn.NewVerifier(d.JWTSecret), identClient)
 	opts := connect.WithInterceptors(d.Interceptors...)
 
 	mux.Handle("/widget.js", web.WidgetHandler())

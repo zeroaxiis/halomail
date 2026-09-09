@@ -11,6 +11,8 @@ import (
 
 	commonv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/common/v1"
 	contactv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1"
+	identityv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1"
+	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
 
 	"github.com/aashishrajdev/halomail/services/contact/internal/app"
 	"github.com/aashishrajdev/halomail/services/shared/authn"
@@ -21,10 +23,11 @@ import (
 type Handlers struct {
 	app      *app.Service
 	verifier authn.Verifier
+	apiKeys  identityv1connect.ApiKeyServiceClient
 }
 
-func NewHandlers(a *app.Service, v authn.Verifier) *Handlers {
-	return &Handlers{app: a, verifier: v}
+func NewHandlers(a *app.Service, v authn.Verifier, apiKeys identityv1connect.ApiKeyServiceClient) *Handlers {
+	return &Handlers{app: a, verifier: v, apiKeys: apiKeys}
 }
 
 func (h *Handlers) principal(req connect.AnyRequest) (userID, orgID string, err error) {
@@ -116,8 +119,18 @@ func (h *Handlers) DeleteForm(ctx context.Context, req *connect.Request[contactv
 // ---- MessageService ------------------------------------------------------
 
 func (h *Handlers) SubmitMessage(ctx context.Context, req *connect.Request[contactv1.SubmitMessageRequest]) (*connect.Response[contactv1.SubmitMessageResponse], error) {
-	res, err := h.app.SubmitMessage(ctx, app.SubmitInput{
-		FormSlug:    req.Msg.GetFormSlug(),
+	verifyRes, err := h.apiKeys.VerifyApiKey(ctx, connect.NewRequest(&identityv1.VerifyApiKeyRequest{
+		Secret: req.Msg.GetAccessKey(),
+	}))
+	if err != nil {
+		return nil, connectutil.ToConnect(errs.Unauthorized("invalid access key"))
+	}
+	if !verifyRes.Msg.GetValid() {
+		return nil, connectutil.ToConnect(errs.Unauthorized("invalid access key"))
+	}
+	ownerID := verifyRes.Msg.GetUserId()
+
+	res, err := h.app.SubmitMessage(ctx, ownerID, app.SubmitInput{
 		SenderName:  req.Msg.GetSenderName(),
 		SenderEmail: req.Msg.GetSenderEmail(),
 		Data:        req.Msg.GetData(),
@@ -196,6 +209,22 @@ func (h *Handlers) DeleteMessage(ctx context.Context, req *connect.Request[conta
 		return nil, connectutil.ToConnect(err)
 	}
 	return connect.NewResponse(&contactv1.DeleteMessageResponse{}), nil
+}
+
+func (h *Handlers) GetUsageStats(ctx context.Context, req *connect.Request[contactv1.GetUsageStatsRequest]) (*connect.Response[contactv1.GetUsageStatsResponse], error) {
+	ownerID, _, err := h.principal(req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	stats, err := h.app.GetUsageStats(ctx, ownerID)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&contactv1.GetUsageStatsResponse{
+		TotalMessages:  int32(stats.TotalMessages),
+		UnreadMessages: int32(stats.UnreadMessages),
+		SpamPrevented:  int32(stats.SpamPrevented),
+	}), nil
 }
 
 // ---- helpers -------------------------------------------------------------

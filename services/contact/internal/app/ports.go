@@ -22,6 +22,7 @@ type MessageRepo interface {
 	List(ctx context.Context, ownerID, formID string, unreadOnly bool, limit, offset int) ([]domain.Message, error)
 	MarkRead(ctx context.Context, id, ownerID string, read bool) error
 	Delete(ctx context.Context, id, ownerID string) error
+	GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error)
 }
 
 // Forwarder delivers a received message to the form's target inbox (and/or

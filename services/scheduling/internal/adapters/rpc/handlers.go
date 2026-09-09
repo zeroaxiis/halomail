@@ -233,6 +233,22 @@ func (h *Handlers) CancelBooking(ctx context.Context, req *connect.Request[sched
 	return connect.NewResponse(&schedulingv1.CancelBookingResponse{Booking: toProtoBooking(b)}), nil
 }
 
+func (h *Handlers) GetUsageStats(ctx context.Context, req *connect.Request[schedulingv1.GetUsageStatsRequest]) (*connect.Response[schedulingv1.GetUsageStatsResponse], error) {
+	ownerID, _, err := h.principal(req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	stats, err := h.app.GetUsageStats(ctx, ownerID)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&schedulingv1.GetUsageStatsResponse{
+		TotalBookings:     int32(stats.TotalBookings),
+		UpcomingBookings:  int32(stats.UpcomingBookings),
+		CancelledBookings: int32(stats.CancelledBookings),
+	}), nil
+}
+
 // ---- CalendarService -----------------------------------------------------
 
 func (h *Handlers) StartConnect(ctx context.Context, req *connect.Request[schedulingv1.StartConnectRequest]) (*connect.Response[schedulingv1.StartConnectResponse], error) {

@@ -122,7 +122,6 @@ func (s *Service) DeleteForm(ctx context.Context, ownerID, id string) error {
 // ---- Messages ------------------------------------------------------------
 
 type SubmitInput struct {
-	FormSlug    string
 	SenderName  string
 	SenderEmail string
 	Data        map[string]string
@@ -136,14 +135,16 @@ type SubmitResult struct {
 	RedirectURL string
 }
 
-// SubmitMessage is the public submit path: rate-limit, spam-score, store, then
-// forward. It always "accepts" (returns success) so bots learn nothing, but
-// spam is stored flagged and never forwarded.
-func (s *Service) SubmitMessage(ctx context.Context, in SubmitInput) (*SubmitResult, error) {
-	form, err := s.forms.GetBySlug(ctx, in.FormSlug)
+// SubmitMessage is the public submit path.
+func (s *Service) SubmitMessage(ctx context.Context, ownerID string, in SubmitInput) (*SubmitResult, error) {
+	forms, err := s.forms.ListByOwner(ctx, ownerID)
 	if err != nil {
 		return nil, err
 	}
+	if len(forms) == 0 {
+		return nil, errs.NotFound("no active forms found for this account")
+	}
+	form := &forms[0]
 	if !form.Active {
 		return nil, errs.Invalid("this form is not accepting submissions")
 	}
@@ -217,6 +218,10 @@ func (s *Service) MarkRead(ctx context.Context, ownerID, id string, read bool) e
 
 func (s *Service) DeleteMessage(ctx context.Context, ownerID, id string) error {
 	return s.messages.Delete(ctx, id, ownerID)
+}
+
+func (s *Service) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
+	return s.messages.GetUsageStats(ctx, ownerID)
 }
 
 // ---- helpers -------------------------------------------------------------

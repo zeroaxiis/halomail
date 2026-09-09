@@ -101,6 +101,7 @@ func main() {
 	contact.Mount(mux, contact.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, Redis: redisClient,
 		Rate: cfg.Rate, Logger: logger, Interceptors: interceptors,
+		IdentityURL: "http://" + cfg.HTTP.Addr(),
 	})
 	template.Mount(mux, template.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, Interceptors: interceptors,

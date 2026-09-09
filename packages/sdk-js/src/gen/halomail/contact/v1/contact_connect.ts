@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateFormRequest, CreateFormResponse, DeleteFormRequest, DeleteFormResponse, DeleteMessageRequest, DeleteMessageResponse, GetFormRequest, GetFormResponse, GetMessageRequest, GetMessageResponse, ListFormsRequest, ListFormsResponse, ListMessagesRequest, ListMessagesResponse, MarkReadRequest, MarkReadResponse, SubmitMessageRequest, SubmitMessageResponse, UpdateFormRequest, UpdateFormResponse } from "./contact_pb.js";
+import { CreateFormRequest, CreateFormResponse, DeleteFormRequest, DeleteFormResponse, DeleteMessageRequest, DeleteMessageResponse, GetFormRequest, GetFormResponse, GetMessageRequest, GetMessageResponse, GetUsageStatsRequest, GetUsageStatsResponse, ListFormsRequest, ListFormsResponse, ListMessagesRequest, ListMessagesResponse, MarkReadRequest, MarkReadResponse, SubmitMessageRequest, SubmitMessageResponse, UpdateFormRequest, UpdateFormResponse } from "./contact_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -111,6 +111,15 @@ export const MessageService = {
       name: "DeleteMessage",
       I: DeleteMessageRequest,
       O: DeleteMessageResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.contact.v1.MessageService.GetUsageStats
+     */
+    getUsageStats: {
+      name: "GetUsageStats",
+      I: GetUsageStatsRequest,
+      O: GetUsageStatsResponse,
       kind: MethodKind.Unary,
     },
   }

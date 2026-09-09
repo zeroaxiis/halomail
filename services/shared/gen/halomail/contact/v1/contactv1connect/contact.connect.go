@@ -59,6 +59,9 @@ const (
 	// MessageServiceDeleteMessageProcedure is the fully-qualified name of the MessageService's
 	// DeleteMessage RPC.
 	MessageServiceDeleteMessageProcedure = "/halomail.contact.v1.MessageService/DeleteMessage"
+	// MessageServiceGetUsageStatsProcedure is the fully-qualified name of the MessageService's
+	// GetUsageStats RPC.
+	MessageServiceGetUsageStatsProcedure = "/halomail.contact.v1.MessageService/GetUsageStats"
 )
 
 // FormServiceClient is a client for the halomail.contact.v1.FormService service.
@@ -243,6 +246,7 @@ type MessageServiceClient interface {
 	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
 	DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error)
+	GetUsageStats(context.Context, *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error)
 }
 
 // NewMessageServiceClient constructs a client for the halomail.contact.v1.MessageService service.
@@ -286,6 +290,12 @@ func NewMessageServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(messageServiceMethods.ByName("DeleteMessage")),
 			connect.WithClientOptions(opts...),
 		),
+		getUsageStats: connect.NewClient[v1.GetUsageStatsRequest, v1.GetUsageStatsResponse](
+			httpClient,
+			baseURL+MessageServiceGetUsageStatsProcedure,
+			connect.WithSchema(messageServiceMethods.ByName("GetUsageStats")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -296,6 +306,7 @@ type messageServiceClient struct {
 	getMessage    *connect.Client[v1.GetMessageRequest, v1.GetMessageResponse]
 	markRead      *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
 	deleteMessage *connect.Client[v1.DeleteMessageRequest, v1.DeleteMessageResponse]
+	getUsageStats *connect.Client[v1.GetUsageStatsRequest, v1.GetUsageStatsResponse]
 }
 
 // SubmitMessage calls halomail.contact.v1.MessageService.SubmitMessage.
@@ -323,6 +334,11 @@ func (c *messageServiceClient) DeleteMessage(ctx context.Context, req *connect.R
 	return c.deleteMessage.CallUnary(ctx, req)
 }
 
+// GetUsageStats calls halomail.contact.v1.MessageService.GetUsageStats.
+func (c *messageServiceClient) GetUsageStats(ctx context.Context, req *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error) {
+	return c.getUsageStats.CallUnary(ctx, req)
+}
+
 // MessageServiceHandler is an implementation of the halomail.contact.v1.MessageService service.
 type MessageServiceHandler interface {
 	// SubmitMessage is public: called by the embedded widget / REST / SDK.
@@ -331,6 +347,7 @@ type MessageServiceHandler interface {
 	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
 	DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error)
+	GetUsageStats(context.Context, *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error)
 }
 
 // NewMessageServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -370,6 +387,12 @@ func NewMessageServiceHandler(svc MessageServiceHandler, opts ...connect.Handler
 		connect.WithSchema(messageServiceMethods.ByName("DeleteMessage")),
 		connect.WithHandlerOptions(opts...),
 	)
+	messageServiceGetUsageStatsHandler := connect.NewUnaryHandler(
+		MessageServiceGetUsageStatsProcedure,
+		svc.GetUsageStats,
+		connect.WithSchema(messageServiceMethods.ByName("GetUsageStats")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/halomail.contact.v1.MessageService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MessageServiceSubmitMessageProcedure:
@@ -382,6 +405,8 @@ func NewMessageServiceHandler(svc MessageServiceHandler, opts ...connect.Handler
 			messageServiceMarkReadHandler.ServeHTTP(w, r)
 		case MessageServiceDeleteMessageProcedure:
 			messageServiceDeleteMessageHandler.ServeHTTP(w, r)
+		case MessageServiceGetUsageStatsProcedure:
+			messageServiceGetUsageStatsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -409,4 +434,8 @@ func (UnimplementedMessageServiceHandler) MarkRead(context.Context, *connect.Req
 
 func (UnimplementedMessageServiceHandler) DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.contact.v1.MessageService.DeleteMessage is not implemented"))
+}
+
+func (UnimplementedMessageServiceHandler) GetUsageStats(context.Context, *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.contact.v1.MessageService.GetUsageStats is not implemented"))
 }

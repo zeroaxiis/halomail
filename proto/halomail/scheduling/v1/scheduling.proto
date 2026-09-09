@@ -211,6 +211,7 @@ service BookingService {
   rpc RescheduleBooking(RescheduleBookingRequest) returns (RescheduleBookingResponse);
   // CancelBooking is public via the cancel_token from the email.
   rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse);
+  rpc GetUsageStats(GetUsageStatsRequest) returns (GetUsageStatsResponse);
 }
 
 message ListSlotsRequest {
@@ -267,6 +268,14 @@ message CancelBookingRequest {
 message CancelBookingResponse {
   Booking booking = 1;
 }
+
+message GetUsageStatsRequest {}
+message GetUsageStatsResponse {
+  int32 total_bookings = 1;
+  int32 upcoming_bookings = 2;
+  int32 cancelled_bookings = 3;
+}
+
 
 // ---------------------------------------------------------------------------
 // CalendarService — OAuth calendar sync

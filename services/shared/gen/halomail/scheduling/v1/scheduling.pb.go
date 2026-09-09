@@ -2187,6 +2187,102 @@ func (x *CancelBookingResponse) GetBooking() *Booking {
 	return nil
 }
 
+type GetUsageStatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUsageStatsRequest) Reset() {
+	*x = GetUsageStatsRequest{}
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUsageStatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUsageStatsRequest) ProtoMessage() {}
+
+func (x *GetUsageStatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUsageStatsRequest.ProtoReflect.Descriptor instead.
+func (*GetUsageStatsRequest) Descriptor() ([]byte, []int) {
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{33}
+}
+
+type GetUsageStatsResponse struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	TotalBookings     int32                  `protobuf:"varint,1,opt,name=total_bookings,json=totalBookings,proto3" json:"total_bookings,omitempty"`
+	UpcomingBookings  int32                  `protobuf:"varint,2,opt,name=upcoming_bookings,json=upcomingBookings,proto3" json:"upcoming_bookings,omitempty"`
+	CancelledBookings int32                  `protobuf:"varint,3,opt,name=cancelled_bookings,json=cancelledBookings,proto3" json:"cancelled_bookings,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *GetUsageStatsResponse) Reset() {
+	*x = GetUsageStatsResponse{}
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUsageStatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUsageStatsResponse) ProtoMessage() {}
+
+func (x *GetUsageStatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUsageStatsResponse.ProtoReflect.Descriptor instead.
+func (*GetUsageStatsResponse) Descriptor() ([]byte, []int) {
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *GetUsageStatsResponse) GetTotalBookings() int32 {
+	if x != nil {
+		return x.TotalBookings
+	}
+	return 0
+}
+
+func (x *GetUsageStatsResponse) GetUpcomingBookings() int32 {
+	if x != nil {
+		return x.UpcomingBookings
+	}
+	return 0
+}
+
+func (x *GetUsageStatsResponse) GetCancelledBookings() int32 {
+	if x != nil {
+		return x.CancelledBookings
+	}
+	return 0
+}
+
 type StartConnectRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Provider      CalendarProvider       `protobuf:"varint,1,opt,name=provider,proto3,enum=halomail.scheduling.v1.CalendarProvider" json:"provider,omitempty"`
@@ -2196,7 +2292,7 @@ type StartConnectRequest struct {
 
 func (x *StartConnectRequest) Reset() {
 	*x = StartConnectRequest{}
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[33]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2208,7 +2304,7 @@ func (x *StartConnectRequest) String() string {
 func (*StartConnectRequest) ProtoMessage() {}
 
 func (x *StartConnectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[33]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2221,7 +2317,7 @@ func (x *StartConnectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartConnectRequest.ProtoReflect.Descriptor instead.
 func (*StartConnectRequest) Descriptor() ([]byte, []int) {
-	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{33}
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *StartConnectRequest) GetProvider() CalendarProvider {
@@ -2240,7 +2336,7 @@ type StartConnectResponse struct {
 
 func (x *StartConnectResponse) Reset() {
 	*x = StartConnectResponse{}
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[34]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2252,7 +2348,7 @@ func (x *StartConnectResponse) String() string {
 func (*StartConnectResponse) ProtoMessage() {}
 
 func (x *StartConnectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[34]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2265,7 +2361,7 @@ func (x *StartConnectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartConnectResponse.ProtoReflect.Descriptor instead.
 func (*StartConnectResponse) Descriptor() ([]byte, []int) {
-	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{34}
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *StartConnectResponse) GetAuthorizationUrl() string {
@@ -2283,7 +2379,7 @@ type ListConnectionsRequest struct {
 
 func (x *ListConnectionsRequest) Reset() {
 	*x = ListConnectionsRequest{}
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[35]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2295,7 +2391,7 @@ func (x *ListConnectionsRequest) String() string {
 func (*ListConnectionsRequest) ProtoMessage() {}
 
 func (x *ListConnectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[35]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2308,7 +2404,7 @@ func (x *ListConnectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConnectionsRequest.ProtoReflect.Descriptor instead.
 func (*ListConnectionsRequest) Descriptor() ([]byte, []int) {
-	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{35}
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{37}
 }
 
 type ListConnectionsResponse struct {
@@ -2320,7 +2416,7 @@ type ListConnectionsResponse struct {
 
 func (x *ListConnectionsResponse) Reset() {
 	*x = ListConnectionsResponse{}
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[36]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2332,7 +2428,7 @@ func (x *ListConnectionsResponse) String() string {
 func (*ListConnectionsResponse) ProtoMessage() {}
 
 func (x *ListConnectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[36]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2345,7 +2441,7 @@ func (x *ListConnectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConnectionsResponse.ProtoReflect.Descriptor instead.
 func (*ListConnectionsResponse) Descriptor() ([]byte, []int) {
-	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{36}
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ListConnectionsResponse) GetConnections() []*CalendarConnection {
@@ -2364,7 +2460,7 @@ type DisconnectCalendarRequest struct {
 
 func (x *DisconnectCalendarRequest) Reset() {
 	*x = DisconnectCalendarRequest{}
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[37]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2376,7 +2472,7 @@ func (x *DisconnectCalendarRequest) String() string {
 func (*DisconnectCalendarRequest) ProtoMessage() {}
 
 func (x *DisconnectCalendarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[37]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2389,7 +2485,7 @@ func (x *DisconnectCalendarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisconnectCalendarRequest.ProtoReflect.Descriptor instead.
 func (*DisconnectCalendarRequest) Descriptor() ([]byte, []int) {
-	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{37}
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *DisconnectCalendarRequest) GetId() string {
@@ -2407,7 +2503,7 @@ type DisconnectCalendarResponse struct {
 
 func (x *DisconnectCalendarResponse) Reset() {
 	*x = DisconnectCalendarResponse{}
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[38]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2419,7 +2515,7 @@ func (x *DisconnectCalendarResponse) String() string {
 func (*DisconnectCalendarResponse) ProtoMessage() {}
 
 func (x *DisconnectCalendarResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[38]
+	mi := &file_halomail_scheduling_v1_scheduling_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2432,7 +2528,7 @@ func (x *DisconnectCalendarResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisconnectCalendarResponse.ProtoReflect.Descriptor instead.
 func (*DisconnectCalendarResponse) Descriptor() ([]byte, []int) {
-	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{38}
+	return file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP(), []int{40}
 }
 
 var File_halomail_scheduling_v1_scheduling_proto protoreflect.FileDescriptor
@@ -2584,7 +2680,12 @@ const file_halomail_scheduling_v1_scheduling_proto_rawDesc = "" +
 	"\fcancel_token\x18\x01 \x01(\tR\vcancelToken\x12\x16\n" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\"R\n" +
 	"\x15CancelBookingResponse\x129\n" +
-	"\abooking\x18\x01 \x01(\v2\x1f.halomail.scheduling.v1.BookingR\abooking\"[\n" +
+	"\abooking\x18\x01 \x01(\v2\x1f.halomail.scheduling.v1.BookingR\abooking\"\x16\n" +
+	"\x14GetUsageStatsRequest\"\x9a\x01\n" +
+	"\x15GetUsageStatsResponse\x12%\n" +
+	"\x0etotal_bookings\x18\x01 \x01(\x05R\rtotalBookings\x12+\n" +
+	"\x11upcoming_bookings\x18\x02 \x01(\x05R\x10upcomingBookings\x12-\n" +
+	"\x12cancelled_bookings\x18\x03 \x01(\x05R\x11cancelledBookings\"[\n" +
 	"\x13StartConnectRequest\x12D\n" +
 	"\bprovider\x18\x01 \x01(\x0e2(.halomail.scheduling.v1.CalendarProviderR\bprovider\"C\n" +
 	"\x14StartConnectResponse\x12+\n" +
@@ -2619,7 +2720,7 @@ const file_halomail_scheduling_v1_scheduling_proto_rawDesc = "" +
 	"\x0fDeleteEventType\x12..halomail.scheduling.v1.DeleteEventTypeRequest\x1a/.halomail.scheduling.v1.DeleteEventTypeResponse2\xfd\x01\n" +
 	"\x13AvailabilityService\x12r\n" +
 	"\x0fGetAvailability\x12..halomail.scheduling.v1.GetAvailabilityRequest\x1a/.halomail.scheduling.v1.GetAvailabilityResponse\x12r\n" +
-	"\x0fSetAvailability\x12..halomail.scheduling.v1.SetAvailabilityRequest\x1a/.halomail.scheduling.v1.SetAvailabilityResponse2\x98\x05\n" +
+	"\x0fSetAvailability\x12..halomail.scheduling.v1.SetAvailabilityRequest\x1a/.halomail.scheduling.v1.SetAvailabilityResponse2\x86\x06\n" +
 	"\x0eBookingService\x12`\n" +
 	"\tListSlots\x12(.halomail.scheduling.v1.ListSlotsRequest\x1a).halomail.scheduling.v1.ListSlotsResponse\x12l\n" +
 	"\rCreateBooking\x12,.halomail.scheduling.v1.CreateBookingRequest\x1a-.halomail.scheduling.v1.CreateBookingResponse\x12c\n" +
@@ -2627,7 +2728,8 @@ const file_halomail_scheduling_v1_scheduling_proto_rawDesc = "" +
 	"GetBooking\x12).halomail.scheduling.v1.GetBookingRequest\x1a*.halomail.scheduling.v1.GetBookingResponse\x12i\n" +
 	"\fListBookings\x12+.halomail.scheduling.v1.ListBookingsRequest\x1a,.halomail.scheduling.v1.ListBookingsResponse\x12x\n" +
 	"\x11RescheduleBooking\x120.halomail.scheduling.v1.RescheduleBookingRequest\x1a1.halomail.scheduling.v1.RescheduleBookingResponse\x12l\n" +
-	"\rCancelBooking\x12,.halomail.scheduling.v1.CancelBookingRequest\x1a-.halomail.scheduling.v1.CancelBookingResponse2\xed\x02\n" +
+	"\rCancelBooking\x12,.halomail.scheduling.v1.CancelBookingRequest\x1a-.halomail.scheduling.v1.CancelBookingResponse\x12l\n" +
+	"\rGetUsageStats\x12,.halomail.scheduling.v1.GetUsageStatsRequest\x1a-.halomail.scheduling.v1.GetUsageStatsResponse2\xed\x02\n" +
 	"\x0fCalendarService\x12i\n" +
 	"\fStartConnect\x12+.halomail.scheduling.v1.StartConnectRequest\x1a,.halomail.scheduling.v1.StartConnectResponse\x12r\n" +
 	"\x0fListConnections\x12..halomail.scheduling.v1.ListConnectionsRequest\x1a/.halomail.scheduling.v1.ListConnectionsResponse\x12{\n" +
@@ -2647,7 +2749,7 @@ func file_halomail_scheduling_v1_scheduling_proto_rawDescGZIP() []byte {
 }
 
 var file_halomail_scheduling_v1_scheduling_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_halomail_scheduling_v1_scheduling_proto_msgTypes = make([]protoimpl.MessageInfo, 39)
+var file_halomail_scheduling_v1_scheduling_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
 var file_halomail_scheduling_v1_scheduling_proto_goTypes = []any{
 	(LocationKind)(0),                  // 0: halomail.scheduling.v1.LocationKind
 	(BookingStatus)(0),                 // 1: halomail.scheduling.v1.BookingStatus
@@ -2685,29 +2787,31 @@ var file_halomail_scheduling_v1_scheduling_proto_goTypes = []any{
 	(*RescheduleBookingResponse)(nil),  // 33: halomail.scheduling.v1.RescheduleBookingResponse
 	(*CancelBookingRequest)(nil),       // 34: halomail.scheduling.v1.CancelBookingRequest
 	(*CancelBookingResponse)(nil),      // 35: halomail.scheduling.v1.CancelBookingResponse
-	(*StartConnectRequest)(nil),        // 36: halomail.scheduling.v1.StartConnectRequest
-	(*StartConnectResponse)(nil),       // 37: halomail.scheduling.v1.StartConnectResponse
-	(*ListConnectionsRequest)(nil),     // 38: halomail.scheduling.v1.ListConnectionsRequest
-	(*ListConnectionsResponse)(nil),    // 39: halomail.scheduling.v1.ListConnectionsResponse
-	(*DisconnectCalendarRequest)(nil),  // 40: halomail.scheduling.v1.DisconnectCalendarRequest
-	(*DisconnectCalendarResponse)(nil), // 41: halomail.scheduling.v1.DisconnectCalendarResponse
-	(*timestamppb.Timestamp)(nil),      // 42: google.protobuf.Timestamp
-	(*v1.PageRequest)(nil),             // 43: halomail.common.v1.PageRequest
-	(*v1.PageResponse)(nil),            // 44: halomail.common.v1.PageResponse
+	(*GetUsageStatsRequest)(nil),       // 36: halomail.scheduling.v1.GetUsageStatsRequest
+	(*GetUsageStatsResponse)(nil),      // 37: halomail.scheduling.v1.GetUsageStatsResponse
+	(*StartConnectRequest)(nil),        // 38: halomail.scheduling.v1.StartConnectRequest
+	(*StartConnectResponse)(nil),       // 39: halomail.scheduling.v1.StartConnectResponse
+	(*ListConnectionsRequest)(nil),     // 40: halomail.scheduling.v1.ListConnectionsRequest
+	(*ListConnectionsResponse)(nil),    // 41: halomail.scheduling.v1.ListConnectionsResponse
+	(*DisconnectCalendarRequest)(nil),  // 42: halomail.scheduling.v1.DisconnectCalendarRequest
+	(*DisconnectCalendarResponse)(nil), // 43: halomail.scheduling.v1.DisconnectCalendarResponse
+	(*timestamppb.Timestamp)(nil),      // 44: google.protobuf.Timestamp
+	(*v1.PageRequest)(nil),             // 45: halomail.common.v1.PageRequest
+	(*v1.PageResponse)(nil),            // 46: halomail.common.v1.PageResponse
 }
 var file_halomail_scheduling_v1_scheduling_proto_depIdxs = []int32{
 	0,  // 0: halomail.scheduling.v1.EventType.location_kind:type_name -> halomail.scheduling.v1.LocationKind
-	42, // 1: halomail.scheduling.v1.EventType.created_at:type_name -> google.protobuf.Timestamp
+	44, // 1: halomail.scheduling.v1.EventType.created_at:type_name -> google.protobuf.Timestamp
 	4,  // 2: halomail.scheduling.v1.Availability.rules:type_name -> halomail.scheduling.v1.AvailabilityRule
 	5,  // 3: halomail.scheduling.v1.Availability.overrides:type_name -> halomail.scheduling.v1.DateOverride
-	42, // 4: halomail.scheduling.v1.Slot.start:type_name -> google.protobuf.Timestamp
-	42, // 5: halomail.scheduling.v1.Slot.end:type_name -> google.protobuf.Timestamp
-	42, // 6: halomail.scheduling.v1.Booking.start:type_name -> google.protobuf.Timestamp
-	42, // 7: halomail.scheduling.v1.Booking.end:type_name -> google.protobuf.Timestamp
+	44, // 4: halomail.scheduling.v1.Slot.start:type_name -> google.protobuf.Timestamp
+	44, // 5: halomail.scheduling.v1.Slot.end:type_name -> google.protobuf.Timestamp
+	44, // 6: halomail.scheduling.v1.Booking.start:type_name -> google.protobuf.Timestamp
+	44, // 7: halomail.scheduling.v1.Booking.end:type_name -> google.protobuf.Timestamp
 	1,  // 8: halomail.scheduling.v1.Booking.status:type_name -> halomail.scheduling.v1.BookingStatus
-	42, // 9: halomail.scheduling.v1.Booking.created_at:type_name -> google.protobuf.Timestamp
+	44, // 9: halomail.scheduling.v1.Booking.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 10: halomail.scheduling.v1.CalendarConnection.provider:type_name -> halomail.scheduling.v1.CalendarProvider
-	42, // 11: halomail.scheduling.v1.CalendarConnection.connected_at:type_name -> google.protobuf.Timestamp
+	44, // 11: halomail.scheduling.v1.CalendarConnection.connected_at:type_name -> google.protobuf.Timestamp
 	0,  // 12: halomail.scheduling.v1.CreateEventTypeRequest.location_kind:type_name -> halomail.scheduling.v1.LocationKind
 	3,  // 13: halomail.scheduling.v1.CreateEventTypeResponse.event_type:type_name -> halomail.scheduling.v1.EventType
 	3,  // 14: halomail.scheduling.v1.GetEventTypeResponse.event_type:type_name -> halomail.scheduling.v1.EventType
@@ -2719,14 +2823,14 @@ var file_halomail_scheduling_v1_scheduling_proto_depIdxs = []int32{
 	5,  // 20: halomail.scheduling.v1.SetAvailabilityRequest.overrides:type_name -> halomail.scheduling.v1.DateOverride
 	6,  // 21: halomail.scheduling.v1.SetAvailabilityResponse.availability:type_name -> halomail.scheduling.v1.Availability
 	7,  // 22: halomail.scheduling.v1.ListSlotsResponse.slots:type_name -> halomail.scheduling.v1.Slot
-	42, // 23: halomail.scheduling.v1.CreateBookingRequest.start:type_name -> google.protobuf.Timestamp
+	44, // 23: halomail.scheduling.v1.CreateBookingRequest.start:type_name -> google.protobuf.Timestamp
 	8,  // 24: halomail.scheduling.v1.CreateBookingResponse.booking:type_name -> halomail.scheduling.v1.Booking
 	8,  // 25: halomail.scheduling.v1.GetBookingResponse.booking:type_name -> halomail.scheduling.v1.Booking
 	1,  // 26: halomail.scheduling.v1.ListBookingsRequest.status:type_name -> halomail.scheduling.v1.BookingStatus
-	43, // 27: halomail.scheduling.v1.ListBookingsRequest.page:type_name -> halomail.common.v1.PageRequest
+	45, // 27: halomail.scheduling.v1.ListBookingsRequest.page:type_name -> halomail.common.v1.PageRequest
 	8,  // 28: halomail.scheduling.v1.ListBookingsResponse.bookings:type_name -> halomail.scheduling.v1.Booking
-	44, // 29: halomail.scheduling.v1.ListBookingsResponse.page:type_name -> halomail.common.v1.PageResponse
-	42, // 30: halomail.scheduling.v1.RescheduleBookingRequest.new_start:type_name -> google.protobuf.Timestamp
+	46, // 29: halomail.scheduling.v1.ListBookingsResponse.page:type_name -> halomail.common.v1.PageResponse
+	44, // 30: halomail.scheduling.v1.RescheduleBookingRequest.new_start:type_name -> google.protobuf.Timestamp
 	8,  // 31: halomail.scheduling.v1.RescheduleBookingResponse.booking:type_name -> halomail.scheduling.v1.Booking
 	8,  // 32: halomail.scheduling.v1.CancelBookingResponse.booking:type_name -> halomail.scheduling.v1.Booking
 	2,  // 33: halomail.scheduling.v1.StartConnectRequest.provider:type_name -> halomail.scheduling.v1.CalendarProvider
@@ -2744,27 +2848,29 @@ var file_halomail_scheduling_v1_scheduling_proto_depIdxs = []int32{
 	30, // 45: halomail.scheduling.v1.BookingService.ListBookings:input_type -> halomail.scheduling.v1.ListBookingsRequest
 	32, // 46: halomail.scheduling.v1.BookingService.RescheduleBooking:input_type -> halomail.scheduling.v1.RescheduleBookingRequest
 	34, // 47: halomail.scheduling.v1.BookingService.CancelBooking:input_type -> halomail.scheduling.v1.CancelBookingRequest
-	36, // 48: halomail.scheduling.v1.CalendarService.StartConnect:input_type -> halomail.scheduling.v1.StartConnectRequest
-	38, // 49: halomail.scheduling.v1.CalendarService.ListConnections:input_type -> halomail.scheduling.v1.ListConnectionsRequest
-	40, // 50: halomail.scheduling.v1.CalendarService.DisconnectCalendar:input_type -> halomail.scheduling.v1.DisconnectCalendarRequest
-	11, // 51: halomail.scheduling.v1.EventTypeService.CreateEventType:output_type -> halomail.scheduling.v1.CreateEventTypeResponse
-	13, // 52: halomail.scheduling.v1.EventTypeService.GetEventType:output_type -> halomail.scheduling.v1.GetEventTypeResponse
-	15, // 53: halomail.scheduling.v1.EventTypeService.ListEventTypes:output_type -> halomail.scheduling.v1.ListEventTypesResponse
-	17, // 54: halomail.scheduling.v1.EventTypeService.UpdateEventType:output_type -> halomail.scheduling.v1.UpdateEventTypeResponse
-	19, // 55: halomail.scheduling.v1.EventTypeService.DeleteEventType:output_type -> halomail.scheduling.v1.DeleteEventTypeResponse
-	21, // 56: halomail.scheduling.v1.AvailabilityService.GetAvailability:output_type -> halomail.scheduling.v1.GetAvailabilityResponse
-	23, // 57: halomail.scheduling.v1.AvailabilityService.SetAvailability:output_type -> halomail.scheduling.v1.SetAvailabilityResponse
-	25, // 58: halomail.scheduling.v1.BookingService.ListSlots:output_type -> halomail.scheduling.v1.ListSlotsResponse
-	27, // 59: halomail.scheduling.v1.BookingService.CreateBooking:output_type -> halomail.scheduling.v1.CreateBookingResponse
-	29, // 60: halomail.scheduling.v1.BookingService.GetBooking:output_type -> halomail.scheduling.v1.GetBookingResponse
-	31, // 61: halomail.scheduling.v1.BookingService.ListBookings:output_type -> halomail.scheduling.v1.ListBookingsResponse
-	33, // 62: halomail.scheduling.v1.BookingService.RescheduleBooking:output_type -> halomail.scheduling.v1.RescheduleBookingResponse
-	35, // 63: halomail.scheduling.v1.BookingService.CancelBooking:output_type -> halomail.scheduling.v1.CancelBookingResponse
-	37, // 64: halomail.scheduling.v1.CalendarService.StartConnect:output_type -> halomail.scheduling.v1.StartConnectResponse
-	39, // 65: halomail.scheduling.v1.CalendarService.ListConnections:output_type -> halomail.scheduling.v1.ListConnectionsResponse
-	41, // 66: halomail.scheduling.v1.CalendarService.DisconnectCalendar:output_type -> halomail.scheduling.v1.DisconnectCalendarResponse
-	51, // [51:67] is the sub-list for method output_type
-	35, // [35:51] is the sub-list for method input_type
+	36, // 48: halomail.scheduling.v1.BookingService.GetUsageStats:input_type -> halomail.scheduling.v1.GetUsageStatsRequest
+	38, // 49: halomail.scheduling.v1.CalendarService.StartConnect:input_type -> halomail.scheduling.v1.StartConnectRequest
+	40, // 50: halomail.scheduling.v1.CalendarService.ListConnections:input_type -> halomail.scheduling.v1.ListConnectionsRequest
+	42, // 51: halomail.scheduling.v1.CalendarService.DisconnectCalendar:input_type -> halomail.scheduling.v1.DisconnectCalendarRequest
+	11, // 52: halomail.scheduling.v1.EventTypeService.CreateEventType:output_type -> halomail.scheduling.v1.CreateEventTypeResponse
+	13, // 53: halomail.scheduling.v1.EventTypeService.GetEventType:output_type -> halomail.scheduling.v1.GetEventTypeResponse
+	15, // 54: halomail.scheduling.v1.EventTypeService.ListEventTypes:output_type -> halomail.scheduling.v1.ListEventTypesResponse
+	17, // 55: halomail.scheduling.v1.EventTypeService.UpdateEventType:output_type -> halomail.scheduling.v1.UpdateEventTypeResponse
+	19, // 56: halomail.scheduling.v1.EventTypeService.DeleteEventType:output_type -> halomail.scheduling.v1.DeleteEventTypeResponse
+	21, // 57: halomail.scheduling.v1.AvailabilityService.GetAvailability:output_type -> halomail.scheduling.v1.GetAvailabilityResponse
+	23, // 58: halomail.scheduling.v1.AvailabilityService.SetAvailability:output_type -> halomail.scheduling.v1.SetAvailabilityResponse
+	25, // 59: halomail.scheduling.v1.BookingService.ListSlots:output_type -> halomail.scheduling.v1.ListSlotsResponse
+	27, // 60: halomail.scheduling.v1.BookingService.CreateBooking:output_type -> halomail.scheduling.v1.CreateBookingResponse
+	29, // 61: halomail.scheduling.v1.BookingService.GetBooking:output_type -> halomail.scheduling.v1.GetBookingResponse
+	31, // 62: halomail.scheduling.v1.BookingService.ListBookings:output_type -> halomail.scheduling.v1.ListBookingsResponse
+	33, // 63: halomail.scheduling.v1.BookingService.RescheduleBooking:output_type -> halomail.scheduling.v1.RescheduleBookingResponse
+	35, // 64: halomail.scheduling.v1.BookingService.CancelBooking:output_type -> halomail.scheduling.v1.CancelBookingResponse
+	37, // 65: halomail.scheduling.v1.BookingService.GetUsageStats:output_type -> halomail.scheduling.v1.GetUsageStatsResponse
+	39, // 66: halomail.scheduling.v1.CalendarService.StartConnect:output_type -> halomail.scheduling.v1.StartConnectResponse
+	41, // 67: halomail.scheduling.v1.CalendarService.ListConnections:output_type -> halomail.scheduling.v1.ListConnectionsResponse
+	43, // 68: halomail.scheduling.v1.CalendarService.DisconnectCalendar:output_type -> halomail.scheduling.v1.DisconnectCalendarResponse
+	52, // [52:69] is the sub-list for method output_type
+	35, // [35:52] is the sub-list for method input_type
 	35, // [35:35] is the sub-list for extension type_name
 	35, // [35:35] is the sub-list for extension extendee
 	0,  // [0:35] is the sub-list for field type_name
@@ -2781,7 +2887,7 @@ func file_halomail_scheduling_v1_scheduling_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_halomail_scheduling_v1_scheduling_proto_rawDesc), len(file_halomail_scheduling_v1_scheduling_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   39,
+			NumMessages:   41,
 			NumExtensions: 0,
 			NumServices:   4,
 		},
