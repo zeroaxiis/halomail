@@ -15,7 +15,7 @@ export function SiteFooter() {
         <FooterCol
           title="Product"
           links={[
-            ["Features", "/features"],
+            ["Features", "/#features"],
             ["Pricing", "/pricing"],
             ["Booking", "/book/demo"],
           ]}
@@ -32,7 +32,7 @@ export function SiteFooter() {
         <FooterCol
           title="Company"
           links={[
-            ["GitHub", "https://github.com/aashishrajdev/halomail"],
+            ["GitHub", "https://github.com/zeroaxiis/halomail"],
             ["Privacy", "#"],
             ["Terms", "#"],
           ]}
