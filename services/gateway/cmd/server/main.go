@@ -87,7 +87,6 @@ func main() {
 	mux.Handle("/readyz", hc.Readiness())
 	mux.HandleFunc("/", root)
 	mux.HandleFunc("/health", healthHandler)
-	mux.HandleFunc("/api/health", healthHandler)
 
 	// Host every service in-process.
 	identity.Mount(mux, identity.Deps{
