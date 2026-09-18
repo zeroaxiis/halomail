@@ -14,7 +14,6 @@ export function SiteHeader() {
             <Logo />
           </Link>
           <nav className="hidden gap-6 text-sm text-muted-foreground md:flex">
-            <Link href="/features" className="transition-colors hover:text-foreground">Features</Link>
             <Link href="/pricing" className="transition-colors hover:text-foreground">Pricing</Link>
             {/* Static page copied from apps/docs by scripts/copy-docs.mjs, so it
                 is a plain <a>, not a Next route. */}

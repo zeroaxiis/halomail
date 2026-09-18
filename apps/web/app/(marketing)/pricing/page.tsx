@@ -20,12 +20,12 @@ const TIERS = [
     href: "/docs/integrate.html",
     featured: false,
     features: [
-      "Every feature — nothing gated",
+      "Every feature, nothing gated",
       "Unlimited users, forms, and bookings",
       "Google & Outlook calendar sync",
       "Signed webhooks and scoped API keys",
       "Your database, your data, your domain",
-      "MIT licensed — fork it if you like",
+      "MIT licensed, fork it if you like",
     ],
   },
   {
@@ -73,7 +73,7 @@ const COMPARE: [string, string | boolean, string | boolean][] = [
 const FAQS = [
   {
     q: "Is the free tier crippled?",
-    a: "No. Self-hosting gives you every feature in the codebase — there is no enterprise edition and no license key. You are paying for operations when you choose hosted, not for features.",
+    a: "No. Self-hosting gives you every feature in the codebase. There is no enterprise edition and no license key. You are paying for operations when you choose hosted, not for features.",
   },
   {
     q: "What does $5 actually cover?",
@@ -85,7 +85,7 @@ const FAQS = [
   },
   {
     q: "What does self-hosting really cost?",
-    a: "In monolith mode it fits the free tiers of a container host plus a managed Postgres — genuinely $0 at small scale. An always-on instance with more headroom runs roughly $5–10/month.",
+    a: "In monolith mode it fits the free tiers of a container host plus a managed Postgres, genuinely $0 at small scale. An always-on instance with more headroom runs roughly $5–10/month.",
   },
   {
     q: "Do you charge per seat?",
@@ -93,7 +93,7 @@ const FAQS = [
   },
   {
     q: "Is there a trial or a refund?",
-    a: "Self-hosting is the trial — run the exact same software for as long as you like before paying anything. Cancel hosted whenever; billing stops at the end of the period.",
+    a: "Self-hosting is the trial: run the exact same software for as long as you like before paying anything. Cancel hosted whenever; billing stops at the end of the period.",
   },
 ];
 
@@ -121,7 +121,7 @@ export default function PricingPage() {
             </h1>
             <p className="mt-5 text-balance text-lg text-muted-foreground">
               Every feature is in the open-source build. The paid plan buys operations —
-              backups, updates, uptime — not unlocked functionality.
+              backups, updates, uptime, not unlocked functionality.
             </p>
           </div>
 
@@ -235,7 +235,7 @@ export default function PricingPage() {
             </h2>
             <p className="mt-5 max-w-md text-muted-foreground">
               In monolith mode HaloMail is one container plus a Postgres database. At
-              portfolio scale that fits inside free tiers — the guide walks through the
+              portfolio scale that fits inside free tiers. The guide walks through the
               exact providers and settings.
             </p>
             <Button asChild variant="outline" size="lg" className="mt-8">
@@ -247,9 +247,9 @@ export default function PricingPage() {
 
           <Card className="overflow-hidden p-0">
             {[
-              ["Hobby — free tiers, monolith", "$0"],
-              ["Small — always-on 256 MB + managed Postgres", "$5–10"],
-              ["Growth — services scaled independently", "per service"],
+              ["Hobby · free tiers, monolith", "$0"],
+              ["Small · always-on 256 MB + managed Postgres", "$5–10"],
+              ["Growth · services scaled independently", "per service"],
             ].map(([label, cost], i) => (
               <div
                 key={label}
@@ -303,7 +303,7 @@ export default function PricingPage() {
               Start free. Upgrade only if you get tired of ops.
             </h2>
             <p className="max-w-md text-muted-foreground">
-              Same software either way — moving between them is a database dump.
+              Same software either way. Moving between them is a database dump.
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg">

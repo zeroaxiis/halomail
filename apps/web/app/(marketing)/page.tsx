@@ -9,11 +9,17 @@ import {
   Mail,
   Palette,
   ShieldCheck,
-  Sparkles,
   Webhook,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { FaqList } from "@/components/marketing/faq-list";
+import { FormsTableCard } from "@/components/marketing/forms-table-card";
+import { HeroPreview } from "@/components/marketing/hero-preview";
+import { SchedulingDemo } from "@/components/marketing/scheduling-demo";
+import { SpamDemo } from "@/components/marketing/spam-demo";
+import { ThemeShowcase } from "@/components/marketing/theme-showcase";
+import { WeekCard } from "@/components/marketing/week-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,6 +34,7 @@ export default function LandingPage() {
       <FormsTable />
       <HowItWorks />
       <Integrate />
+      <FeatureDetail />
       <Stats />
       <Faq />
       <FinalCta />
@@ -42,9 +49,11 @@ export default function LandingPage() {
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-center">
-      <Badge variant="outline" className="bg-card/60 px-3 py-1 font-normal text-muted-foreground backdrop-blur">
-        {children}
-      </Badge>
+      <span className="rounded-full border border-border bg-card/60 px-4 py-1.5 backdrop-blur">
+        <span className="section-label text-sm font-medium uppercase tracking-[0.25em]">
+          {children}
+        </span>
+      </span>
     </div>
   );
 }
@@ -81,18 +90,13 @@ function Hero() {
       />
 
       <div className="container relative flex flex-col items-center py-24 text-center md:py-32">
-        <Badge variant="outline" className="mb-6 animate-fade-up gap-1.5 bg-card/60 py-1 pl-2 pr-3 backdrop-blur">
-          <Sparkles className="size-3.5 text-brand" />
-          <span className="font-normal text-muted-foreground">API-first · open source · MIT</span>
-        </Badge>
-
         <h1 className="max-w-4xl animate-fade-up text-4xl font-semibold leading-[1.08] tracking-tight md:text-6xl">
           Scheduling and contact forms,
           <br className="hidden md:block" /> behind one clean API.
         </h1>
 
         <p className="mt-6 max-w-xl animate-fade-up text-balance text-lg text-muted-foreground">
-          Give every user a public booking page and an embeddable contact form — backed by
+          Give every user a public booking page and an embeddable contact form, backed by
           typed ConnectRPC, a generated SDK, signed webhooks, and a dashboard you don&apos;t
           have to build.
         </p>
@@ -121,83 +125,6 @@ function Hero() {
   );
 }
 
-/** A compact, believable product shot: booking picker beside a live submission. */
-function HeroPreview() {
-  return (
-    <div className="relative mt-16 w-full max-w-4xl animate-fade-up">
-      <Card className="glass overflow-hidden p-2 shadow-2xl">
-        <div className="rounded-md border border-border bg-background">
-          <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
-            <span className="size-2.5 rounded-full bg-destructive/60" />
-            <span className="size-2.5 rounded-full bg-yellow-500/60" />
-            <span className="size-2.5 rounded-full bg-emerald-500/60" />
-            <span className="ml-3 font-mono text-[11px] text-muted-foreground">
-              halomail.app/book/grace-hopper
-            </span>
-          </div>
-
-          <div className="grid gap-4 p-4 text-left sm:grid-cols-2">
-            <div className="rounded-lg border border-border p-4">
-              <p className="text-xs text-muted-foreground">Intro Call · 30 min</p>
-              <p className="mt-1 font-medium">Pick a time</p>
-              <div className="mt-3 flex gap-1.5">
-                {["Mon", "Tue", "Wed", "Thu"].map((d, i) => (
-                  <div
-                    key={d}
-                    className={`flex-1 rounded-md border px-2 py-2 text-center text-[11px] ${
-                      i === 1
-                        ? "border-foreground/30 bg-secondary font-medium"
-                        : "border-border text-muted-foreground"
-                    }`}
-                  >
-                    {d}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3 space-y-1.5">
-                {["09:00", "09:30", "10:00"].map((t, i) => (
-                  <div
-                    key={t}
-                    className={`rounded-md border px-3 py-2 font-mono text-xs ${
-                      i === 0
-                        ? "border-brand/40 bg-brand/10 text-brand"
-                        : "border-border text-muted-foreground"
-                    }`}
-                  >
-                    {t}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-border p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Inbox</p>
-                <Badge variant="success" className="px-1.5 py-0 text-[10px]">live</Badge>
-              </div>
-              <div className="mt-3 space-y-2">
-                {[
-                  { n: "Jane Visitor", m: "Saw your portfolio — can we talk?" },
-                  { n: "Marc Dev", m: "Question about the API pricing" },
-                  { n: "Priya S.", m: "Booking rescheduled to Thursday" },
-                ].map((row) => (
-                  <div key={row.n} className="rounded-md border border-border px-3 py-2">
-                    <p className="text-xs font-medium">{row.n}</p>
-                    <p className="truncate text-[11px] text-muted-foreground">{row.m}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-3 font-mono text-[10px] text-muted-foreground">
-                POST /SubmitMessage · 200 OK
-              </p>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
 /* -------------------------------------------------------------------------- */
 /* Logo strip                                                                 */
 /* -------------------------------------------------------------------------- */
@@ -222,11 +149,11 @@ function LogoStrip() {
       </h2>
 
       <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <div className="flex w-max animate-marquee gap-3">
+        <div className="flex w-max animate-marquee">
           {[...STACK, ...STACK].map((name, i) => (
             <div
               key={`${name}-${i}`}
-              className="flex h-14 min-w-[180px] items-center justify-center rounded-lg border border-border bg-card px-6 text-sm text-muted-foreground"
+              className="mr-3 flex h-14 min-w-[180px] items-center justify-center rounded-lg border border-border bg-card px-6 text-sm text-muted-foreground"
             >
               {name}
             </div>
@@ -243,7 +170,7 @@ function LogoStrip() {
 
 function Features() {
   return (
-    <section className="container py-20 md:py-28">
+    <section id="features" className="container scroll-mt-24 py-20 md:py-28">
       <SectionHead
         label="Features"
         title="Everything a booking link needs, and nothing it doesn't"
@@ -256,51 +183,9 @@ function Features() {
           <FeatureHead
             icon={<CalendarClock />}
             title="Scheduling that respects timezones"
-            desc="Weekly availability rules, date overrides, Google and Outlook sync, reschedule and cancel flows — slots are computed server-side so two people never book the same minute."
+            desc="Weekly availability rules, date overrides, Google and Outlook sync, reschedule and cancel flows. Slots are computed server-side so two people never book the same minute."
           />
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-border bg-background p-4">
-              <p className="text-xs text-muted-foreground">Weekly rules</p>
-              <div className="mt-3 space-y-2">
-                {[
-                  ["Mon – Fri", "09:00 – 17:00"],
-                  ["Saturday", "Unavailable"],
-                ].map(([d, t]) => (
-                  <div key={d} className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{d}</span>
-                    <span className="font-mono">{t}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 flex h-16 items-end gap-1">
-                {[40, 65, 30, 80, 55, 20, 70].map((h, i) => (
-                  <div
-                    key={i}
-                    style={{ height: `${h}%` }}
-                    className={`flex-1 rounded-sm ${i === 3 ? "bg-brand/70" : "bg-secondary"}`}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="rounded-lg border border-border bg-background p-4">
-              <p className="text-xs text-muted-foreground">Next bookings</p>
-              <div className="mt-3 space-y-2">
-                {[
-                  ["Intro Call", "Tue 09:00"],
-                  ["Design Review", "Wed 14:30"],
-                  ["Pairing", "Thu 11:00"],
-                ].map(([t, w]) => (
-                  <div
-                    key={t}
-                    className="flex items-center justify-between rounded-md border border-border px-3 py-2"
-                  >
-                    <span className="text-xs font-medium">{t}</span>
-                    <span className="font-mono text-[11px] text-muted-foreground">{w}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <SchedulingDemo />
         </Card>
 
         {/* Spam */}
@@ -310,57 +195,21 @@ function Features() {
             title="Spam-proof by default"
             desc="Honeypot fields, per-IP rate limiting, and a spam score on every submission."
           />
-          <div className="mt-6 space-y-2">
-            {[
-              { label: "jane@example.com", score: "0.02", spam: false },
-              { label: "winner@lottery.biz", score: "0.97", spam: true },
-              { label: "marc@studio.dev", score: "0.05", spam: false },
-            ].map((r) => (
-              <div
-                key={r.label}
-                className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2"
-              >
-                <span className="truncate text-xs text-muted-foreground">{r.label}</span>
-                <Badge variant={r.spam ? "danger" : "success"} className="ml-2 px-1.5 py-0 text-[10px]">
-                  {r.score}
-                </Badge>
-              </div>
-            ))}
-          </div>
+          <SpamDemo />
         </Card>
 
-        {/* Email designer */}
-        <Card className="bg-card p-6">
-          <FeatureHead
-            icon={<Palette />}
-            title="Emails that don't look templated"
-            desc="Five built-in themes plus custom HTML, with live preview before you send."
-          />
-          <div className="mt-6 grid grid-cols-5 gap-2">
-            {["Minimal", "Apple", "Notion", "Glass", "Terminal"].map((t, i) => (
-              <div
-                key={t}
-                className={`rounded-md border p-2 text-center text-[10px] ${
-                  i === 2 ? "border-brand/40 bg-brand/10 text-brand" : "border-border text-muted-foreground"
-                }`}
-              >
-                <div className="mb-1.5 h-8 rounded bg-secondary" />
-                {t}
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Developer — wide */}
-        <Card className="bg-card overflow-hidden p-6 lg:col-span-2">
+        {/* Developer */}
+        <Card className="bg-card overflow-hidden p-6">
           <FeatureHead
             icon={<Code2 />}
             title="Typed end to end"
             desc="Protobuf definitions generate both the Go server and the TypeScript SDK, so a renamed field breaks the build instead of production."
           />
-          <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-background p-4">
-            <pre className="font-mono text-[12px] leading-relaxed text-muted-foreground">
-              <code>{`const halo = new HaloMail({ apiUrl: process.env.API_URL });
+          <div className="mt-6 rounded-lg border border-border bg-background p-4">
+            <pre className="whitespace-pre-wrap break-words font-mono text-[12px] leading-relaxed text-muted-foreground">
+              <code>{`const halo = new HaloMail({
+  apiUrl: process.env.API_URL,
+});
 
 await halo.contact.submitMessage({
   formSlug:    "portfolio",
@@ -370,6 +219,16 @@ await halo.contact.submitMessage({
 });`}</code>
             </pre>
           </div>
+        </Card>
+
+        {/* Email designer — wide so the theme previews get room */}
+        <Card className="bg-card p-6 lg:col-span-2">
+          <FeatureHead
+            icon={<Palette />}
+            title="Emails that don't look templated"
+            desc="Five built-in themes plus custom HTML, with live preview before you send."
+          />
+          <ThemeShowcase />
         </Card>
       </div>
     </section>
@@ -410,7 +269,7 @@ function Dashboard() {
           </h2>
           <p className="mt-5 max-w-md text-muted-foreground">
             Every booking, every form submission, every API key and webhook delivery in a
-            single place — with an audit log that records who changed what.
+            single place, with an audit log that records who changed what.
           </p>
           <ul className="mt-7 space-y-3">
             {[
@@ -431,62 +290,7 @@ function Dashboard() {
           </Button>
         </div>
 
-        <Card className="bg-card overflow-hidden p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">This week</p>
-            <div className="flex gap-1">
-              {["1D", "7D"].map((t, i) => (
-                <span
-                  key={t}
-                  className={`rounded-md border px-2 py-0.5 text-[11px] ${
-                    i === 1 ? "border-foreground/25 bg-secondary" : "border-border text-muted-foreground"
-                  }`}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            {[
-              ["Bookings", "34"],
-              ["Messages", "128"],
-              ["Show rate", "92%"],
-            ].map(([k, v]) => (
-              <div key={k} className="rounded-lg border border-border bg-background p-3">
-                <p className="text-[11px] text-muted-foreground">{k}</p>
-                <p className="mt-1 text-xl font-semibold tracking-tight">{v}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 rounded-lg border border-border bg-background p-4">
-            <svg viewBox="0 0 320 90" className="h-24 w-full" role="img" aria-label="Weekly volume">
-              <polyline
-                points="0,70 45,58 90,64 135,38 180,44 225,22 270,30 320,12"
-                fill="none"
-                stroke="hsl(var(--brand))"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <polyline
-                points="0,80 45,74 90,78 135,66 180,70 225,58 270,62 320,52"
-                fill="none"
-                stroke="hsl(var(--muted-foreground))"
-                strokeWidth="1.5"
-                strokeDasharray="3 3"
-                opacity="0.5"
-              />
-            </svg>
-            <div className="mt-2 flex justify-between font-mono text-[10px] text-muted-foreground">
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-                <span key={d}>{d}</span>
-              ))}
-            </div>
-          </div>
-        </Card>
+        <WeekCard />
       </div>
     </section>
   );
@@ -496,40 +300,11 @@ function Dashboard() {
 /* Forms table split                                                          */
 /* -------------------------------------------------------------------------- */
 
-const FORMS = [
-  ["portfolio", "142", "0.4%", "2m ago"],
-  ["hire-me", "38", "1.1%", "1h ago"],
-  ["support", "512", "3.8%", "4m ago"],
-  ["newsletter", "96", "0.9%", "22m ago"],
-  ["feedback", "27", "0.0%", "3h ago"],
-];
-
 function FormsTable() {
   return (
     <section className="container py-20 md:py-28">
       <div className="grid items-center gap-12 lg:grid-cols-2">
-        <Card className="bg-card order-2 overflow-hidden p-0 lg:order-1">
-          <div className="grid grid-cols-4 border-b border-border px-5 py-3 text-[11px] uppercase tracking-wide text-muted-foreground">
-            <span className="col-span-1">Form</span>
-            <span className="text-right">Messages</span>
-            <span className="text-right">Spam</span>
-            <span className="text-right">Last</span>
-          </div>
-          {FORMS.map(([slug, msgs, spam, last]) => (
-            <div
-              key={slug}
-              className="grid grid-cols-4 items-center border-b border-border px-5 py-3.5 text-sm last:border-0"
-            >
-              <span className="flex items-center gap-2 font-mono text-xs">
-                <Inbox className="size-3.5 text-muted-foreground" />
-                {slug}
-              </span>
-              <span className="text-right font-medium">{msgs}</span>
-              <span className="text-right text-muted-foreground">{spam}</span>
-              <span className="text-right text-xs text-muted-foreground">{last}</span>
-            </div>
-          ))}
-        </Card>
+        <FormsTableCard />
 
         <div className="order-1 lg:order-2">
           <h2 className="max-w-md text-3xl font-semibold tracking-tight md:text-4xl">
@@ -537,7 +312,7 @@ function FormsTable() {
           </h2>
           <p className="mt-5 max-w-md text-muted-foreground">
             One form per page, per campaign, per client. Each gets its own slug, target
-            address, field schema, and redirect — and shares the same two-line embed.
+            address, field schema, and redirect, and shares the same two-line embed.
           </p>
           <Button asChild variant="outline" size="lg" className="mt-8">
             <a href="/docs/integrate.html">
@@ -556,19 +331,22 @@ function FormsTable() {
 
 const STEPS = [
   {
-    n: "01",
+    n: "1",
     title: "Create a form or event type",
     desc: "From the dashboard or one API call. You get a slug and a public booking handle.",
+    example: "halomail.app/book/you",
   },
   {
-    n: "02",
+    n: "2",
     title: "Paste two lines into your site",
     desc: "A script tag and a data-halomail attribute on the form you already designed.",
+    example: '<form data-halomail="portfolio">',
   },
   {
-    n: "03",
-    title: "Watch messages and bookings land",
+    n: "3",
+    title: "Messages and bookings land",
     desc: "Stored, forwarded to your inbox, and pushed to your endpoints as signed webhooks.",
+    example: "POST /SubmitMessage · 200 OK",
   },
 ];
 
@@ -576,14 +354,33 @@ function HowItWorks() {
   return (
     <section className="border-y border-border bg-card/30 py-20 md:py-28">
       <div className="container">
-        <SectionHead label="How it works" title="Live on your site in three steps" />
-        <div className="grid gap-4 md:grid-cols-3">
-          {STEPS.map((s) => (
-            <Card key={s.n} className="bg-card p-6">
-              <span className="font-mono text-sm text-brand">{s.n}</span>
-              <h3 className="mt-3 font-medium tracking-tight">{s.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
-            </Card>
+        <SectionHead
+          label="How it works"
+          title="Live on your site in three steps"
+          desc="No SDK required for the basics: a slug, two lines of HTML, and you're receiving."
+        />
+        <div className="relative grid gap-4 md:grid-cols-3">
+          {STEPS.map((s, i) => (
+            <div key={s.n} className="relative">
+              <Card className="bg-card h-full p-6">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-7 items-center justify-center rounded-full border border-brand/40 bg-brand/10 font-mono text-sm text-brand">
+                    {s.n}
+                  </span>
+                  <h3 className="font-medium tracking-tight">{s.title}</h3>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+                <p className="mt-4 truncate rounded-md border border-border bg-background px-3 py-2 font-mono text-[11px] text-muted-foreground">
+                  {s.example}
+                </p>
+              </Card>
+              {i < STEPS.length - 1 ? (
+                <ArrowRight
+                  aria-hidden
+                  className="absolute -right-4 top-1/2 z-10 hidden size-4 -translate-y-1/2 text-muted-foreground md:block"
+                />
+              ) : null}
+            </div>
           ))}
         </div>
       </div>
@@ -648,7 +445,7 @@ function CodeCard({ title, children }: { title: string; children: string }) {
         <span className="size-2.5 rounded-full bg-emerald-500/60" />
         <span className="ml-2 font-mono text-[11px] text-muted-foreground">{title}</span>
       </div>
-      <pre className="overflow-x-auto p-5 font-mono text-[12.5px] leading-relaxed">
+      <pre className="whitespace-pre-wrap break-words p-5 font-mono text-[12.5px] leading-relaxed">
         <code>{children}</code>
       </pre>
     </Card>
@@ -661,6 +458,86 @@ function Mini({ icon, label }: { icon: React.ReactNode; label: string }) {
       {icon}
       <span className="font-medium">{label}</span>
     </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Feature detail — the full surface, folded in from the old /features page   */
+/* -------------------------------------------------------------------------- */
+
+const DETAIL = [
+  {
+    icon: <CalendarClock />,
+    title: "Scheduling",
+    tagline: "A Calendly-style booking page for every user.",
+    points: [
+      "Availability rules with per-date overrides",
+      "Google and Outlook calendar sync",
+      "Reschedule and cancel links built in",
+    ],
+  },
+  {
+    icon: <Inbox />,
+    title: "Contact forms",
+    tagline: "One script tag turns any form into an inbox.",
+    points: [
+      "Spam scoring plus rate limiting",
+      "Stored, searchable submissions",
+      "Email forwarding to your inbox",
+    ],
+  },
+  {
+    icon: <Palette />,
+    title: "Email designer",
+    tagline: "Notification emails that match your brand.",
+    points: [
+      "Five built-in themes, custom HTML too",
+      "Template variables, safely substituted",
+      "Live preview before you send",
+    ],
+  },
+  {
+    icon: <Code2 />,
+    title: "Developer surface",
+    tagline: "Everything is an API before it's a screen.",
+    points: [
+      "Scoped keys and signed webhooks",
+      "Generated TypeScript SDK",
+      "Audit logs on sensitive actions",
+    ],
+  },
+];
+
+function FeatureDetail() {
+  return (
+    <section className="border-t border-border bg-card/30 py-20 md:py-28">
+      <div className="container">
+        <SectionHead
+          label="The full surface"
+          title="Everything you need, nothing you don't"
+          desc="One typed API powers the dashboard, the SDK, and your own integrations."
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {DETAIL.map((s) => (
+            <Card key={s.title} className="bg-card p-6">
+              <div className="mb-4 inline-flex size-9 items-center justify-center rounded-lg border border-border bg-secondary [&_svg]:size-4">
+                {s.icon}
+              </div>
+              <h3 className="font-medium tracking-tight">{s.title}</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">{s.tagline}</p>
+              <ul className="mt-4 space-y-2 border-t border-border pt-4 text-[13px] text-muted-foreground">
+                {s.points.map((p) => (
+                  <li key={p} className="flex gap-2">
+                    <span className="mt-[7px] size-1 shrink-0 rounded-full bg-brand" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -705,7 +582,7 @@ const FAQS = [
   },
   {
     q: "Do I need a database?",
-    a: "PostgreSQL, yes — a free Neon project is plenty to start. Redis is optional: without it, rate limiting falls back to an in-memory limiter, which is correct for a single instance.",
+    a: "PostgreSQL, yes. A free Neon project is plenty to start. Redis is optional: without it, rate limiting falls back to an in-memory limiter, which is correct for a single instance.",
   },
   {
     q: "Can I use my own domain for emails?",
@@ -718,6 +595,26 @@ const FAQS = [
   {
     q: "How do I keep the API off the public internet?",
     a: "Every write endpoint except form submission and booking requires a bearer token. Deploy the gateway behind your own proxy if you want the rest locked down further.",
+  },
+  {
+    q: "Is the free tier crippled?",
+    a: "No. Self-hosting gives you every feature in the codebase. There is no enterprise edition and no license key. You are paying for operations when you choose hosted, not for features.",
+  },
+  {
+    q: "What does the $5 hosted plan actually cover?",
+    a: "A managed Postgres with daily backups, automatic deploys of new versions, configured email delivery, and someone to email when something breaks.",
+  },
+  {
+    q: "Can I move between hosted and self-hosted?",
+    a: "In both directions. It is the same schema and the same API, so a database dump moves your data either way. No export fees, no lock-in.",
+  },
+  {
+    q: "Do you charge per seat?",
+    a: "No. One price covers your whole team, however many people that is.",
+  },
+  {
+    q: "Is there a trial or a refund?",
+    a: "Self-hosting is the trial: run the exact same software for as long as you like before paying anything. Cancel hosted whenever; billing stops at the end of the period.",
   },
 ];
 
@@ -732,7 +629,7 @@ function Faq() {
         </div>
         <div className="flex flex-col items-start gap-5">
           <p className="max-w-md text-muted-foreground">
-            Confused or curious? The docs cover the whole surface — from the first embed to
+            Confused or curious? The docs cover the whole surface, from the first embed to
             self-hosting the stack on your own infrastructure.
           </p>
           <Button asChild variant="outline">
@@ -743,14 +640,7 @@ function Faq() {
         </div>
       </div>
 
-      <div className="mt-14 grid gap-x-10 gap-y-8 border-t border-border pt-10 md:grid-cols-2">
-        {FAQS.map((f) => (
-          <div key={f.q}>
-            <h3 className="font-medium tracking-tight">{f.q}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
-          </div>
-        ))}
-      </div>
+      <FaqList items={FAQS} />
     </section>
   );
 }
@@ -780,7 +670,7 @@ function FinalCta() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <a href="https://github.com/aashishrajdev/halomail" target="_blank" rel="noreferrer">
+              <a href="https://github.com/zeroaxiis/halomail" target="_blank" rel="noreferrer">
                 View on GitHub
               </a>
             </Button>
