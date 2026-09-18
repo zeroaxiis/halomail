@@ -1,6 +1,7 @@
 package errs
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -27,5 +28,19 @@ func TestConstructorsSetKindAndFormatMessage(t *testing.T) {
 				t.Fatalf("message = %q, want %q", got, "bad input")
 			}
 		})
+	}
+}
+
+func TestErrorIncludesWrappedCause(t *testing.T) {
+	cause := errors.New("connection refused")
+	err := Wrap(cause, KindInternal, "load user")
+	if got := err.Error(); got != "load user: connection refused" {
+		t.Fatalf("message = %q", got)
+	}
+	if !errors.Is(err, cause) {
+		t.Fatal("wrapped cause is not reachable through errors.Is")
+	}
+	if Invalid("no cause").Unwrap() != nil {
+		t.Fatal("constructor errors should not carry a cause")
 	}
 }
