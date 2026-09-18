@@ -2,6 +2,7 @@ package errs
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -42,5 +43,18 @@ func TestErrorIncludesWrappedCause(t *testing.T) {
 	}
 	if Invalid("no cause").Unwrap() != nil {
 		t.Fatal("constructor errors should not carry a cause")
+	}
+}
+
+func TestKindOfWalksErrorChain(t *testing.T) {
+	wrapped := fmt.Errorf("handler: %w", NotFound("form %s", "f1"))
+	if got := KindOf(wrapped); got != KindNotFound {
+		t.Fatalf("kind of wrapped error = %d, want %d", got, KindNotFound)
+	}
+	if got := KindOf(errors.New("plain")); got != KindUnknown {
+		t.Fatalf("kind of plain error = %d, want %d", got, KindUnknown)
+	}
+	if got := KindOf(nil); got != KindUnknown {
+		t.Fatalf("kind of nil = %d, want %d", got, KindUnknown)
 	}
 }
