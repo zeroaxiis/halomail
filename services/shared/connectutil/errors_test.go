@@ -4,6 +4,7 @@ import (
 	"connectrpc.com/connect"
 	"errors"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"strings"
 	"testing"
 )
 
@@ -31,5 +32,20 @@ func TestToConnectPassesThroughNilAndConnectErrors(t *testing.T) {
 	original := connect.NewError(connect.CodeAborted, errors.New("retry"))
 	if got := ToConnect(original); got != original {
 		t.Fatalf("connect error was re-wrapped: %v", got)
+	}
+}
+
+func TestToConnectHidesUnclassifiedErrors(t *testing.T) {
+	for _, in := range []error{
+		errors.New("pq: password authentication failed"),
+		errs.Internal("pq: password authentication failed"),
+	} {
+		err := ToConnect(in)
+		if got := connect.CodeOf(err); got != connect.CodeInternal {
+			t.Fatalf("code = %s, want internal", got)
+		}
+		if strings.Contains(err.Error(), "password") {
+			t.Fatalf("internal detail leaked to the client: %v", err)
+		}
 	}
 }
