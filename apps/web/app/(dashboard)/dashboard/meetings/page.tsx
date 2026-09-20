@@ -29,6 +29,7 @@ export default function MeetingsPage() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     setTimezone(localTimezone());
@@ -79,7 +80,7 @@ export default function MeetingsPage() {
 
   return <>
     <PageHeader title="Meetings" description="Turn a website button into a calendar booking with a Google Meet link." />
-    <FeatureAccess feature="meetings" />
+    <FeatureAccess feature="meetings" refreshTrigger={refreshTrigger} />
     <div className="mb-6 grid gap-4 sm:grid-cols-3">
       {[["Total bookings", stats.data?.totalBookings], ["Upcoming", stats.data?.upcomingBookings], ["Cancelled", stats.data?.cancelledBookings]].map(([label, value]) => <Card key={String(label)} className="p-5"><p className="text-sm text-muted-foreground">{label}</p><p className="mt-2 text-2xl font-semibold">{stats.loading ? "…" : value || 0}</p></Card>)}
     </div>
@@ -116,7 +117,7 @@ export default function MeetingsPage() {
         </form>
       </Card>
     </div>
-    <div className="mb-3 flex items-center justify-between"><h2 className="font-medium">Recent bookings</h2><Button variant="outline" onClick={() => { void bookings.reload(); void stats.reload(); }}>Refresh</Button></div>
+    <div className="mb-3 flex items-center justify-between"><h2 className="font-medium">Recent bookings</h2><Button variant="outline" onClick={() => { void bookings.reload(); void stats.reload(); setRefreshTrigger(t => t + 1); }}>Refresh</Button></div>
     <Card className="divide-y divide-border">
       {bookings.loading ? <p className="p-5">Loading…</p> : !bookings.data?.bookings?.length ? <p className="p-5 text-muted-foreground">No bookings yet.</p> : bookings.data.bookings.map(booking => <div key={booking.id} className="flex flex-wrap justify-between gap-3 p-5 text-sm">
         <div><p className="font-medium">{booking.inviteeName}</p><p className="text-muted-foreground">{booking.inviteeEmail}</p></div>

@@ -9,7 +9,7 @@ import (
 )
 
 func Queue(ctx context.Context, tx pgx.Tx, id, recipient, replyTo, subject, body string) error {
-	_, err := tx.Exec(ctx, `INSERT INTO mail_outbox(id,recipient,reply_to,subject,html) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(id) DO NOTHING`, id, recipient, replyTo, subject, body)
+	_, err := tx.Exec(ctx, `INSERT INTO mail_outbox(id,recipient,reply_to,subject,html) VALUES($1,$2,$3,$4,$5) ON CONFLICT(id) DO NOTHING`, id, recipient, replyTo, subject, body)
 	return err
 }
 

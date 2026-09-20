@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { API_URL, rpc } from "@/lib/api";
@@ -10,9 +10,12 @@ type Feature = "forms" | "meetings";
 interface AccessKey { id: string; name: string; prefix: string; lastFour: string; revoked?: boolean; scopes?: string[] }
 interface Allowance { used: number; limit: number; remaining: number; resetsAt: string | null }
 
-export function FeatureAccess({ feature }: { feature: Feature }) {
+export function FeatureAccess({ feature, refreshTrigger }: { feature: Feature, refreshTrigger?: number }) {
   const keys = useRpc<{ keys?: AccessKey[] }>("halomail.identity.v1.ApiKeyService/ListApiKeys");
   const usage = useRpc<Record<Feature, Allowance>>("v1/usage");
+  useEffect(() => {
+    if (refreshTrigger) void usage.reload();
+  }, [refreshTrigger, usage]);
   const [secret, setSecret] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

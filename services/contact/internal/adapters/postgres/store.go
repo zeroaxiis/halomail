@@ -169,7 +169,7 @@ func (r *Messages) Create(ctx context.Context, m *domain.Message) error {
 	}
 	if !m.IsSpam {
 		var recipient string
-		if err = tx.QueryRow(ctx, `SELECT email FROM users WHERE id=$1`, m.OwnerID).Scan(&recipient); err != nil {
+		if err = tx.QueryRow(ctx, `SELECT target_email FROM forms WHERE id=$1`, m.FormID).Scan(&recipient); err != nil {
 			return err
 		}
 		fields := make(map[string]string, len(m.Data)+2)
