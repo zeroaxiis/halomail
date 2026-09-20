@@ -276,7 +276,6 @@ message GetUsageStatsResponse {
   int32 cancelled_bookings = 3;
 }
 
-
 // ---------------------------------------------------------------------------
 // CalendarService — OAuth calendar sync
 // ---------------------------------------------------------------------------
