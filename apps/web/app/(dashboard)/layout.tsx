@@ -4,18 +4,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
-import { getToken } from "@/lib/auth";
+import { saveSession, type SessionUser } from "@/lib/auth";
+import { rpc } from "@/lib/api";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (!getToken()) {
-      router.replace("/login");
-      return;
-    }
-    setReady(true);
+    rpc<{ user: SessionUser }>("halomail.identity.v1.AuthService/GetCurrentUser")
+      .then(result => { saveSession("", result.user); setReady(true); })
+      .catch(() => router.replace("/login"));
   }, [router]);
 
   if (!ready) {

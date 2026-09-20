@@ -25,6 +25,7 @@ type UserRepo interface {
 type SessionRepo interface {
 	Create(ctx context.Context, s *domain.Session) error
 	GetByRefreshHash(ctx context.Context, hash string) (*domain.Session, error)
+	Consume(ctx context.Context, id string) error
 	Revoke(ctx context.Context, id string) error
 }
 

@@ -34,6 +34,7 @@ type BookingRepo interface {
 	// used to compute busy intervals.
 	ListConfirmedBetween(ctx context.Context, ownerID string, from, to time.Time) ([]domain.Booking, error)
 	Update(ctx context.Context, b *domain.Booking) error
+	GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error)
 }
 
 type CalendarRepo interface {
@@ -46,4 +47,10 @@ type Repos struct {
 	Availability AvailabilityRepo
 	Bookings     BookingRepo
 	Calendars    CalendarRepo
+}
+
+type Calendar interface {
+	Ready(context.Context, string) error
+	Busy(context.Context, string, time.Time, time.Time, string) ([]domain.Booking, error)
+	Start(context.Context, string) (string, error)
 }

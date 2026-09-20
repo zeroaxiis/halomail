@@ -4,12 +4,9 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"net/mail"
 	"strings"
 	"time"
-
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"golang.org/x/oauth2/microsoft"
 
 	"github.com/aashishrajdev/halomail/services/scheduling/internal/domain"
 	"github.com/aashishrajdev/halomail/services/scheduling/internal/slots"
@@ -22,6 +19,7 @@ import (
 type Config struct {
 	Google    config.OAuth
 	Microsoft config.Microsoft
+	Calendar  Calendar
 }
 
 type Service struct {
@@ -65,6 +63,9 @@ func (s *Service) CreateEventType(ctx context.Context, ownerID string, in EventT
 	if in.DurationMinutes <= 0 {
 		in.DurationMinutes = 30
 	}
+	if in.DurationMinutes > 480 || in.BufferBeforeMinutes < 0 || in.BufferAfterMinutes < 0 || in.BufferBeforeMinutes > 240 || in.BufferAfterMinutes > 240 {
+		return nil, errs.Invalid("invalid duration or buffers")
+	}
 	slug := in.Slug
 	if slug == "" {
 		slug = slugify(in.Title)
@@ -103,6 +104,9 @@ func (s *Service) ListEventTypes(ctx context.Context, ownerID string) ([]domain.
 }
 
 func (s *Service) UpdateEventType(ctx context.Context, ownerID, id string, in EventTypeInput, active bool) (*domain.EventType, error) {
+	if in.DurationMinutes > 480 || in.DurationMinutes < 0 || in.BufferBeforeMinutes < 0 || in.BufferAfterMinutes < 0 || in.BufferBeforeMinutes > 240 || in.BufferAfterMinutes > 240 {
+		return nil, errs.Invalid("invalid duration or buffers")
+	}
 	et, err := s.eventTypes.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -155,6 +159,22 @@ func (s *Service) GetAvailability(ctx context.Context, ownerID string) (*domain.
 }
 
 func (s *Service) SetAvailability(ctx context.Context, ownerID, tz string, rules []domain.Rule, overrides []domain.Override) (*domain.Availability, error) {
+	if len(rules) > 100 || len(overrides) > 366 {
+		return nil, errs.Invalid("too many availability rules")
+	}
+	for _, rule := range rules {
+		if rule.Weekday < 0 || rule.Weekday > 6 || rule.StartMinute < 0 || rule.EndMinute > 1440 || rule.EndMinute <= rule.StartMinute {
+			return nil, errs.Invalid("invalid availability rule")
+		}
+	}
+	for _, override := range overrides {
+		if _, err := time.Parse("2006-01-02", override.Date); err != nil {
+			return nil, errs.Invalid("invalid override date")
+		}
+		if !override.Unavailable && (override.StartMinute < 0 || override.EndMinute > 1440 || override.EndMinute <= override.StartMinute) {
+			return nil, errs.Invalid("invalid override hours")
+		}
+	}
 	if tz == "" {
 		tz = "UTC"
 	}
@@ -181,12 +201,26 @@ func (s *Service) ListSlots(ctx context.Context, eventTypeID, fromDate, toDate, 
 	}
 	loc := mustLoc(avail.Timezone)
 
-	from, _ := time.ParseInLocation("2006-01-02", fromDate, loc)
-	to, _ := time.ParseInLocation("2006-01-02", toDate, loc)
+	from, fromErr := time.ParseInLocation("2006-01-02", fromDate, loc)
+	to, toErr := time.ParseInLocation("2006-01-02", toDate, loc)
+	if fromErr != nil || toErr != nil || to.Before(from) || to.Sub(from) > 31*24*time.Hour {
+		return nil, errs.Invalid("choose a valid date range of at most 31 days")
+	}
+	if !et.Active {
+		return nil, errs.Invalid("event type is inactive")
+	}
 	busyBookings, err := s.bookings.ListConfirmedBetween(ctx, et.OwnerID, from, to.AddDate(0, 0, 1))
 	if err != nil {
 		return nil, err
 	}
+	if s.cfg.Calendar == nil {
+		return nil, errs.Invalid("connect a calendar before accepting bookings")
+	}
+	external, err := s.cfg.Calendar.Busy(ctx, et.OwnerID, from, to.AddDate(0, 0, 1), "")
+	if err != nil {
+		return nil, err
+	}
+	busyBookings = append(busyBookings, external...)
 
 	computed := slots.Compute(slots.Params{
 		Location:        loc,
@@ -210,6 +244,12 @@ func (s *Service) ListSlots(ctx context.Context, eventTypeID, fromDate, toDate, 
 }
 
 func (s *Service) CreateBooking(ctx context.Context, eventTypeID, name, email, inviteeTZ string, start time.Time, notes string) (*domain.Booking, error) {
+	if strings.TrimSpace(name) == "" || len(name) > 200 || len(notes) > 10000 {
+		return nil, errs.Invalid("provide a name and valid booking answers")
+	}
+	if !start.Equal(start.Truncate(time.Minute)) {
+		return nil, errs.Invalid("choose an offered slot")
+	}
 	if !validEmail(email) {
 		return nil, errs.Invalid("a valid invitee email is required")
 	}
@@ -267,6 +307,9 @@ func (s *Service) ListBookings(ctx context.Context, ownerID, status string, limi
 }
 
 func (s *Service) RescheduleBooking(ctx context.Context, rescheduleToken string, newStart time.Time) (*domain.Booking, error) {
+	if !newStart.Equal(newStart.Truncate(time.Minute)) {
+		return nil, errs.Invalid("choose an offered slot")
+	}
 	b, err := s.bookings.GetByToken(ctx, "reschedule", rescheduleToken)
 	if err != nil {
 		return nil, err
@@ -294,9 +337,15 @@ func (s *Service) RescheduleBooking(ctx context.Context, rescheduleToken string,
 }
 
 func (s *Service) CancelBooking(ctx context.Context, cancelToken, reason string) (*domain.Booking, error) {
+	if len(reason) > 1000 {
+		return nil, errs.Invalid("cancellation reason is too long")
+	}
 	b, err := s.bookings.GetByToken(ctx, "cancel", cancelToken)
 	if err != nil {
 		return nil, err
+	}
+	if b.Status == domain.StatusCancelled {
+		return b, nil
 	}
 	b.Status = domain.StatusCancelled
 	if reason != "" {
@@ -311,6 +360,15 @@ func (s *Service) CancelBooking(ctx context.Context, cancelToken, reason string)
 // slotFree reports whether start is a currently-bookable slot for et,
 // optionally ignoring an existing booking (used on reschedule).
 func (s *Service) slotFree(ctx context.Context, et *domain.EventType, start time.Time, excludeBookingID string) (bool, error) {
+	if !et.Active || start.After(s.now().AddDate(0, 0, 90)) {
+		return false, errs.Invalid("choose an active event within the next 90 days")
+	}
+	if s.cfg.Calendar == nil {
+		return false, errs.Invalid("connect a calendar before accepting bookings")
+	}
+	if err := s.cfg.Calendar.Ready(ctx, et.OwnerID); err != nil {
+		return false, err
+	}
 	avail, err := s.availability.Get(ctx, et.OwnerID)
 	if err != nil {
 		return false, err
@@ -322,6 +380,11 @@ func (s *Service) slotFree(ctx context.Context, et *domain.EventType, start time
 	if err != nil {
 		return false, err
 	}
+	external, err := s.cfg.Calendar.Busy(ctx, et.OwnerID, start.Add(-24*time.Hour), start.Add(24*time.Hour), excludeBookingID)
+	if err != nil {
+		return false, err
+	}
+	busy = append(busy, external...)
 	free := slots.Compute(slots.Params{
 		Location:        loc,
 		Rules:           toSlotRules(avail.Rules),
@@ -343,16 +406,20 @@ func (s *Service) slotFree(ctx context.Context, et *domain.EventType, start time
 	return false, nil
 }
 
+func (s *Service) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
+	return s.bookings.GetUsageStats(ctx, ownerID)
+}
+
 // ---- Calendars -----------------------------------------------------------
 
 func (s *Service) StartConnect(ctx context.Context, ownerID, provider string) (string, error) {
-	conf, err := s.oauthConfig(provider)
-	if err != nil {
-		return "", err
+	if provider != domain.ProviderGoogle {
+		return "", errs.Invalid("Google Calendar is supported for meeting bookings")
 	}
-	// State binds the flow to the owner. In production this should be signed.
-	state := provider + ":" + ownerID + ":" + randomToken()
-	return conf.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce), nil
+	if s.cfg.Calendar == nil {
+		return "", errs.Invalid("calendar integration is not configured")
+	}
+	return s.cfg.Calendar.Start(ctx, ownerID)
 }
 
 func (s *Service) ListConnections(ctx context.Context, ownerID string) ([]domain.CalendarConnection, error) {
@@ -361,39 +428,6 @@ func (s *Service) ListConnections(ctx context.Context, ownerID string) ([]domain
 
 func (s *Service) DisconnectCalendar(ctx context.Context, ownerID, id string) error {
 	return s.calendars.Delete(ctx, id, ownerID)
-}
-
-func (s *Service) oauthConfig(provider string) (*oauth2.Config, error) {
-	switch provider {
-	case domain.ProviderGoogle:
-		if s.cfg.Google.ClientID == "" {
-			return nil, errs.Invalid("google calendar is not configured")
-		}
-		return &oauth2.Config{
-			ClientID:     s.cfg.Google.ClientID,
-			ClientSecret: s.cfg.Google.ClientSecret,
-			RedirectURL:  s.cfg.Google.RedirectURL,
-			Endpoint:     google.Endpoint,
-			Scopes: []string{
-				"https://www.googleapis.com/auth/calendar.events",
-				"https://www.googleapis.com/auth/calendar.readonly",
-				"openid", "email",
-			},
-		}, nil
-	case domain.ProviderOutlook:
-		if s.cfg.Microsoft.ClientID == "" {
-			return nil, errs.Invalid("outlook calendar is not configured")
-		}
-		return &oauth2.Config{
-			ClientID:     s.cfg.Microsoft.ClientID,
-			ClientSecret: s.cfg.Microsoft.ClientSecret,
-			RedirectURL:  s.cfg.Microsoft.RedirectURL,
-			Endpoint:     microsoft.AzureADEndpoint(s.cfg.Microsoft.TenantID),
-			Scopes:       []string{"offline_access", "Calendars.ReadWrite", "openid", "email"},
-		}, nil
-	default:
-		return nil, errs.Invalid("unknown calendar provider %q", provider)
-	}
 }
 
 // ---- helpers -------------------------------------------------------------
@@ -417,7 +451,7 @@ func toSlotOverrides(os []domain.Override) []slots.Override {
 func toBusy(bs []domain.Booking, exclude string) []slots.Interval {
 	out := make([]slots.Interval, 0, len(bs))
 	for _, b := range bs {
-		if b.ID == exclude || b.Status == domain.StatusCancelled {
+		if (exclude != "" && b.ID == exclude) || b.Status == domain.StatusCancelled {
 			continue
 		}
 		out = append(out, slots.Interval{Start: b.Start, End: b.End})
@@ -461,6 +495,6 @@ func slugify(s string) string {
 }
 
 func validEmail(e string) bool {
-	at := strings.IndexByte(e, '@')
-	return at > 0 && at < len(e)-1 && !strings.ContainsAny(e, " \t")
+	address, err := mail.ParseAddress(e)
+	return err == nil && address.Address == e && len(e) <= 254 && !strings.ContainsAny(e, "\r\n")
 }

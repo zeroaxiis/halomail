@@ -30,8 +30,11 @@ func (v Verifier) Verify(token string) (userID, orgID string, err error) {
 			return nil, errors.New("unexpected signing method")
 		}
 		return v.secret, nil
-	}); err != nil {
+	}, jwt.WithValidMethods([]string{"HS256"}), jwt.WithExpirationRequired()); err != nil {
 		return "", "", err
+	}
+	if c.Subject == "" || c.OrgID == "" {
+		return "", "", errors.New("missing principal")
 	}
 	return c.Subject, c.OrgID, nil
 }

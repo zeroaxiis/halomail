@@ -5,9 +5,12 @@ package email
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime"
+	"net"
 	"net/http"
 	"net/mail"
 	"net/smtp"
@@ -19,6 +22,7 @@ import (
 
 // Message is a transactional email.
 type Message struct {
+	ID      string
 	To      []string
 	From    string
 	ReplyTo string
@@ -64,6 +68,9 @@ func (s *ResendSender) Send(ctx context.Context, msg Message) (string, string, e
 	}
 	req.Header.Set("Authorization", "Bearer "+s.apiKey)
 	req.Header.Set("Content-Type", "application/json")
+	if msg.ID != "" {
+		req.Header.Set("Idempotency-Key", msg.ID)
+	}
 
 	resp, err := s.client.Do(req)
 	if err != nil {
@@ -92,9 +99,14 @@ func NewSMTP(host string, port int, defaultFrom string) *SMTPSender {
 	return &SMTPSender{addr: fmt.Sprintf("%s:%d", host, port), defaultFrom: defaultFrom}
 }
 
-func (s *SMTPSender) Send(_ context.Context, msg Message) (string, string, error) {
+func (s *SMTPSender) Send(ctx context.Context, msg Message) (string, string, error) {
 	from := firstNonEmpty(msg.From, s.defaultFrom)
 	fromAddr := addressOnly(from)
+	for _, header := range append(append([]string{}, msg.To...), from, msg.ReplyTo) {
+		if strings.ContainsAny(header, "\r\n") {
+			return "", "smtp", fmt.Errorf("invalid mail address")
+		}
+	}
 
 	var b strings.Builder
 	fmt.Fprintf(&b, "From: %s\r\n", from)
@@ -102,7 +114,7 @@ func (s *SMTPSender) Send(_ context.Context, msg Message) (string, string, error
 	if msg.ReplyTo != "" {
 		fmt.Fprintf(&b, "Reply-To: %s\r\n", msg.ReplyTo)
 	}
-	fmt.Fprintf(&b, "Subject: %s\r\n", msg.Subject)
+	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("UTF-8", strings.NewReplacer("\r", " ", "\n", " ").Replace(msg.Subject)))
 	b.WriteString("MIME-Version: 1.0\r\n")
 	b.WriteString("Content-Type: text/html; charset=UTF-8\r\n\r\n")
 	if msg.HTML != "" {
@@ -111,9 +123,49 @@ func (s *SMTPSender) Send(_ context.Context, msg Message) (string, string, error
 		b.WriteString(msg.Text)
 	}
 
-	if err := smtp.SendMail(s.addr, nil, fromAddr, msg.To, []byte(b.String())); err != nil {
+	connection, err := (&net.Dialer{Timeout: 10 * time.Second}).DialContext(ctx, "tcp", s.addr)
+	if err != nil {
 		return "", "smtp", err
 	}
+	defer connection.Close()
+	stop := context.AfterFunc(ctx, func() { _ = connection.Close() })
+	defer stop()
+	if err = connection.SetDeadline(time.Now().Add(20 * time.Second)); err != nil {
+		return "", "smtp", err
+	}
+	host, _, err := net.SplitHostPort(s.addr)
+	if err != nil {
+		return "", "smtp", err
+	}
+	client, err := smtp.NewClient(connection, host)
+	if err != nil {
+		return "", "smtp", err
+	}
+	defer client.Close()
+	if supported, _ := client.Extension("STARTTLS"); supported {
+		if err = client.StartTLS(&tls.Config{ServerName: host, MinVersion: tls.VersionTLS12}); err != nil {
+			return "", "smtp", err
+		}
+	}
+	if err = client.Mail(fromAddr); err != nil {
+		return "", "smtp", err
+	}
+	for _, recipient := range msg.To {
+		if err = client.Rcpt(recipient); err != nil {
+			return "", "smtp", err
+		}
+	}
+	writer, err := client.Data()
+	if err != nil {
+		return "", "smtp", err
+	}
+	if _, err = io.WriteString(writer, b.String()); err != nil {
+		return "", "smtp", err
+	}
+	if err = writer.Close(); err != nil {
+		return "", "smtp", err
+	}
+	_ = client.Quit()
 	return idgen.Prefixed("eml_"), "smtp", nil
 }
 

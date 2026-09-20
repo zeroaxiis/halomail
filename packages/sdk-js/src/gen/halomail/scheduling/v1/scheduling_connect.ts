@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CancelBookingRequest, CancelBookingResponse, CreateBookingRequest, CreateBookingResponse, CreateEventTypeRequest, CreateEventTypeResponse, DeleteEventTypeRequest, DeleteEventTypeResponse, DisconnectCalendarRequest, DisconnectCalendarResponse, GetAvailabilityRequest, GetAvailabilityResponse, GetBookingRequest, GetBookingResponse, GetEventTypeRequest, GetEventTypeResponse, ListBookingsRequest, ListBookingsResponse, ListConnectionsRequest, ListConnectionsResponse, ListEventTypesRequest, ListEventTypesResponse, ListSlotsRequest, ListSlotsResponse, RescheduleBookingRequest, RescheduleBookingResponse, SetAvailabilityRequest, SetAvailabilityResponse, StartConnectRequest, StartConnectResponse, UpdateEventTypeRequest, UpdateEventTypeResponse } from "./scheduling_pb.js";
+import { CancelBookingRequest, CancelBookingResponse, CreateBookingRequest, CreateBookingResponse, CreateEventTypeRequest, CreateEventTypeResponse, DeleteEventTypeRequest, DeleteEventTypeResponse, DisconnectCalendarRequest, DisconnectCalendarResponse, GetAvailabilityRequest, GetAvailabilityResponse, GetBookingRequest, GetBookingResponse, GetEventTypeRequest, GetEventTypeResponse, GetUsageStatsRequest, GetUsageStatsResponse, ListBookingsRequest, ListBookingsResponse, ListConnectionsRequest, ListConnectionsResponse, ListEventTypesRequest, ListEventTypesResponse, ListSlotsRequest, ListSlotsResponse, RescheduleBookingRequest, RescheduleBookingResponse, SetAvailabilityRequest, SetAvailabilityResponse, StartConnectRequest, StartConnectResponse, UpdateEventTypeRequest, UpdateEventTypeResponse } from "./scheduling_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -153,6 +153,15 @@ export const BookingService = {
       name: "CancelBooking",
       I: CancelBookingRequest,
       O: CancelBookingResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.scheduling.v1.BookingService.GetUsageStats
+     */
+    getUsageStats: {
+      name: "GetUsageStats",
+      I: GetUsageStatsRequest,
+      O: GetUsageStatsResponse,
       kind: MethodKind.Unary,
     },
   }

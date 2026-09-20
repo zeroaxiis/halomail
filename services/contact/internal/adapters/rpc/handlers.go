@@ -11,20 +11,24 @@ import (
 
 	commonv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/common/v1"
 	contactv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1"
+	identityv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1"
+	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
 
 	"github.com/aashishrajdev/halomail/services/contact/internal/app"
 	"github.com/aashishrajdev/halomail/services/shared/authn"
 	"github.com/aashishrajdev/halomail/services/shared/connectutil"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/aashishrajdev/halomail/services/shared/httpx"
 )
 
 type Handlers struct {
 	app      *app.Service
 	verifier authn.Verifier
+	apiKeys  identityv1connect.ApiKeyServiceClient
 }
 
-func NewHandlers(a *app.Service, v authn.Verifier) *Handlers {
-	return &Handlers{app: a, verifier: v}
+func NewHandlers(a *app.Service, v authn.Verifier, apiKeys identityv1connect.ApiKeyServiceClient) *Handlers {
+	return &Handlers{app: a, verifier: v, apiKeys: apiKeys}
 }
 
 func (h *Handlers) principal(req connect.AnyRequest) (userID, orgID string, err error) {
@@ -61,9 +65,16 @@ func (h *Handlers) CreateForm(ctx context.Context, req *connect.Request[contactv
 }
 
 func (h *Handlers) GetForm(ctx context.Context, req *connect.Request[contactv1.GetFormRequest]) (*connect.Response[contactv1.GetFormResponse], error) {
+	ownerID, _, authErr := h.principal(req)
+	if authErr != nil {
+		return nil, connectutil.ToConnect(authErr)
+	}
 	f, err := h.app.GetForm(ctx, req.Msg.GetId(), req.Msg.GetSlug())
 	if err != nil {
 		return nil, connectutil.ToConnect(err)
+	}
+	if f.OwnerID != ownerID {
+		return nil, connectutil.ToConnect(errs.NotFound("form not found"))
 	}
 	return connect.NewResponse(&contactv1.GetFormResponse{Form: toProtoForm(f)}), nil
 }
@@ -116,8 +127,18 @@ func (h *Handlers) DeleteForm(ctx context.Context, req *connect.Request[contactv
 // ---- MessageService ------------------------------------------------------
 
 func (h *Handlers) SubmitMessage(ctx context.Context, req *connect.Request[contactv1.SubmitMessageRequest]) (*connect.Response[contactv1.SubmitMessageResponse], error) {
-	res, err := h.app.SubmitMessage(ctx, app.SubmitInput{
-		FormSlug:    req.Msg.GetFormSlug(),
+	verifyRes, err := h.apiKeys.VerifyApiKey(ctx, connect.NewRequest(&identityv1.VerifyApiKeyRequest{
+		Secret: req.Msg.GetAccessKey(),
+	}))
+	if err != nil {
+		return nil, connectutil.ToConnect(errs.Unauthorized("invalid access key"))
+	}
+	if !verifyRes.Msg.GetValid() || len(verifyRes.Msg.GetScopes()) != 1 || verifyRes.Msg.GetScopes()[0] != "forms:submit" {
+		return nil, connectutil.ToConnect(errs.Unauthorized("invalid access key"))
+	}
+	ownerID := verifyRes.Msg.GetUserId()
+
+	res, err := h.app.SubmitMessage(ctx, ownerID, app.SubmitInput{
 		SenderName:  req.Msg.GetSenderName(),
 		SenderEmail: req.Msg.GetSenderEmail(),
 		Data:        req.Msg.GetData(),
@@ -198,16 +219,26 @@ func (h *Handlers) DeleteMessage(ctx context.Context, req *connect.Request[conta
 	return connect.NewResponse(&contactv1.DeleteMessageResponse{}), nil
 }
 
+func (h *Handlers) GetUsageStats(ctx context.Context, req *connect.Request[contactv1.GetUsageStatsRequest]) (*connect.Response[contactv1.GetUsageStatsResponse], error) {
+	ownerID, _, err := h.principal(req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	stats, err := h.app.GetUsageStats(ctx, ownerID)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&contactv1.GetUsageStatsResponse{
+		TotalMessages:  int32(stats.TotalMessages),
+		UnreadMessages: int32(stats.UnreadMessages),
+		SpamPrevented:  int32(stats.SpamPrevented),
+	}), nil
+}
+
 // ---- helpers -------------------------------------------------------------
 
 func clientIP(req connect.AnyRequest) string {
-	if xff := req.Header().Get("X-Forwarded-For"); xff != "" {
-		if i := strings.IndexByte(xff, ','); i > 0 {
-			return strings.TrimSpace(xff[:i])
-		}
-		return strings.TrimSpace(xff)
-	}
-	return req.Peer().Addr
+	return httpx.Peer(req.Peer().Addr)
 }
 
 func atoiSafe(s string) int {

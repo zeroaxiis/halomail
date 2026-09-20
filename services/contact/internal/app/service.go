@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -42,6 +43,9 @@ type FormInput struct {
 }
 
 func (s *Service) CreateForm(ctx context.Context, ownerID string, in FormInput) (*domain.Form, error) {
+	if strings.HasPrefix(in.Slug, "inbox_") {
+		return nil, errs.Invalid("this slug is reserved")
+	}
 	if strings.TrimSpace(in.Name) == "" {
 		return nil, errs.Invalid("form name is required")
 	}
@@ -122,7 +126,6 @@ func (s *Service) DeleteForm(ctx context.Context, ownerID, id string) error {
 // ---- Messages ------------------------------------------------------------
 
 type SubmitInput struct {
-	FormSlug    string
 	SenderName  string
 	SenderEmail string
 	Data        map[string]string
@@ -136,11 +139,23 @@ type SubmitResult struct {
 	RedirectURL string
 }
 
-// SubmitMessage is the public submit path: rate-limit, spam-score, store, then
-// forward. It always "accepts" (returns success) so bots learn nothing, but
-// spam is stored flagged and never forwarded.
-func (s *Service) SubmitMessage(ctx context.Context, in SubmitInput) (*SubmitResult, error) {
-	form, err := s.forms.GetBySlug(ctx, in.FormSlug)
+// SubmitMessage is the public submit path.
+func (s *Service) SubmitMessage(ctx context.Context, ownerID string, in SubmitInput) (*SubmitResult, error) {
+	if len(in.Data) > 50 || len(in.SenderName) > 200 {
+		return nil, errs.Invalid("submission is too large")
+	}
+	for key, value := range in.Data {
+		if len(key) > 100 || len(value) > 10000 {
+			return nil, errs.Invalid("form field is too large")
+		}
+	}
+	if in.SenderEmail != "" {
+		parsed, parseErr := mail.ParseAddress(in.SenderEmail)
+		if parseErr != nil || parsed.Address != in.SenderEmail || len(in.SenderEmail) > 254 || strings.ContainsAny(in.SenderEmail, "\r\n") {
+			return nil, errs.Invalid("invalid sender email")
+		}
+	}
+	form, err := s.forms.Inbox(ctx, ownerID)
 	if err != nil {
 		return nil, err
 	}
@@ -217,6 +232,10 @@ func (s *Service) MarkRead(ctx context.Context, ownerID, id string, read bool) e
 
 func (s *Service) DeleteMessage(ctx context.Context, ownerID, id string) error {
 	return s.messages.Delete(ctx, id, ownerID)
+}
+
+func (s *Service) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
+	return s.messages.GetUsageStats(ctx, ownerID)
 }
 
 // ---- helpers -------------------------------------------------------------

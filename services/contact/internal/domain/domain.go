@@ -58,3 +58,10 @@ type Message struct {
 	Read        bool
 	CreatedAt   time.Time
 }
+
+// UsageStats holds aggregate metrics for the dashboard.
+type UsageStats struct {
+	TotalMessages  int
+	UnreadMessages int
+	SpamPrevented  int
+}

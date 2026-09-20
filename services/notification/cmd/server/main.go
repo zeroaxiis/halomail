@@ -83,6 +83,7 @@ func main() {
 
 	// Background webhook delivery worker.
 	go app.NewWorker(repos, logger).Run(ctx)
+	go app.RunMailWorker(ctx, pool, sender, logger)
 
 	interceptors, err := connectutil.Default(logger)
 	if err != nil {
@@ -97,7 +98,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
-	mux.Handle(notificationv1connect.NewEmailServiceHandler(handlers, opts))
 	mux.Handle(notificationv1connect.NewWebhookServiceHandler(handlers, opts))
 
 	if err := server.Run(ctx, cfg.HTTP.Addr(), mux, logger); err != nil {

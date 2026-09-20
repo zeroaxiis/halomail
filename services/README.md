@@ -10,7 +10,7 @@ module with clean-architecture internals.
 | -------------- | ------------------------- | -------- | ---------------------------------------------------------- | ------ |
 | `gateway`      | [gateway](gateway)         | 8080     | Public edge: auth, rate limit, REST/OpenAPI, BFF aggregation | [↗](gateway/README.md) |
 | `identity`     | [identity](identity)       | 8081     | Auth (sessions/JWT), users, orgs, API keys, audit log       | [↗](identity/README.md) |
-| `scheduling`   | [scheduling](scheduling)   | 8082     | Availability, bookings, timezone, Google/Outlook sync       | [↗](scheduling/README.md) |
+| `scheduling`   | [scheduling](scheduling)   | 8082     | Availability, bookings, timezone, Google sync               | [↗](scheduling/README.md) |
 | `contact`      | [contact](contact)         | 8083     | Contact forms, messages, spam protection, forwarding        | [↗](contact/README.md) |
 | `template`     | [template](template)       | 8084     | Email themes, rendering, live preview                       | [↗](template/README.md) |
 | `notification` | [notification](notification) | 8085   | Resend email delivery, webhook dispatch                     | [↗](notification/README.md) |

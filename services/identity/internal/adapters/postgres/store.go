@@ -121,6 +121,17 @@ func (r *Sessions) Revoke(ctx context.Context, id string) error {
 	return err
 }
 
+func (r *Sessions) Consume(ctx context.Context, id string) error {
+	tag, err := r.pool.Exec(ctx, `UPDATE sessions SET revoked=true WHERE id=$1 AND NOT revoked AND expires_at>now()`, id)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() != 1 {
+		return errs.Unauthorized("session expired or already refreshed")
+	}
+	return nil
+}
+
 // ---- API keys ------------------------------------------------------------
 
 type APIKeys struct{ pool *pgxpool.Pool }

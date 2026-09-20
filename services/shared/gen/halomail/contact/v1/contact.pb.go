@@ -992,7 +992,7 @@ func (*DeleteFormResponse) Descriptor() ([]byte, []int) {
 
 type SubmitMessageRequest struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
-	FormSlug    string                 `protobuf:"bytes,1,opt,name=form_slug,json=formSlug,proto3" json:"form_slug,omitempty"`
+	AccessKey   string                 `protobuf:"bytes,1,opt,name=access_key,json=accessKey,proto3" json:"access_key,omitempty"`
 	SenderName  string                 `protobuf:"bytes,2,opt,name=sender_name,json=senderName,proto3" json:"sender_name,omitempty"`
 	SenderEmail string                 `protobuf:"bytes,3,opt,name=sender_email,json=senderEmail,proto3" json:"sender_email,omitempty"`
 	Data        map[string]string      `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -1032,9 +1032,9 @@ func (*SubmitMessageRequest) Descriptor() ([]byte, []int) {
 	return file_halomail_contact_v1_contact_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *SubmitMessageRequest) GetFormSlug() string {
+func (x *SubmitMessageRequest) GetAccessKey() string {
 	if x != nil {
-		return x.FormSlug
+		return x.AccessKey
 	}
 	return ""
 }
@@ -1495,6 +1495,102 @@ func (*DeleteMessageResponse) Descriptor() ([]byte, []int) {
 	return file_halomail_contact_v1_contact_proto_rawDescGZIP(), []int{22}
 }
 
+type GetUsageStatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUsageStatsRequest) Reset() {
+	*x = GetUsageStatsRequest{}
+	mi := &file_halomail_contact_v1_contact_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUsageStatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUsageStatsRequest) ProtoMessage() {}
+
+func (x *GetUsageStatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_halomail_contact_v1_contact_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUsageStatsRequest.ProtoReflect.Descriptor instead.
+func (*GetUsageStatsRequest) Descriptor() ([]byte, []int) {
+	return file_halomail_contact_v1_contact_proto_rawDescGZIP(), []int{23}
+}
+
+type GetUsageStatsResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	TotalMessages  int32                  `protobuf:"varint,1,opt,name=total_messages,json=totalMessages,proto3" json:"total_messages,omitempty"`
+	UnreadMessages int32                  `protobuf:"varint,2,opt,name=unread_messages,json=unreadMessages,proto3" json:"unread_messages,omitempty"`
+	SpamPrevented  int32                  `protobuf:"varint,3,opt,name=spam_prevented,json=spamPrevented,proto3" json:"spam_prevented,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *GetUsageStatsResponse) Reset() {
+	*x = GetUsageStatsResponse{}
+	mi := &file_halomail_contact_v1_contact_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUsageStatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUsageStatsResponse) ProtoMessage() {}
+
+func (x *GetUsageStatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_halomail_contact_v1_contact_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUsageStatsResponse.ProtoReflect.Descriptor instead.
+func (*GetUsageStatsResponse) Descriptor() ([]byte, []int) {
+	return file_halomail_contact_v1_contact_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GetUsageStatsResponse) GetTotalMessages() int32 {
+	if x != nil {
+		return x.TotalMessages
+	}
+	return 0
+}
+
+func (x *GetUsageStatsResponse) GetUnreadMessages() int32 {
+	if x != nil {
+		return x.UnreadMessages
+	}
+	return 0
+}
+
+func (x *GetUsageStatsResponse) GetSpamPrevented() int32 {
+	if x != nil {
+		return x.SpamPrevented
+	}
+	return 0
+}
+
 var File_halomail_contact_v1_contact_proto protoreflect.FileDescriptor
 
 const file_halomail_contact_v1_contact_proto_rawDesc = "" +
@@ -1570,9 +1666,10 @@ const file_halomail_contact_v1_contact_proto_rawDesc = "" +
 	"\x04form\x18\x01 \x01(\v2\x19.halomail.contact.v1.FormR\x04form\"#\n" +
 	"\x11DeleteFormRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12DeleteFormResponse\"\x95\x02\n" +
-	"\x14SubmitMessageRequest\x12\x1b\n" +
-	"\tform_slug\x18\x01 \x01(\tR\bformSlug\x12\x1f\n" +
+	"\x12DeleteFormResponse\"\x97\x02\n" +
+	"\x14SubmitMessageRequest\x12\x1d\n" +
+	"\n" +
+	"access_key\x18\x01 \x01(\tR\taccessKey\x12\x1f\n" +
 	"\vsender_name\x18\x02 \x01(\tR\n" +
 	"senderName\x12!\n" +
 	"\fsender_email\x18\x03 \x01(\tR\vsenderEmail\x12G\n" +
@@ -1603,7 +1700,12 @@ const file_halomail_contact_v1_contact_proto_rawDesc = "" +
 	"\x10MarkReadResponse\"&\n" +
 	"\x14DeleteMessageRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x17\n" +
-	"\x15DeleteMessageResponse*\x99\x01\n" +
+	"\x15DeleteMessageResponse\"\x16\n" +
+	"\x14GetUsageStatsRequest\"\x8e\x01\n" +
+	"\x15GetUsageStatsResponse\x12%\n" +
+	"\x0etotal_messages\x18\x01 \x01(\x05R\rtotalMessages\x12'\n" +
+	"\x0funread_messages\x18\x02 \x01(\x05R\x0eunreadMessages\x12%\n" +
+	"\x0espam_prevented\x18\x03 \x01(\x05R\rspamPrevented*\x99\x01\n" +
 	"\tFieldType\x12\x1a\n" +
 	"\x16FIELD_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fFIELD_TYPE_TEXT\x10\x01\x12\x14\n" +
@@ -1624,14 +1726,15 @@ const file_halomail_contact_v1_contact_proto_rawDesc = "" +
 	"\n" +
 	"UpdateForm\x12&.halomail.contact.v1.UpdateFormRequest\x1a'.halomail.contact.v1.UpdateFormResponse\x12]\n" +
 	"\n" +
-	"DeleteForm\x12&.halomail.contact.v1.DeleteFormRequest\x1a'.halomail.contact.v1.DeleteFormResponse2\xfd\x03\n" +
+	"DeleteForm\x12&.halomail.contact.v1.DeleteFormRequest\x1a'.halomail.contact.v1.DeleteFormResponse2\xe5\x04\n" +
 	"\x0eMessageService\x12f\n" +
 	"\rSubmitMessage\x12).halomail.contact.v1.SubmitMessageRequest\x1a*.halomail.contact.v1.SubmitMessageResponse\x12c\n" +
 	"\fListMessages\x12(.halomail.contact.v1.ListMessagesRequest\x1a).halomail.contact.v1.ListMessagesResponse\x12]\n" +
 	"\n" +
 	"GetMessage\x12&.halomail.contact.v1.GetMessageRequest\x1a'.halomail.contact.v1.GetMessageResponse\x12W\n" +
 	"\bMarkRead\x12$.halomail.contact.v1.MarkReadRequest\x1a%.halomail.contact.v1.MarkReadResponse\x12f\n" +
-	"\rDeleteMessage\x12).halomail.contact.v1.DeleteMessageRequest\x1a*.halomail.contact.v1.DeleteMessageResponseB\xea\x01\n" +
+	"\rDeleteMessage\x12).halomail.contact.v1.DeleteMessageRequest\x1a*.halomail.contact.v1.DeleteMessageResponse\x12f\n" +
+	"\rGetUsageStats\x12).halomail.contact.v1.GetUsageStatsRequest\x1a*.halomail.contact.v1.GetUsageStatsResponseB\xea\x01\n" +
 	"\x17com.halomail.contact.v1B\fContactProtoP\x01ZSgithub.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1;contactv1\xa2\x02\x03HCX\xaa\x02\x13Halomail.Contact.V1\xca\x02\x13Halomail\\Contact\\V1\xe2\x02\x1fHalomail\\Contact\\V1\\GPBMetadata\xea\x02\x15Halomail::Contact::V1b\x06proto3"
 
 var (
@@ -1647,7 +1750,7 @@ func file_halomail_contact_v1_contact_proto_rawDescGZIP() []byte {
 }
 
 var file_halomail_contact_v1_contact_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_halomail_contact_v1_contact_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_halomail_contact_v1_contact_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_halomail_contact_v1_contact_proto_goTypes = []any{
 	(FieldType)(0),                // 0: halomail.contact.v1.FieldType
 	(SpamProtection)(0),           // 1: halomail.contact.v1.SpamProtection
@@ -1674,19 +1777,21 @@ var file_halomail_contact_v1_contact_proto_goTypes = []any{
 	(*MarkReadResponse)(nil),      // 22: halomail.contact.v1.MarkReadResponse
 	(*DeleteMessageRequest)(nil),  // 23: halomail.contact.v1.DeleteMessageRequest
 	(*DeleteMessageResponse)(nil), // 24: halomail.contact.v1.DeleteMessageResponse
-	nil,                           // 25: halomail.contact.v1.Message.DataEntry
-	nil,                           // 26: halomail.contact.v1.SubmitMessageRequest.DataEntry
-	(*timestamppb.Timestamp)(nil), // 27: google.protobuf.Timestamp
-	(*v1.PageRequest)(nil),        // 28: halomail.common.v1.PageRequest
-	(*v1.PageResponse)(nil),       // 29: halomail.common.v1.PageResponse
+	(*GetUsageStatsRequest)(nil),  // 25: halomail.contact.v1.GetUsageStatsRequest
+	(*GetUsageStatsResponse)(nil), // 26: halomail.contact.v1.GetUsageStatsResponse
+	nil,                           // 27: halomail.contact.v1.Message.DataEntry
+	nil,                           // 28: halomail.contact.v1.SubmitMessageRequest.DataEntry
+	(*timestamppb.Timestamp)(nil), // 29: google.protobuf.Timestamp
+	(*v1.PageRequest)(nil),        // 30: halomail.common.v1.PageRequest
+	(*v1.PageResponse)(nil),       // 31: halomail.common.v1.PageResponse
 }
 var file_halomail_contact_v1_contact_proto_depIdxs = []int32{
 	0,  // 0: halomail.contact.v1.FormField.type:type_name -> halomail.contact.v1.FieldType
 	1,  // 1: halomail.contact.v1.Form.spam_protection:type_name -> halomail.contact.v1.SpamProtection
 	2,  // 2: halomail.contact.v1.Form.fields:type_name -> halomail.contact.v1.FormField
-	27, // 3: halomail.contact.v1.Form.created_at:type_name -> google.protobuf.Timestamp
-	25, // 4: halomail.contact.v1.Message.data:type_name -> halomail.contact.v1.Message.DataEntry
-	27, // 5: halomail.contact.v1.Message.created_at:type_name -> google.protobuf.Timestamp
+	29, // 3: halomail.contact.v1.Form.created_at:type_name -> google.protobuf.Timestamp
+	27, // 4: halomail.contact.v1.Message.data:type_name -> halomail.contact.v1.Message.DataEntry
+	29, // 5: halomail.contact.v1.Message.created_at:type_name -> google.protobuf.Timestamp
 	1,  // 6: halomail.contact.v1.CreateFormRequest.spam_protection:type_name -> halomail.contact.v1.SpamProtection
 	2,  // 7: halomail.contact.v1.CreateFormRequest.fields:type_name -> halomail.contact.v1.FormField
 	3,  // 8: halomail.contact.v1.CreateFormResponse.form:type_name -> halomail.contact.v1.Form
@@ -1695,10 +1800,10 @@ var file_halomail_contact_v1_contact_proto_depIdxs = []int32{
 	1,  // 11: halomail.contact.v1.UpdateFormRequest.spam_protection:type_name -> halomail.contact.v1.SpamProtection
 	2,  // 12: halomail.contact.v1.UpdateFormRequest.fields:type_name -> halomail.contact.v1.FormField
 	3,  // 13: halomail.contact.v1.UpdateFormResponse.form:type_name -> halomail.contact.v1.Form
-	26, // 14: halomail.contact.v1.SubmitMessageRequest.data:type_name -> halomail.contact.v1.SubmitMessageRequest.DataEntry
-	28, // 15: halomail.contact.v1.ListMessagesRequest.page:type_name -> halomail.common.v1.PageRequest
+	28, // 14: halomail.contact.v1.SubmitMessageRequest.data:type_name -> halomail.contact.v1.SubmitMessageRequest.DataEntry
+	30, // 15: halomail.contact.v1.ListMessagesRequest.page:type_name -> halomail.common.v1.PageRequest
 	4,  // 16: halomail.contact.v1.ListMessagesResponse.messages:type_name -> halomail.contact.v1.Message
-	29, // 17: halomail.contact.v1.ListMessagesResponse.page:type_name -> halomail.common.v1.PageResponse
+	31, // 17: halomail.contact.v1.ListMessagesResponse.page:type_name -> halomail.common.v1.PageResponse
 	4,  // 18: halomail.contact.v1.GetMessageResponse.message:type_name -> halomail.contact.v1.Message
 	5,  // 19: halomail.contact.v1.FormService.CreateForm:input_type -> halomail.contact.v1.CreateFormRequest
 	7,  // 20: halomail.contact.v1.FormService.GetForm:input_type -> halomail.contact.v1.GetFormRequest
@@ -1710,18 +1815,20 @@ var file_halomail_contact_v1_contact_proto_depIdxs = []int32{
 	19, // 26: halomail.contact.v1.MessageService.GetMessage:input_type -> halomail.contact.v1.GetMessageRequest
 	21, // 27: halomail.contact.v1.MessageService.MarkRead:input_type -> halomail.contact.v1.MarkReadRequest
 	23, // 28: halomail.contact.v1.MessageService.DeleteMessage:input_type -> halomail.contact.v1.DeleteMessageRequest
-	6,  // 29: halomail.contact.v1.FormService.CreateForm:output_type -> halomail.contact.v1.CreateFormResponse
-	8,  // 30: halomail.contact.v1.FormService.GetForm:output_type -> halomail.contact.v1.GetFormResponse
-	10, // 31: halomail.contact.v1.FormService.ListForms:output_type -> halomail.contact.v1.ListFormsResponse
-	12, // 32: halomail.contact.v1.FormService.UpdateForm:output_type -> halomail.contact.v1.UpdateFormResponse
-	14, // 33: halomail.contact.v1.FormService.DeleteForm:output_type -> halomail.contact.v1.DeleteFormResponse
-	16, // 34: halomail.contact.v1.MessageService.SubmitMessage:output_type -> halomail.contact.v1.SubmitMessageResponse
-	18, // 35: halomail.contact.v1.MessageService.ListMessages:output_type -> halomail.contact.v1.ListMessagesResponse
-	20, // 36: halomail.contact.v1.MessageService.GetMessage:output_type -> halomail.contact.v1.GetMessageResponse
-	22, // 37: halomail.contact.v1.MessageService.MarkRead:output_type -> halomail.contact.v1.MarkReadResponse
-	24, // 38: halomail.contact.v1.MessageService.DeleteMessage:output_type -> halomail.contact.v1.DeleteMessageResponse
-	29, // [29:39] is the sub-list for method output_type
-	19, // [19:29] is the sub-list for method input_type
+	25, // 29: halomail.contact.v1.MessageService.GetUsageStats:input_type -> halomail.contact.v1.GetUsageStatsRequest
+	6,  // 30: halomail.contact.v1.FormService.CreateForm:output_type -> halomail.contact.v1.CreateFormResponse
+	8,  // 31: halomail.contact.v1.FormService.GetForm:output_type -> halomail.contact.v1.GetFormResponse
+	10, // 32: halomail.contact.v1.FormService.ListForms:output_type -> halomail.contact.v1.ListFormsResponse
+	12, // 33: halomail.contact.v1.FormService.UpdateForm:output_type -> halomail.contact.v1.UpdateFormResponse
+	14, // 34: halomail.contact.v1.FormService.DeleteForm:output_type -> halomail.contact.v1.DeleteFormResponse
+	16, // 35: halomail.contact.v1.MessageService.SubmitMessage:output_type -> halomail.contact.v1.SubmitMessageResponse
+	18, // 36: halomail.contact.v1.MessageService.ListMessages:output_type -> halomail.contact.v1.ListMessagesResponse
+	20, // 37: halomail.contact.v1.MessageService.GetMessage:output_type -> halomail.contact.v1.GetMessageResponse
+	22, // 38: halomail.contact.v1.MessageService.MarkRead:output_type -> halomail.contact.v1.MarkReadResponse
+	24, // 39: halomail.contact.v1.MessageService.DeleteMessage:output_type -> halomail.contact.v1.DeleteMessageResponse
+	26, // 40: halomail.contact.v1.MessageService.GetUsageStats:output_type -> halomail.contact.v1.GetUsageStatsResponse
+	30, // [30:41] is the sub-list for method output_type
+	19, // [19:30] is the sub-list for method input_type
 	19, // [19:19] is the sub-list for extension type_name
 	19, // [19:19] is the sub-list for extension extendee
 	0,  // [0:19] is the sub-list for field type_name
@@ -1738,7 +1845,7 @@ func file_halomail_contact_v1_contact_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_halomail_contact_v1_contact_proto_rawDesc), len(file_halomail_contact_v1_contact_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   25,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

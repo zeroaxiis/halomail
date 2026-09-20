@@ -78,6 +78,9 @@ const (
 	// BookingServiceCancelBookingProcedure is the fully-qualified name of the BookingService's
 	// CancelBooking RPC.
 	BookingServiceCancelBookingProcedure = "/halomail.scheduling.v1.BookingService/CancelBooking"
+	// BookingServiceGetUsageStatsProcedure is the fully-qualified name of the BookingService's
+	// GetUsageStats RPC.
+	BookingServiceGetUsageStatsProcedure = "/halomail.scheduling.v1.BookingService/GetUsageStats"
 	// CalendarServiceStartConnectProcedure is the fully-qualified name of the CalendarService's
 	// StartConnect RPC.
 	CalendarServiceStartConnectProcedure = "/halomail.scheduling.v1.CalendarService/StartConnect"
@@ -373,6 +376,7 @@ type BookingServiceClient interface {
 	RescheduleBooking(context.Context, *connect.Request[v1.RescheduleBookingRequest]) (*connect.Response[v1.RescheduleBookingResponse], error)
 	// CancelBooking is public via the cancel_token from the email.
 	CancelBooking(context.Context, *connect.Request[v1.CancelBookingRequest]) (*connect.Response[v1.CancelBookingResponse], error)
+	GetUsageStats(context.Context, *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error)
 }
 
 // NewBookingServiceClient constructs a client for the halomail.scheduling.v1.BookingService
@@ -422,6 +426,12 @@ func NewBookingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(bookingServiceMethods.ByName("CancelBooking")),
 			connect.WithClientOptions(opts...),
 		),
+		getUsageStats: connect.NewClient[v1.GetUsageStatsRequest, v1.GetUsageStatsResponse](
+			httpClient,
+			baseURL+BookingServiceGetUsageStatsProcedure,
+			connect.WithSchema(bookingServiceMethods.ByName("GetUsageStats")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -433,6 +443,7 @@ type bookingServiceClient struct {
 	listBookings      *connect.Client[v1.ListBookingsRequest, v1.ListBookingsResponse]
 	rescheduleBooking *connect.Client[v1.RescheduleBookingRequest, v1.RescheduleBookingResponse]
 	cancelBooking     *connect.Client[v1.CancelBookingRequest, v1.CancelBookingResponse]
+	getUsageStats     *connect.Client[v1.GetUsageStatsRequest, v1.GetUsageStatsResponse]
 }
 
 // ListSlots calls halomail.scheduling.v1.BookingService.ListSlots.
@@ -465,6 +476,11 @@ func (c *bookingServiceClient) CancelBooking(ctx context.Context, req *connect.R
 	return c.cancelBooking.CallUnary(ctx, req)
 }
 
+// GetUsageStats calls halomail.scheduling.v1.BookingService.GetUsageStats.
+func (c *bookingServiceClient) GetUsageStats(ctx context.Context, req *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error) {
+	return c.getUsageStats.CallUnary(ctx, req)
+}
+
 // BookingServiceHandler is an implementation of the halomail.scheduling.v1.BookingService service.
 type BookingServiceHandler interface {
 	// ListSlots is public: computes free slots for an event type in a range.
@@ -477,6 +493,7 @@ type BookingServiceHandler interface {
 	RescheduleBooking(context.Context, *connect.Request[v1.RescheduleBookingRequest]) (*connect.Response[v1.RescheduleBookingResponse], error)
 	// CancelBooking is public via the cancel_token from the email.
 	CancelBooking(context.Context, *connect.Request[v1.CancelBookingRequest]) (*connect.Response[v1.CancelBookingResponse], error)
+	GetUsageStats(context.Context, *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error)
 }
 
 // NewBookingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -522,6 +539,12 @@ func NewBookingServiceHandler(svc BookingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(bookingServiceMethods.ByName("CancelBooking")),
 		connect.WithHandlerOptions(opts...),
 	)
+	bookingServiceGetUsageStatsHandler := connect.NewUnaryHandler(
+		BookingServiceGetUsageStatsProcedure,
+		svc.GetUsageStats,
+		connect.WithSchema(bookingServiceMethods.ByName("GetUsageStats")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/halomail.scheduling.v1.BookingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BookingServiceListSlotsProcedure:
@@ -536,6 +559,8 @@ func NewBookingServiceHandler(svc BookingServiceHandler, opts ...connect.Handler
 			bookingServiceRescheduleBookingHandler.ServeHTTP(w, r)
 		case BookingServiceCancelBookingProcedure:
 			bookingServiceCancelBookingHandler.ServeHTTP(w, r)
+		case BookingServiceGetUsageStatsProcedure:
+			bookingServiceGetUsageStatsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -567,6 +592,10 @@ func (UnimplementedBookingServiceHandler) RescheduleBooking(context.Context, *co
 
 func (UnimplementedBookingServiceHandler) CancelBooking(context.Context, *connect.Request[v1.CancelBookingRequest]) (*connect.Response[v1.CancelBookingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.scheduling.v1.BookingService.CancelBooking is not implemented"))
+}
+
+func (UnimplementedBookingServiceHandler) GetUsageStats(context.Context, *connect.Request[v1.GetUsageStatsRequest]) (*connect.Response[v1.GetUsageStatsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.scheduling.v1.BookingService.GetUsageStats is not implemented"))
 }
 
 // CalendarServiceClient is a client for the halomail.scheduling.v1.CalendarService service.

@@ -43,13 +43,7 @@ func (h *Handlers) ownerID(req connect.AnyRequest) (string, error) {
 // ---- EmailService (internal) ---------------------------------------------
 
 func (h *Handlers) SendEmail(ctx context.Context, req *connect.Request[notificationv1.SendEmailRequest]) (*connect.Response[notificationv1.SendEmailResponse], error) {
-	id, provider, err := h.app.SendEmail(ctx,
-		req.Msg.GetTo(), req.Msg.GetFrom(), req.Msg.GetReplyTo(),
-		req.Msg.GetSubject(), req.Msg.GetHtml(), req.Msg.GetText())
-	if err != nil {
-		return nil, connectutil.ToConnect(err)
-	}
-	return connect.NewResponse(&notificationv1.SendEmailResponse{Id: id, Provider: provider}), nil
+	return nil, connectutil.ToConnect(errs.Forbidden("direct email delivery is unavailable"))
 }
 
 // ---- WebhookService ------------------------------------------------------
@@ -107,9 +101,5 @@ func (h *Handlers) RotateSecret(ctx context.Context, req *connect.Request[notifi
 
 // Dispatch is internal: other services publish events to fan out.
 func (h *Handlers) Dispatch(ctx context.Context, req *connect.Request[notificationv1.DispatchRequest]) (*connect.Response[notificationv1.DispatchResponse], error) {
-	queued, err := h.app.Dispatch(ctx, req.Msg.GetOwnerId(), eventFromProto(req.Msg.GetEvent()), req.Msg.GetPayload())
-	if err != nil {
-		return nil, connectutil.ToConnect(err)
-	}
-	return connect.NewResponse(&notificationv1.DispatchResponse{Queued: int32(queued)}), nil
+	return nil, connectutil.ToConnect(errs.Forbidden("direct event dispatch is unavailable"))
 }

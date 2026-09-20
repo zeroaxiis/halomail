@@ -133,7 +133,7 @@ const STACK = [
   "PostgreSQL",
   "Redis",
   "Google Calendar",
-  "Outlook",
+  "Google Meet",
   "Resend",
   "ConnectRPC",
   "Docker",
@@ -183,7 +183,7 @@ function Features() {
           <FeatureHead
             icon={<CalendarClock />}
             title="Scheduling that respects timezones"
-            desc="Weekly availability rules, date overrides, Google and Outlook sync, reschedule and cancel flows. Slots are computed server-side so two people never book the same minute."
+            desc="Weekly availability rules, date overrides, Google Calendar sync, and auto-generated Google Meet links. Slots are computed server-side so two people never book the same minute."
           />
           <SchedulingDemo />
         </Card>
@@ -308,11 +308,10 @@ function FormsTable() {
 
         <div className="order-1 lg:order-2">
           <h2 className="max-w-md text-3xl font-semibold tracking-tight md:text-4xl">
-            Run as many forms as you have pages.
+            Embed forms anywhere with an access key.
           </h2>
           <p className="mt-5 max-w-md text-muted-foreground">
-            One form per page, per campaign, per client. Each gets its own slug, target
-            address, field schema, and redirect, and shares the same two-line embed.
+            Just like Web3Forms, generate a unique access key for your website. When users submit the form, data is stored and email notifications are instantly routed to you.
           </p>
           <Button asChild variant="outline" size="lg" className="mt-8">
             <a href="/docs/integrate.html">
@@ -469,21 +468,21 @@ const DETAIL = [
   {
     icon: <CalendarClock />,
     title: "Scheduling",
-    tagline: "A Calendly-style booking page for every user.",
+    tagline: "A cal.com-style booking experience for every user.",
     points: [
       "Availability rules with per-date overrides",
-      "Google and Outlook calendar sync",
+      "Google Calendar sync & auto-generated Google Meet links",
       "Reschedule and cancel links built in",
     ],
   },
   {
     icon: <Inbox />,
     title: "Contact forms",
-    tagline: "One script tag turns any form into an inbox.",
+    tagline: "Web3Forms-style access keys for your website.",
     points: [
       "Spam scoring plus rate limiting",
       "Stored, searchable submissions",
-      "Email forwarding to your inbox",
+      "Instant email forwarding to your inbox",
     ],
   },
   {

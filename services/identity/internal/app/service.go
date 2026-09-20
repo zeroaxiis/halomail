@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -72,8 +73,8 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (*
 	if !validEmail(email) {
 		return nil, errs.Invalid("a valid email is required")
 	}
-	if len(password) < 8 {
-		return nil, errs.Invalid("password must be at least 8 characters")
+	if len(password) < 8 || len(password) > 1024 || len(name) > 200 {
+		return nil, errs.Invalid("use an 8 to 1024 character password and a name up to 200 characters")
 	}
 
 	hash, err := crypto.HashPassword(password)
@@ -112,6 +113,9 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (*
 }
 
 func (s *Service) Login(ctx context.Context, email, password string) (*AuthResult, error) {
+	if len(password) > 1024 || len(email) > 254 {
+		return nil, errs.Unauthorized("invalid email or password")
+	}
 	user, err := s.users.GetUserByEmail(ctx, normalizeEmail(email))
 	if err != nil {
 		if errs.KindOf(err) == errs.KindNotFound {
@@ -149,7 +153,9 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string) (IssuedSessi
 	if err != nil {
 		return IssuedSession{}, err
 	}
-	_ = s.sessions.Revoke(ctx, sess.ID)
+	if err = s.sessions.Consume(ctx, sess.ID); err != nil {
+		return IssuedSession{}, err
+	}
 	return s.issueSession(ctx, user)
 }
 
@@ -234,14 +240,20 @@ func (s *Service) UpdateUser(ctx context.Context, userID, name, handle, avatarUR
 // ---- API keys ------------------------------------------------------------
 
 func (s *Service) CreateAPIKey(ctx context.Context, userID, orgID, name string, scopes []string) (*domain.APIKey, string, error) {
-	if strings.TrimSpace(name) == "" {
-		return nil, "", errs.Invalid("api key name is required")
+	name = strings.ToLower(strings.TrimSpace(name))
+	switch name {
+	case "forms":
+		scopes = []string{"forms:submit"}
+	case "meetings":
+		scopes = []string{"meetings:book"}
+	default:
+		return nil, "", errs.Invalid("choose forms or meetings for the access key")
 	}
 	raw, err := crypto.RandomToken(24) // 48 hex chars
 	if err != nil {
 		return nil, "", errs.Wrap(err, errs.KindInternal, "generate api key")
 	}
-	secret := s.cfg.APIKeyPrefix + "live_" + raw
+	secret := s.cfg.APIKeyPrefix + name + "_" + raw
 
 	// api_keys.scopes is NOT NULL; a nil slice would be written as NULL and
 	// skip the column default.
@@ -255,7 +267,7 @@ func (s *Service) CreateAPIKey(ctx context.Context, userID, orgID, name string, 
 		OrgID:      orgID,
 		UserID:     userID,
 		Name:       name,
-		Prefix:     s.cfg.APIKeyPrefix + "live",
+		Prefix:     s.cfg.APIKeyPrefix + name,
 		LastFour:   raw[len(raw)-4:],
 		SecretHash: crypto.SHA256Hex(secret),
 		Scopes:     scopes,
@@ -352,8 +364,8 @@ func (s *Service) record(ctx context.Context, orgID, actorID, action, targetType
 func normalizeEmail(e string) string { return strings.ToLower(strings.TrimSpace(e)) }
 
 func validEmail(e string) bool {
-	at := strings.IndexByte(e, '@')
-	return at > 0 && at < len(e)-1 && !strings.ContainsAny(e, " \t")
+	address, err := mail.ParseAddress(e)
+	return err == nil && address.Address == e && len(e) <= 254 && !strings.ContainsAny(e, "\r\n")
 }
 
 func defaultOrgName(name, email string) string {

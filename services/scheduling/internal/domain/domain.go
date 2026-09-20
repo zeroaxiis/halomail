@@ -88,3 +88,10 @@ type Slot struct {
 	Start time.Time
 	End   time.Time
 }
+
+// UsageStats holds aggregate metrics for the dashboard.
+type UsageStats struct {
+	TotalBookings     int
+	UpcomingBookings  int
+	CancelledBookings int
+}

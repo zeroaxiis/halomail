@@ -129,10 +129,11 @@ service MessageService {
   rpc GetMessage(GetMessageRequest) returns (GetMessageResponse);
   rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
   rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse);
+  rpc GetUsageStats(GetUsageStatsRequest) returns (GetUsageStatsResponse);
 }
 
 message SubmitMessageRequest {
-  string form_slug = 1;
+  string access_key = 1;
   string sender_name = 2;
   string sender_email = 3;
   map<string, string> data = 4;
@@ -172,3 +173,10 @@ message DeleteMessageRequest {
   string id = 1;
 }
 message DeleteMessageResponse {}
+
+message GetUsageStatsRequest {}
+message GetUsageStatsResponse {
+  int32 total_messages = 1;
+  int32 unread_messages = 2;
+  int32 spam_prevented = 3;
+}

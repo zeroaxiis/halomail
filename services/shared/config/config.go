@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/aashishrajdev/halomail/services/shared/usage"
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
 )
@@ -22,6 +23,7 @@ type Config struct {
 	Microsoft Microsoft
 	OTel      OTel
 	Rate      Rate
+	Limits    usage.Policy
 }
 
 type App struct {
@@ -51,9 +53,10 @@ type Redis struct {
 }
 
 type Auth struct {
-	JWTSecret    string        `env:"JWT_SECRET"`
-	SessionTTL   time.Duration `env:"SESSION_TTL" envDefault:"720h"`
-	APIKeyPrefix string        `env:"API_KEY_PREFIX" envDefault:"hl_"`
+	JWTSecret             string        `env:"JWT_SECRET"`
+	SessionTTL            time.Duration `env:"SESSION_TTL" envDefault:"720h"`
+	APIKeyPrefix          string        `env:"API_KEY_PREFIX" envDefault:"hl_"`
+	CalendarEncryptionKey string        `env:"CALENDAR_ENCRYPTION_KEY"`
 }
 
 type Email struct {
@@ -98,6 +101,12 @@ func Load() (*Config, error) {
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("config: %w", err)
+	}
+	if len(cfg.Auth.JWTSecret) < 32 {
+		return nil, fmt.Errorf("JWT_SECRET must contain at least 32 characters")
+	}
+	if cfg.Limits.Forms < 0 || cfg.Limits.Meetings < 0 {
+		return nil, fmt.Errorf("free limits cannot be negative")
 	}
 	return cfg, nil
 }

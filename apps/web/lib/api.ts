@@ -1,6 +1,3 @@
-// Thin ConnectRPC-over-JSON client. Connect speaks plain JSON over POST, so the
-// browser can call the gateway directly. The generated TS SDK (packages/sdk-js)
-// can replace this later for full type-safety.
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -15,6 +12,8 @@ export class ApiError extends Error {
   }
 }
 
+let refreshing: Promise<boolean> | null = null;
+
 /**
  * rpc calls /halomail.<service>.v1.<Service>/<Method>.
  * @param procedure e.g. "halomail.identity.v1.AuthService/Login"
@@ -23,15 +22,24 @@ export async function rpc<T = unknown>(
   procedure: string,
   body: unknown = {},
   token?: string | null,
+  accessKey?: string,
 ): Promise<T> {
-  const res = await fetch(`${API_URL}/${procedure}`, {
+  const request = () => fetch(`/api/rpc/${procedure}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(accessKey ? { "X-HaloMail-Key": accessKey } : {}),
     },
     body: JSON.stringify(body ?? {}),
   });
+  void token;
+  let res = await request();
+  if (res.status === 401 && !procedure.includes("AuthService/Login") && !procedure.includes("AuthService/Register") && !procedure.includes("AuthService/RefreshSession") && !accessKey) {
+    refreshing ??= fetch("/api/rpc/halomail.identity.v1.AuthService/RefreshSession", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
+    }).then(response => response.ok).finally(() => { refreshing = null; });
+    if (await refreshing) res = await request();
+  }
 
   if (!res.ok) {
     let message = res.statusText;

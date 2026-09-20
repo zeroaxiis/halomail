@@ -18,12 +18,16 @@ Minimal. Premium. Developer-focused. Deployable for free.
 
 HaloMail gives every user two things, behind one clean API:
 
-1. **A public booking page** — share `halomail.dev/book/yourname`, invitees pick a
-   slot from your real availability, and the meeting lands on your Google or
-   Outlook calendar with confirmation + reschedule/cancel emails.
-2. **An embeddable contact form** — drop a `<script>` (or call the REST API / SDK)
-   on your portfolio; submissions are spam-filtered, stored, and forwarded to
-   your inbox.
+1. **Forms** — generate one public submission key, embed it in website forms,
+   and receive submitted fields at your account email.
+2. **Meetings** — generate a separate booking key, connect Google Calendar,
+   configure meeting types and availability, and share a booking button.
+   Calendar-confirmed bookings receive Google Meet links and email notifications.
+
+Default free allowances are 25 form submissions and 10 bookings per month.
+Keys are shown once, masked thereafter, and must be deleted before replacement.
+See [Forms and Meetings setup, behavior and limitations](docs/FORMS_AND_MEETINGS.md)
+before running or deploying the new flow.
 
 Everything is driven by a typed **ConnectRPC** API (gRPC + gRPC-Web + JSON/REST
 from one definition), so the dashboard, the SDK, and your own integrations all
@@ -36,8 +40,8 @@ theme designer, and first-class OpenTelemetry observability.
 
 | Area               | What you get                                                             |
 | ------------------ | ----------------------------------------------------------------------- |
-| **Scheduling**     | Public booking pages, availability rules + date overrides, timezone detection, Google & Outlook sync, confirmations, reschedule/cancel links |
-| **Contact forms**  | Embeddable widget, REST API + SDK, honeypot/reCAPTCHA spam protection, rate limiting, message storage, email forwarding |
+| **Scheduling**     | Key-based booking pages, availability rules + date overrides, Google Calendar/Meet integration, queued confirmations and cancellation links |
+| **Contact forms**  | HTML/JSON submission endpoint, embeddable widget, honeypot/heuristic spam protection, quotas, storage and queued email forwarding |
 | **Email designer** | Built-in themes — Minimal, Apple, Notion, Glass, Terminal — plus custom HTML and live preview |
 | **Developer**      | API keys, signed webhooks, generated TypeScript SDK, OpenAPI docs, audit logs |
 | **Operations**     | OpenTelemetry traces, structured JSON logs, liveness/readiness probes, Docker, one-container "free" deploy mode |

@@ -13,6 +13,8 @@ import (
 
 	"github.com/aashishrajdev/halomail/services/contact/internal/domain"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/aashishrajdev/halomail/services/shared/outbox"
+	"github.com/aashishrajdev/halomail/services/shared/usage"
 )
 
 // ---- Forms ---------------------------------------------------------------
@@ -20,6 +22,16 @@ import (
 type Forms struct{ pool *pgxpool.Pool }
 
 func NewForms(pool *pgxpool.Pool) *Forms { return &Forms{pool: pool} }
+
+func (r *Forms) Inbox(ctx context.Context, ownerID string) (*domain.Form, error) {
+	id := "inbox_" + ownerID
+	_, err := r.pool.Exec(ctx, `INSERT INTO forms(id,owner_id,name,slug,target_email)
+	SELECT $1,id,'Website forms',$1,email FROM users WHERE id=$2 ON CONFLICT(id) DO NOTHING`, id, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	return r.GetByID(ctx, id)
+}
 
 const formColumns = `id, owner_id, name, slug, target_email, spam_protection, redirect_url, fields, active, created_at`
 
@@ -114,13 +126,32 @@ func scanForm(row pgx.Row) (*domain.Form, error) {
 
 // ---- Messages ------------------------------------------------------------
 
-type Messages struct{ pool *pgxpool.Pool }
+type Messages struct {
+	pool   *pgxpool.Pool
+	policy usage.Policy
+}
 
-func NewMessages(pool *pgxpool.Pool) *Messages { return &Messages{pool: pool} }
+func NewMessages(pool *pgxpool.Pool, policies ...usage.Policy) *Messages {
+	policy := usage.Policy{Forms: 25, Meetings: 10, Monthly: true}
+	if len(policies) > 0 {
+		policy = policies[0]
+	}
+	return &Messages{pool: pool, policy: policy}
+}
 
 const msgColumns = `id, form_id, owner_id, sender_name, sender_email, data, ip, user_agent, spam_score, is_spam, read, created_at`
 
 func (r *Messages) Create(ctx context.Context, m *domain.Message) error {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if !m.IsSpam {
+		if err = usage.Consume(ctx, tx, r.policy, m.OwnerID, "forms"); err != nil {
+			return err
+		}
+	}
 	data, err := json.Marshal(m.Data)
 	if err != nil {
 		return err
@@ -128,12 +159,30 @@ func (r *Messages) Create(ctx context.Context, m *domain.Message) error {
 	if m.Data == nil {
 		data = []byte("{}")
 	}
-	_, err = r.pool.Exec(ctx,
+	_, err = tx.Exec(ctx,
 		`INSERT INTO messages (`+msgColumns+`)
 		 VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7,$8,$9,$10,$11,$12)`,
 		m.ID, m.FormID, m.OwnerID, m.SenderName, m.SenderEmail, string(data),
 		m.IP, m.UserAgent, m.SpamScore, m.IsSpam, m.Read, m.CreatedAt)
-	return err
+	if err != nil {
+		return err
+	}
+	if !m.IsSpam {
+		var recipient string
+		if err = tx.QueryRow(ctx, `SELECT target_email FROM forms WHERE id=$1`, m.FormID).Scan(&recipient); err != nil {
+			return err
+		}
+		fields := make(map[string]string, len(m.Data)+2)
+		for key, value := range m.Data {
+			fields[key] = value
+		}
+		fields["Sender name"] = m.SenderName
+		fields["Sender email"] = m.SenderEmail
+		if err = outbox.Queue(ctx, tx, m.ID, recipient, m.SenderEmail, "New website form submission", outbox.Fields("New form submission", fields)); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
 }
 
 func (r *Messages) GetByID(ctx context.Context, id string) (*domain.Message, error) {
@@ -191,6 +240,22 @@ func (r *Messages) Delete(ctx context.Context, id, ownerID string) error {
 		return errs.NotFound("message not found")
 	}
 	return nil
+}
+
+func (r *Messages) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
+	var stats domain.UsageStats
+	err := r.pool.QueryRow(ctx, `
+		SELECT 
+			COUNT(*),
+			COALESCE(COUNT(*) FILTER (WHERE read = false), 0),
+			COALESCE(COUNT(*) FILTER (WHERE is_spam = true), 0)
+		FROM messages 
+		WHERE owner_id = $1
+	`, ownerID).Scan(&stats.TotalMessages, &stats.UnreadMessages, &stats.SpamPrevented)
+	if err != nil {
+		return nil, err
+	}
+	return &stats, nil
 }
 
 func scanMessage(row pgx.Row) (*domain.Message, error) {

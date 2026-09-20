@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -92,14 +93,17 @@ func main() {
 	identity.Mount(mux, identity.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
 		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Interceptors: interceptors,
+		Limits: cfg.Limits,
 	})
 	scheduling.Mount(mux, scheduling.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret,
 		Google: cfg.Google, Microsoft: cfg.Microsoft, Interceptors: interceptors,
+		Limits: cfg.Limits, EncryptionKey: cfg.Auth.CalendarEncryptionKey, WebURL: cfg.App.PublicWebURL, Context: ctx, Logger: logger,
 	})
 	contact.Mount(mux, contact.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, Redis: redisClient,
 		Rate: cfg.Rate, Logger: logger, Interceptors: interceptors,
+		IdentityURL: "http://127.0.0.1:" + fmt.Sprint(cfg.HTTP.Port), Limits: cfg.Limits,
 	})
 	template.Mount(mux, template.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, Interceptors: interceptors,
@@ -131,7 +135,7 @@ func withCORS(next http.Handler) http.Handler {
 		h := w.Header()
 		h.Set("Access-Control-Allow-Origin", "*")
 		h.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		h.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Connect-Protocol-Version, Connect-Timeout-Ms, X-Requested-With")
+		h.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Connect-Protocol-Version, Connect-Timeout-Ms, X-Requested-With, X-HaloMail-Key")
 		h.Set("Access-Control-Max-Age", "86400")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

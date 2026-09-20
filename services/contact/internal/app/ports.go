@@ -8,6 +8,7 @@ import (
 )
 
 type FormRepo interface {
+	Inbox(ctx context.Context, ownerID string) (*domain.Form, error)
 	Create(ctx context.Context, f *domain.Form) error
 	GetByID(ctx context.Context, id string) (*domain.Form, error)
 	GetBySlug(ctx context.Context, slug string) (*domain.Form, error)
@@ -22,6 +23,7 @@ type MessageRepo interface {
 	List(ctx context.Context, ownerID, formID string, unreadOnly bool, limit, offset int) ([]domain.Message, error)
 	MarkRead(ctx context.Context, id, ownerID string, read bool) error
 	Delete(ctx context.Context, id, ownerID string) error
+	GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error)
 }
 
 // Forwarder delivers a received message to the form's target inbox (and/or

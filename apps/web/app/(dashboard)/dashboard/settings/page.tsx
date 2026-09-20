@@ -56,7 +56,7 @@ export default function SettingsPage() {
       );
       const current = getUser();
       const token = getToken();
-      if (current && token) saveSession(token, { ...current, ...res.user });
+      if (current) saveSession(token || "", { ...current, ...res.user });
       setSaved(true);
     } finally {
       setBusy(false);
