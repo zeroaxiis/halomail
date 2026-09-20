@@ -1,6 +1,7 @@
 package health
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -26,6 +27,22 @@ func TestLivenessAlwaysOK(t *testing.T) {
 		t.Fatalf("content type = %q", got)
 	}
 	if out := decode(t, rec); out.Status != "ok" || len(out.Checks) != 0 {
+		t.Fatalf("body = %+v", out)
+	}
+}
+
+func TestReadinessReportsEachCheck(t *testing.T) {
+	checker := New()
+	checker.Register("postgres", func(context.Context) error { return nil })
+	checker.Register("redis", func(context.Context) error { return nil })
+
+	rec := httptest.NewRecorder()
+	checker.Readiness()(rec, httptest.NewRequest(http.MethodGet, "/readyz", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	out := decode(t, rec)
+	if out.Status != "ok" || out.Checks["postgres"] != "ok" || out.Checks["redis"] != "ok" {
 		t.Fatalf("body = %+v", out)
 	}
 }
