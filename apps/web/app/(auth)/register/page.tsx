@@ -29,7 +29,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const res = await rpc<RegisterResponse>("halomail.identity.v1.AuthService/Register", { name, email, password });
-      saveSession(res.session.accessToken, res.user);
+      saveSession("", res.user);
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");

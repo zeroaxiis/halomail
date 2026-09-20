@@ -8,6 +8,7 @@ import (
 )
 
 type FormRepo interface {
+	Inbox(ctx context.Context, ownerID string) (*domain.Form, error)
 	Create(ctx context.Context, f *domain.Form) error
 	GetByID(ctx context.Context, id string) (*domain.Form, error)
 	GetBySlug(ctx context.Context, slug string) (*domain.Form, error)

@@ -4,7 +4,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 	"os"
 
@@ -27,20 +26,9 @@ import (
 	"github.com/aashishrajdev/halomail/services/contact/internal/adapters/rpc"
 	"github.com/aashishrajdev/halomail/services/contact/internal/app"
 	"github.com/aashishrajdev/halomail/services/contact/internal/web"
-	cdomain "github.com/aashishrajdev/halomail/services/contact/internal/domain"
 )
 
 const serviceName = "contact"
-
-// logForwarder is the default Forwarder: it logs deliveries. The real one calls
-// the notification service.
-type logForwarder struct{ logger *slog.Logger }
-
-func (f logForwarder) Forward(ctx context.Context, form *cdomain.Form, msg *cdomain.Message) error {
-	f.logger.InfoContext(ctx, "forwarding contact message",
-		"form", form.Slug, "to", form.TargetEmail, "message_id", msg.ID, "spam", msg.IsSpam)
-	return nil
-}
 
 func main() {
 	ctx := context.Background()
@@ -96,8 +84,8 @@ func main() {
 
 	svc := app.New(app.Repos{
 		Forms:    cpg.NewForms(pool),
-		Messages: cpg.NewMessages(pool),
-	}, limiter, logForwarder{logger: logger})
+		Messages: cpg.NewMessages(pool, cfg.Limits),
+	}, limiter, nil)
 
 	identityURL := cfg.App.PublicAPIURL
 	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, identityURL)
@@ -117,6 +105,7 @@ func main() {
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
 	mux.Handle("/widget.js", web.WidgetHandler())
+	mux.HandleFunc("POST /submit", web.SubmitHandler(svc, pool))
 	mux.Handle(contactv1connect.NewFormServiceHandler(handlers, opts))
 	mux.Handle(contactv1connect.NewMessageServiceHandler(handlers, opts))
 

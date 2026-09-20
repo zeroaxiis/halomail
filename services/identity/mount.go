@@ -14,6 +14,9 @@ import (
 	"github.com/aashishrajdev/halomail/services/identity/internal/adapters/postgres"
 	"github.com/aashishrajdev/halomail/services/identity/internal/adapters/rpc"
 	"github.com/aashishrajdev/halomail/services/identity/internal/app"
+	"github.com/aashishrajdev/halomail/services/shared/authn"
+	"github.com/aashishrajdev/halomail/services/shared/httpx"
+	"github.com/aashishrajdev/halomail/services/shared/usage"
 )
 
 type Deps struct {
@@ -22,6 +25,7 @@ type Deps struct {
 	SessionTTL   time.Duration
 	APIKeyPrefix string
 	Interceptors []connect.Interceptor
+	Limits       usage.Policy
 }
 
 // Mount registers the identity ConnectRPC handlers on mux.
@@ -42,4 +46,22 @@ func Mount(mux *http.ServeMux, d Deps) {
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewApiKeyServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewAuditServiceHandler(h, opts))
+	mux.HandleFunc("POST /v1/usage", func(writer http.ResponseWriter, request *http.Request) {
+		owner, err := httpx.Owner(request, authn.NewVerifier(d.JWTSecret))
+		if err != nil {
+			httpx.Error(writer, err)
+			return
+		}
+		forms, err := usage.Read(request.Context(), d.Pool, d.Limits, owner, "forms")
+		if err != nil {
+			httpx.Error(writer, err)
+			return
+		}
+		meetings, err := usage.Read(request.Context(), d.Pool, d.Limits, owner, "meetings")
+		if err != nil {
+			httpx.Error(writer, err)
+			return
+		}
+		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": "free"})
+	})
 }

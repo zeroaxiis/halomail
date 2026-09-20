@@ -32,9 +32,6 @@ func (h *Handlers) principal(ctx context.Context, req connect.AnyRequest) (userI
 	switch {
 	case strings.HasPrefix(authz, "Bearer "):
 		return h.app.VerifyToken(ctx, strings.TrimSpace(authz[len("Bearer "):]))
-	case strings.HasPrefix(authz, "ApiKey "):
-		uid, oid, _, err := h.app.VerifyAPIKey(ctx, strings.TrimSpace(authz[len("ApiKey "):]))
-		return uid, oid, err
 	default:
 		return "", "", errs.Unauthorized("missing or malformed Authorization header")
 	}
@@ -105,6 +102,13 @@ func (h *Handlers) VerifyToken(ctx context.Context, req *connect.Request[identit
 // ---- UserService ---------------------------------------------------------
 
 func (h *Handlers) GetUser(ctx context.Context, req *connect.Request[identityv1.GetUserRequest]) (*connect.Response[identityv1.GetUserResponse], error) {
+	ownerID, _, authErr := h.principal(ctx, req)
+	if authErr != nil {
+		return nil, connectutil.ToConnect(authErr)
+	}
+	if ownerID != req.Msg.GetId() {
+		return nil, connectutil.ToConnect(errs.Forbidden("not your profile"))
+	}
 	user, err := h.app.GetUser(ctx, req.Msg.GetId())
 	if err != nil {
 		return nil, connectutil.ToConnect(err)
@@ -117,7 +121,7 @@ func (h *Handlers) GetUserByHandle(ctx context.Context, req *connect.Request[ide
 	if err != nil {
 		return nil, connectutil.ToConnect(err)
 	}
-	return connect.NewResponse(&identityv1.GetUserByHandleResponse{User: toProtoUser(user)}), nil
+	return connect.NewResponse(&identityv1.GetUserByHandleResponse{User: &identityv1.User{Id: user.ID, Name: user.Name, Handle: user.Handle, Timezone: user.Timezone}}), nil
 }
 
 func (h *Handlers) UpdateUser(ctx context.Context, req *connect.Request[identityv1.UpdateUserRequest]) (*connect.Response[identityv1.UpdateUserResponse], error) {
@@ -219,8 +223,13 @@ func (h *Handlers) ListAuditLogs(ctx context.Context, req *connect.Request[ident
 }
 
 func (h *Handlers) RecordAuditLog(ctx context.Context, req *connect.Request[identityv1.RecordAuditLogRequest]) (*connect.Response[identityv1.RecordAuditLogResponse], error) {
+	ownerID, orgID, authErr := h.principal(ctx, req)
+	if authErr != nil {
+		return nil, connectutil.ToConnect(authErr)
+	}
 	id, err := h.app.RecordAudit(ctx, app.RecordAuditInput{
-		ActorID:    req.Msg.GetActorId(),
+		OrgID:      orgID,
+		ActorID:    ownerID,
 		Action:     req.Msg.GetAction(),
 		TargetType: req.Msg.GetTargetType(),
 		TargetID:   req.Msg.GetTargetId(),

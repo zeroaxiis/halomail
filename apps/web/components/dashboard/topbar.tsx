@@ -6,13 +6,15 @@ import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { clearSession, getUser, type SessionUser } from "@/lib/auth";
+import { rpc } from "@/lib/api";
 
 export function Topbar() {
   const router = useRouter();
   const [user, setUser] = useState<SessionUser | null>(null);
   useEffect(() => setUser(getUser()), []);
 
-  function logout() {
+  async function logout() {
+    await rpc("halomail.identity.v1.AuthService/Logout").catch(() => {});
     clearSession();
     router.replace("/login");
   }

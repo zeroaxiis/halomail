@@ -48,3 +48,9 @@ type Repos struct {
 	Bookings     BookingRepo
 	Calendars    CalendarRepo
 }
+
+type Calendar interface {
+	Ready(context.Context, string) error
+	Busy(context.Context, string, time.Time, time.Time, string) ([]domain.Booking, error)
+	Start(context.Context, string) (string, error)
+}

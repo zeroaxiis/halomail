@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
+	"github.com/aashishrajdev/halomail/services/shared/accesskey"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	commonv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/common/v1"
 	schedulingv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/scheduling/v1"
@@ -22,10 +24,33 @@ import (
 type Handlers struct {
 	app      *app.Service
 	verifier authn.Verifier
+	pool     *pgxpool.Pool
 }
 
-func NewHandlers(a *app.Service, v authn.Verifier) *Handlers {
-	return &Handlers{app: a, verifier: v}
+func NewHandlers(a *app.Service, v authn.Verifier, pools ...*pgxpool.Pool) *Handlers {
+	handlers := &Handlers{app: a, verifier: v}
+	if len(pools) > 0 {
+		handlers.pool = pools[0]
+	}
+	return handlers
+}
+
+func (h *Handlers) bookingKey(ctx context.Context, req connect.AnyRequest, eventID string) error {
+	if h.pool == nil {
+		return errs.Unauthorized("meeting access key required")
+	}
+	owner, err := accesskey.Verify(ctx, h.pool, req.Header().Get("X-HaloMail-Key"), "meetings")
+	if err != nil {
+		return err
+	}
+	event, err := h.app.GetEventType(ctx, eventID)
+	if err != nil {
+		return err
+	}
+	if owner.ID != event.OwnerID {
+		return errs.Forbidden("access key does not belong to this event")
+	}
+	return nil
 }
 
 // principal authenticates an owner via the Bearer access token.
@@ -154,6 +179,9 @@ func (h *Handlers) SetAvailability(ctx context.Context, req *connect.Request[sch
 // ---- BookingService ------------------------------------------------------
 
 func (h *Handlers) ListSlots(ctx context.Context, req *connect.Request[schedulingv1.ListSlotsRequest]) (*connect.Response[schedulingv1.ListSlotsResponse], error) {
+	if err := h.bookingKey(ctx, req, req.Msg.GetEventTypeId()); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
 	slotList, err := h.app.ListSlots(ctx, req.Msg.GetEventTypeId(), req.Msg.GetFromDate(), req.Msg.GetToDate(), req.Msg.GetInviteeTimezone())
 	if err != nil {
 		return nil, connectutil.ToConnect(err)
@@ -166,6 +194,9 @@ func (h *Handlers) ListSlots(ctx context.Context, req *connect.Request[schedulin
 }
 
 func (h *Handlers) CreateBooking(ctx context.Context, req *connect.Request[schedulingv1.CreateBookingRequest]) (*connect.Response[schedulingv1.CreateBookingResponse], error) {
+	if err := h.bookingKey(ctx, req, req.Msg.GetEventTypeId()); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
 	b, err := h.app.CreateBooking(ctx,
 		req.Msg.GetEventTypeId(),
 		req.Msg.GetInviteeName(),
@@ -181,9 +212,16 @@ func (h *Handlers) CreateBooking(ctx context.Context, req *connect.Request[sched
 }
 
 func (h *Handlers) GetBooking(ctx context.Context, req *connect.Request[schedulingv1.GetBookingRequest]) (*connect.Response[schedulingv1.GetBookingResponse], error) {
+	owner, _, authErr := h.principal(req)
+	if authErr != nil {
+		return nil, connectutil.ToConnect(authErr)
+	}
 	b, err := h.app.GetBooking(ctx, req.Msg.GetId())
 	if err != nil {
 		return nil, connectutil.ToConnect(err)
+	}
+	if b.OwnerID != owner {
+		return nil, connectutil.ToConnect(errs.NotFound("booking not found"))
 	}
 	return connect.NewResponse(&schedulingv1.GetBookingResponse{Booking: toProtoBooking(b)}), nil
 }

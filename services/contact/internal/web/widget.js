@@ -1,7 +1,7 @@
 /* HaloMail contact widget — progressive enhancement for contact forms.
  *
  *   <script src="https://<api-host>/widget.js" defer></script>
- *   <form data-halomail="your-form-slug">
+ *   <form data-halomail="your-forms-access-key">
  *     <input name="name"><input name="email"><textarea name="message"></textarea>
  *     <input name="_hl_hp" tabindex="-1" autocomplete="off" style="display:none">
  *     <button type="submit">Send</button>
@@ -21,13 +21,18 @@
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        formSlug: slug,
+        accessKey: slug,
         senderName: payload.name || "",
         senderEmail: payload.email || "",
         data: payload.data || {},
         honeypot: payload.honeypot || ""
       })
-    }).then(function (r) { return r.json(); });
+    }).then(function (response) {
+      return response.json().then(function (result) {
+        if (!response.ok || !result.accepted) throw new Error(result.message || "Submission failed");
+        return result;
+      });
+    });
   }
 
   function bind(base) {
@@ -36,6 +41,8 @@
       form.__halomail = true;
       form.addEventListener("submit", function (e) {
         e.preventDefault();
+        if (form.__sending) return;
+        form.__sending = true;
         var slug = form.getAttribute("data-halomail");
         var data = {}, name = "", email = "", honeypot = "";
         new FormData(form).forEach(function (v, k) {
@@ -52,7 +59,7 @@
           })
           .catch(function (err) {
             form.dispatchEvent(new CustomEvent("halomail:error", { detail: err }));
-          });
+          }).finally(function () { form.__sending = false; });
       });
     });
   }

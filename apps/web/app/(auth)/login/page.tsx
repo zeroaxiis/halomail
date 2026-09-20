@@ -28,7 +28,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await rpc<LoginResponse>("halomail.identity.v1.AuthService/Login", { email, password });
-      saveSession(res.session.accessToken, res.user);
+      saveSession("", res.user);
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");

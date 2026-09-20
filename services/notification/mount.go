@@ -10,9 +10,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	notificationv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/notification/v1/notificationv1connect"
 	"github.com/aashishrajdev/halomail/services/shared/authn"
 	"github.com/aashishrajdev/halomail/services/shared/config"
+	notificationv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/notification/v1/notificationv1connect"
 
 	"github.com/aashishrajdev/halomail/services/notification/internal/adapters/postgres"
 	"github.com/aashishrajdev/halomail/services/notification/internal/adapters/rpc"
@@ -46,8 +46,8 @@ func Mount(ctx context.Context, mux *http.ServeMux, d Deps) {
 	h := rpc.NewHandlers(svc, authn.NewVerifier(d.JWTSecret))
 
 	go app.NewWorker(repos, d.Logger).Run(ctx)
+	go app.RunMailWorker(ctx, d.Pool, sender, d.Logger)
 
 	opts := connect.WithInterceptors(d.Interceptors...)
-	mux.Handle(notificationv1connect.NewEmailServiceHandler(h, opts))
 	mux.Handle(notificationv1connect.NewWebhookServiceHandler(h, opts))
 }

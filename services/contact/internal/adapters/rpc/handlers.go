@@ -18,6 +18,7 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/authn"
 	"github.com/aashishrajdev/halomail/services/shared/connectutil"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/aashishrajdev/halomail/services/shared/httpx"
 )
 
 type Handlers struct {
@@ -64,9 +65,16 @@ func (h *Handlers) CreateForm(ctx context.Context, req *connect.Request[contactv
 }
 
 func (h *Handlers) GetForm(ctx context.Context, req *connect.Request[contactv1.GetFormRequest]) (*connect.Response[contactv1.GetFormResponse], error) {
+	ownerID, _, authErr := h.principal(req)
+	if authErr != nil {
+		return nil, connectutil.ToConnect(authErr)
+	}
 	f, err := h.app.GetForm(ctx, req.Msg.GetId(), req.Msg.GetSlug())
 	if err != nil {
 		return nil, connectutil.ToConnect(err)
+	}
+	if f.OwnerID != ownerID {
+		return nil, connectutil.ToConnect(errs.NotFound("form not found"))
 	}
 	return connect.NewResponse(&contactv1.GetFormResponse{Form: toProtoForm(f)}), nil
 }
@@ -125,7 +133,7 @@ func (h *Handlers) SubmitMessage(ctx context.Context, req *connect.Request[conta
 	if err != nil {
 		return nil, connectutil.ToConnect(errs.Unauthorized("invalid access key"))
 	}
-	if !verifyRes.Msg.GetValid() {
+	if !verifyRes.Msg.GetValid() || len(verifyRes.Msg.GetScopes()) != 1 || verifyRes.Msg.GetScopes()[0] != "forms:submit" {
 		return nil, connectutil.ToConnect(errs.Unauthorized("invalid access key"))
 	}
 	ownerID := verifyRes.Msg.GetUserId()
@@ -230,13 +238,7 @@ func (h *Handlers) GetUsageStats(ctx context.Context, req *connect.Request[conta
 // ---- helpers -------------------------------------------------------------
 
 func clientIP(req connect.AnyRequest) string {
-	if xff := req.Header().Get("X-Forwarded-For"); xff != "" {
-		if i := strings.IndexByte(xff, ','); i > 0 {
-			return strings.TrimSpace(xff[:i])
-		}
-		return strings.TrimSpace(xff)
-	}
-	return req.Peer().Addr
+	return httpx.Peer(req.Peer().Addr)
 }
 
 func atoiSafe(s string) int {

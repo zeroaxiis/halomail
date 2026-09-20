@@ -35,7 +35,7 @@ func ToConnect(err error) error {
 	case errs.KindRateLimited:
 		code = connect.CodeResourceExhausted
 	default:
-		code = connect.CodeInternal
+		return connect.NewError(connect.CodeInternal, errors.New("internal server error"))
 	}
 	return connect.NewError(code, err)
 }

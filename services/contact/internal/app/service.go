@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -42,6 +43,9 @@ type FormInput struct {
 }
 
 func (s *Service) CreateForm(ctx context.Context, ownerID string, in FormInput) (*domain.Form, error) {
+	if strings.HasPrefix(in.Slug, "inbox_") {
+		return nil, errs.Invalid("this slug is reserved")
+	}
 	if strings.TrimSpace(in.Name) == "" {
 		return nil, errs.Invalid("form name is required")
 	}
@@ -137,14 +141,24 @@ type SubmitResult struct {
 
 // SubmitMessage is the public submit path.
 func (s *Service) SubmitMessage(ctx context.Context, ownerID string, in SubmitInput) (*SubmitResult, error) {
-	forms, err := s.forms.ListByOwner(ctx, ownerID)
+	if len(in.Data) > 50 || len(in.SenderName) > 200 {
+		return nil, errs.Invalid("submission is too large")
+	}
+	for key, value := range in.Data {
+		if len(key) > 100 || len(value) > 10000 {
+			return nil, errs.Invalid("form field is too large")
+		}
+	}
+	if in.SenderEmail != "" {
+		parsed, parseErr := mail.ParseAddress(in.SenderEmail)
+		if parseErr != nil || parsed.Address != in.SenderEmail || len(in.SenderEmail) > 254 || strings.ContainsAny(in.SenderEmail, "\r\n") {
+			return nil, errs.Invalid("invalid sender email")
+		}
+	}
+	form, err := s.forms.Inbox(ctx, ownerID)
 	if err != nil {
 		return nil, err
 	}
-	if len(forms) == 0 {
-		return nil, errs.NotFound("no active forms found for this account")
-	}
-	form := &forms[0]
 	if !form.Active {
 		return nil, errs.Invalid("this form is not accepting submissions")
 	}

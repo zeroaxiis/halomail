@@ -13,6 +13,7 @@ import (
 	"github.com/aashishrajdev/halomail/services/scheduling/internal/domain"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
 	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/aashishrajdev/halomail/services/shared/usage"
 )
 
 // ---- Event types ---------------------------------------------------------
@@ -73,7 +74,7 @@ func (r *EventTypes) Update(ctx context.Context, et *domain.EventType) error {
 }
 
 func (r *EventTypes) Delete(ctx context.Context, id, ownerID string) error {
-	tag, err := r.pool.Exec(ctx, `DELETE FROM event_types WHERE id=$1 AND owner_id=$2`, id, ownerID)
+	tag, err := r.pool.Exec(ctx, `UPDATE event_types SET active=false WHERE id=$1 AND owner_id=$2`, id, ownerID)
 	if err != nil {
 		return err
 	}
@@ -185,21 +186,49 @@ func (r *Availability) Set(ctx context.Context, a *domain.Availability) error {
 
 // ---- Bookings ------------------------------------------------------------
 
-type Bookings struct{ pool *pgxpool.Pool }
+type Bookings struct {
+	pool   *pgxpool.Pool
+	policy usage.Policy
+}
 
-func NewBookings(pool *pgxpool.Pool) *Bookings { return &Bookings{pool: pool} }
+func NewBookings(pool *pgxpool.Pool, policies ...usage.Policy) *Bookings {
+	policy := usage.Policy{Forms: 25, Meetings: 10, Monthly: true}
+	if len(policies) > 0 {
+		policy = policies[0]
+	}
+	return &Bookings{pool: pool, policy: policy}
+}
 
 const bkColumns = `id, event_type_id, owner_id, invitee_name, invitee_email, invitee_timezone,
 	start_at, end_at, status, location, notes, reschedule_token, cancel_token, created_at`
 
 func (r *Bookings) Create(ctx context.Context, b *domain.Booking) error {
-	_, err := r.pool.Exec(ctx,
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if err = lockSlot(ctx, tx, b); err != nil {
+		return err
+	}
+	if err = usage.Consume(ctx, tx, r.policy, b.OwnerID, "meetings"); err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx,
 		`INSERT INTO bookings (`+bkColumns+`)
 		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
 		b.ID, b.EventTypeID, b.OwnerID, b.InviteeName, b.InviteeEmail, b.InviteeTimezone,
 		b.Start, b.End, b.Status, b.Location, b.Notes, b.RescheduleToken, b.CancelToken, b.CreatedAt,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE bookings SET calendar_pending=true,location='' WHERE id=$1`, b.ID)
+	if err != nil {
+		return err
+	}
+	b.Location = ""
+	return tx.Commit(ctx)
 }
 
 func (r *Bookings) GetByID(ctx context.Context, id string) (*domain.Booking, error) {
@@ -245,10 +274,52 @@ func (r *Bookings) ListConfirmedBetween(ctx context.Context, ownerID string, fro
 }
 
 func (r *Bookings) Update(ctx context.Context, b *domain.Booking) error {
-	_, err := r.pool.Exec(ctx,
-		`UPDATE bookings SET start_at=$2, end_at=$3, status=$4, notes=$5 WHERE id=$1`,
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if err = lockSlot(ctx, tx, b); err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx,
+		`UPDATE bookings SET start_at=$2, end_at=$3, status=$4, notes=$5,location='',calendar_pending=true,calendar_retry_at=now(),revision=revision+1 WHERE id=$1`,
 		b.ID, b.Start, b.End, b.Status, b.Notes)
-	return err
+	if err != nil {
+		return err
+	}
+	b.Location = ""
+	return tx.Commit(ctx)
+}
+
+func lockSlot(ctx context.Context, tx pgx.Tx, booking *domain.Booking) error {
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1,0))`, booking.OwnerID); err != nil {
+		return err
+	}
+	if booking.Status == domain.StatusCancelled {
+		return nil
+	}
+	var currentStatus string
+	statusErr := tx.QueryRow(ctx, `SELECT status FROM bookings WHERE id=$1 FOR UPDATE`, booking.ID).Scan(&currentStatus)
+	if statusErr != nil && !errors.Is(statusErr, pgx.ErrNoRows) {
+		return statusErr
+	}
+	if currentStatus == domain.StatusCancelled {
+		return errs.Conflict("cannot reschedule a cancelled booking")
+	}
+	var overlaps bool
+	err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM bookings b
+	JOIN event_types existing ON existing.id=b.event_type_id JOIN event_types requested ON requested.id=$5
+	WHERE b.owner_id=$1 AND b.id<>$2 AND b.status='confirmed'
+	AND b.start_at-make_interval(mins=>existing.buffer_before_minutes)<$4::timestamptz+make_interval(mins=>requested.buffer_after_minutes)
+	AND b.end_at+make_interval(mins=>existing.buffer_after_minutes)>$3::timestamptz-make_interval(mins=>requested.buffer_before_minutes))`, booking.OwnerID, booking.ID, booking.Start, booking.End, booking.EventTypeID).Scan(&overlaps)
+	if err != nil {
+		return err
+	}
+	if overlaps {
+		return errs.Conflict("that time was just booked; choose another slot")
+	}
+	return nil
 }
 
 func (r *Bookings) GetUsageStats(ctx context.Context, ownerID string) (*domain.UsageStats, error) {
@@ -299,7 +370,7 @@ func NewCalendars(pool *pgxpool.Pool) *Calendars { return &Calendars{pool: pool}
 
 func (r *Calendars) ListByOwner(ctx context.Context, ownerID string) ([]domain.CalendarConnection, error) {
 	rows, err := r.pool.Query(ctx,
-		`SELECT id, owner_id, provider, email, created_at FROM calendar_connections WHERE owner_id=$1 ORDER BY created_at`, ownerID)
+		`SELECT 'google:'||owner_id,owner_id,'google',email,created_at FROM google_credentials WHERE owner_id=$1`, ownerID)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +387,7 @@ func (r *Calendars) ListByOwner(ctx context.Context, ownerID string) ([]domain.C
 }
 
 func (r *Calendars) Delete(ctx context.Context, id, ownerID string) error {
-	tag, err := r.pool.Exec(ctx, `DELETE FROM calendar_connections WHERE id=$1 AND owner_id=$2`, id, ownerID)
+	tag, err := r.pool.Exec(ctx, `DELETE FROM google_credentials WHERE 'google:'||owner_id=$1 AND owner_id=$2`, id, ownerID)
 	if err != nil {
 		return err
 	}

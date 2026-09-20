@@ -50,9 +50,12 @@ func (t TokenIssuer) Parse(token string) (*Claims, error) {
 			return nil, errors.New("unexpected signing method")
 		}
 		return t.secret, nil
-	})
+	}, jwt.WithValidMethods([]string{"HS256"}), jwt.WithExpirationRequired())
 	if err != nil {
 		return nil, err
+	}
+	if claims.Subject == "" || claims.OrgID == "" {
+		return nil, errors.New("missing principal")
 	}
 	return claims, nil
 }
