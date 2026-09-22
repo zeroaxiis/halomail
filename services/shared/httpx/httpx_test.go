@@ -3,11 +3,14 @@ package httpx
 import (
 	"encoding/json"
 	"errors"
+	"github.com/aashishrajdev/halomail/services/shared/authn"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestJSONSetsHeadersAndStatus(t *testing.T) {
@@ -54,5 +57,35 @@ func TestErrorMapsKindsToStatus(t *testing.T) {
 		if rec.Code != tc.status || body.Message != tc.message || body.Success {
 			t.Errorf("%v: got %d %+v, want %d %q", tc.err, rec.Code, body, tc.status, tc.message)
 		}
+	}
+}
+
+func TestOwnerRequiresValidBearerToken(t *testing.T) {
+	secret := strings.Repeat("k", 32)
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, authn.Claims{
+		OrgID: "org_1",
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   "usr_1",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute)),
+		},
+	}).SignedString([]byte(secret))
+	if err != nil {
+		t.Fatal(err)
+	}
+	verifier := authn.NewVerifier(secret)
+
+	for _, header := range []string{"", "Basic dXNlcjpwYXNz", "Bearer not-a-jwt", token} {
+		request := httptest.NewRequest(http.MethodGet, "/", nil)
+		request.Header.Set("Authorization", header)
+		if _, err := Owner(request, verifier); errs.KindOf(err) != errs.KindUnauthorized {
+			t.Errorf("header %q: err = %v, want unauthorized", header, err)
+		}
+	}
+
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	request.Header.Set("Authorization", "Bearer "+token)
+	owner, err := Owner(request, verifier)
+	if err != nil || owner != "usr_1" {
+		t.Fatalf("owner = %q, err = %v", owner, err)
 	}
 }
