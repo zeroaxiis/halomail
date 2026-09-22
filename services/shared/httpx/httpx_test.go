@@ -89,3 +89,17 @@ func TestOwnerRequiresValidBearerToken(t *testing.T) {
 		t.Fatalf("owner = %q, err = %v", owner, err)
 	}
 }
+
+func TestPeer(t *testing.T) {
+	cases := map[string]string{
+		"203.0.113.7:51234": "203.0.113.7",
+		"[::1]:8080":        "::1",
+		"203.0.113.7":       "203.0.113.7",
+		"":                  "",
+	}
+	for in, want := range cases {
+		if got := Peer(in); got != want {
+			t.Errorf("Peer(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
