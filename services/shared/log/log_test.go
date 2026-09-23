@@ -22,3 +22,15 @@ func TestParseLevel(t *testing.T) {
 		}
 	}
 }
+
+func TestRedactMasksSensitiveKeys(t *testing.T) {
+	for _, key := range []string{"password", "Authorization", "refresh_token", "X-Api_Key", "jwt", "client_secret"} {
+		got := redact(nil, slog.String(key, "hunter2"))
+		if got.Key != key || got.Value.String() != "[REDACTED]" {
+			t.Errorf("%s was not redacted: %v", key, got)
+		}
+	}
+	if got := redact(nil, slog.String("email", "grace@example.com")); got.Value.String() != "grace@example.com" {
+		t.Errorf("non-sensitive value changed: %v", got)
+	}
+}
