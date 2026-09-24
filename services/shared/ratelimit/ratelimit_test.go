@@ -17,3 +17,17 @@ func TestMemoryAllowsBurstThenDenies(t *testing.T) {
 		t.Fatal("request beyond burst allowed")
 	}
 }
+
+func TestMemoryTracksKeysIndependently(t *testing.T) {
+	limiter := NewMemory(Config{RPS: 0.001, Burst: 1})
+	ctx := context.Background()
+	if ok, _ := limiter.Allow(ctx, "a"); !ok {
+		t.Fatal("first request for a denied")
+	}
+	if ok, _ := limiter.Allow(ctx, "a"); ok {
+		t.Fatal("second request for a allowed")
+	}
+	if ok, _ := limiter.Allow(ctx, "b"); !ok {
+		t.Fatal("b was throttled by a's usage")
+	}
+}
