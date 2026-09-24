@@ -31,3 +31,9 @@ func TestMemoryTracksKeysIndependently(t *testing.T) {
 		t.Fatal("b was throttled by a's usage")
 	}
 }
+
+func TestNewFallsBackToMemoryWithoutRedis(t *testing.T) {
+	if _, ok := New(nil, Config{RPS: 1, Burst: 1}).(*memoryLimiter); !ok {
+		t.Fatal("nil redis client should select the in-memory limiter")
+	}
+}
