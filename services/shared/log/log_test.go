@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"log/slog"
 	"testing"
 )
@@ -32,5 +33,19 @@ func TestRedactMasksSensitiveKeys(t *testing.T) {
 	}
 	if got := redact(nil, slog.String("email", "grace@example.com")); got.Value.String() != "grace@example.com" {
 		t.Errorf("non-sensitive value changed: %v", got)
+	}
+}
+
+func TestNewHonoursLevel(t *testing.T) {
+	logger := New(Options{Level: "warn", Service: "identity", Env: "test"})
+	if logger == nil {
+		t.Fatal("New returned nil")
+	}
+	ctx := context.Background()
+	if logger.Enabled(ctx, slog.LevelInfo) {
+		t.Fatal("info should be filtered at warn level")
+	}
+	if !logger.Enabled(ctx, slog.LevelWarn) {
+		t.Fatal("warn should be enabled at warn level")
 	}
 }
