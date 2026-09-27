@@ -40,3 +40,17 @@ func TestVerifyRequiresHS256ExpiryAndPrincipal(test *testing.T) {
 		})
 	}
 }
+
+func TestVerifyRejectsForeignSecretAndGarbage(test *testing.T) {
+	claims := Claims{OrgID: "org", RegisteredClaims: jwt.RegisteredClaims{Subject: "owner", ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour))}}
+	foreign, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(strings.Repeat("x", 32)))
+	if err != nil {
+		test.Fatal(err)
+	}
+	verifier := NewVerifier(strings.Repeat("s", 32))
+	for _, token := range []string{foreign, "not.a.jwt", ""} {
+		if _, _, err := verifier.Verify(token); err == nil {
+			test.Fatalf("token %q accepted", token)
+		}
+	}
+}
