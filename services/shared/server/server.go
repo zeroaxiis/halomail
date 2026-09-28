@@ -54,6 +54,8 @@ func Run(ctx context.Context, addr string, handler http.Handler, logger *slog.Lo
 	}
 }
 
+// Protect wraps next with security headers, a 64KB request body cap, and
+// per-client rate limiting of POSTs (stricter for login and register).
 func Protect(next http.Handler) http.Handler {
 	public := ratelimit.NewMemory(ratelimit.Config{RPS: 10, Burst: 30})
 	login := ratelimit.NewMemory(ratelimit.Config{RPS: 1, Burst: 10})
