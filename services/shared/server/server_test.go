@@ -30,3 +30,14 @@ func TestProtectLimitsBodiesAndLoginAttempts(test *testing.T) {
 		test.Fatal("login attempts were not throttled")
 	}
 }
+
+func TestProtectSetsSecurityHeaders(test *testing.T) {
+	handler := Protect(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.WriteHeader(http.StatusNoContent)
+	}))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest("GET", "/", nil))
+	if response.Header().Get("X-Content-Type-Options") != "nosniff" || response.Header().Get("Referrer-Policy") != "no-referrer" {
+		test.Fatalf("security headers missing: %v", response.Header())
+	}
+}
