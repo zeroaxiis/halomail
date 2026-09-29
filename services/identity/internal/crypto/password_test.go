@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -30,5 +31,22 @@ func TestVerifyPasswordRejectsMalformedHashes(t *testing.T) {
 		if ok, err := VerifyPassword(encoded, "password"); ok || err == nil {
 			t.Errorf("malformed hash %q: ok=%v err=%v", encoded, ok, err)
 		}
+	}
+}
+
+func TestHashPasswordUsesFreshSalt(t *testing.T) {
+	first, err := HashPassword("same password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := HashPassword("same password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first == second {
+		t.Fatal("two hashes of the same password are identical; salt is not random")
+	}
+	if !strings.HasPrefix(first, "$argon2id$v=19$m=65536,t=1,p=4$") {
+		t.Fatalf("unexpected PHC header: %s", first)
 	}
 }
