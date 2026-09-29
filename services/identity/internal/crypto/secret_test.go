@@ -21,3 +21,15 @@ func TestRandomToken(t *testing.T) {
 		t.Fatal("two random tokens are identical")
 	}
 }
+
+func TestSHA256Hex(t *testing.T) {
+	cases := map[string]string{
+		"":    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+		"abc": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+	}
+	for in, want := range cases {
+		if got := SHA256Hex(in); got != want {
+			t.Errorf("SHA256Hex(%q) = %s, want %s", in, got, want)
+		}
+	}
+}
