@@ -17,6 +17,7 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/authn"
 	"github.com/aashishrajdev/halomail/services/shared/httpx"
 	"github.com/aashishrajdev/halomail/services/shared/usage"
+	"github.com/redis/go-redis/v9"
 )
 
 type Deps struct {
@@ -24,6 +25,7 @@ type Deps struct {
 	JWTSecret    string
 	SessionTTL   time.Duration
 	APIKeyPrefix string
+	Redis        *redis.Client
 	Interceptors []connect.Interceptor
 	Limits       usage.Policy
 }
@@ -39,7 +41,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 		JWTSecret:    d.JWTSecret,
 		RefreshTTL:   d.SessionTTL,
 		APIKeyPrefix: d.APIKeyPrefix,
-	})
+	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	opts := connect.WithInterceptors(d.Interceptors...)
 	mux.Handle(identityv1connect.NewAuthServiceHandler(h, opts))

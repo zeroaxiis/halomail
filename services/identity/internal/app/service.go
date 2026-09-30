@@ -10,6 +10,8 @@ import (
 	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
 	"github.com/aashishrajdev/halomail/services/shared/errs"
 	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/redis/go-redis/v9"
+	"encoding/json"
 )
 
 // accessTokenTTL is the lifetime of an access JWT. Refresh tokens live longer
@@ -31,10 +33,11 @@ type Service struct {
 	audit    AuditRepo
 	tokens   crypto.TokenIssuer
 	cfg      Config
+	redis    *redis.Client
 	now      func() time.Time
 }
 
-func New(r Repos, cfg Config) *Service {
+func New(r Repos, cfg Config, redisClient *redis.Client) *Service {
 	if cfg.RefreshTTL <= 0 {
 		cfg.RefreshTTL = 30 * 24 * time.Hour
 	}
@@ -48,6 +51,7 @@ func New(r Repos, cfg Config) *Service {
 		audit:    r.Audit,
 		tokens:   crypto.NewTokenIssuer(cfg.JWTSecret),
 		cfg:      cfg,
+		redis:    redisClient,
 		now:      time.Now,
 	}
 }
@@ -285,6 +289,19 @@ func (s *Service) ListAPIKeys(ctx context.Context, userID string) ([]domain.APIK
 }
 
 func (s *Service) RevokeAPIKey(ctx context.Context, id, userID, orgID string) error {
+	// Security fix: Invalidate cache when revoking
+	keys, err := s.apiKeys.ListByUser(ctx, userID)
+	if err == nil {
+		for _, k := range keys {
+			if k.ID == id {
+				if s.redis != nil {
+					_ = s.redis.Del(ctx, "apikey:"+k.SecretHash).Err()
+				}
+				break
+			}
+		}
+	}
+
 	if err := s.apiKeys.Revoke(ctx, id, userID); err != nil {
 		return err
 	}
@@ -293,7 +310,25 @@ func (s *Service) RevokeAPIKey(ctx context.Context, id, userID, orgID string) er
 }
 
 func (s *Service) VerifyAPIKey(ctx context.Context, secret string) (userID, orgID string, scopes []string, err error) {
-	key, err := s.apiKeys.GetBySecretHash(ctx, crypto.SHA256Hex(secret))
+	hash := crypto.SHA256Hex(secret)
+	cacheKey := "apikey:" + hash
+
+	type cachedKey struct {
+		UserID string   `json:"user_id"`
+		OrgID  string   `json:"org_id"`
+		Scopes []string `json:"scopes"`
+	}
+
+	if s.redis != nil {
+		if val, err := s.redis.Get(ctx, cacheKey).Result(); err == nil {
+			var ck cachedKey
+			if json.Unmarshal([]byte(val), &ck) == nil {
+				return ck.UserID, ck.OrgID, ck.Scopes, nil
+			}
+		}
+	}
+
+	key, err := s.apiKeys.GetBySecretHash(ctx, hash)
 	if err != nil {
 		if errs.KindOf(err) == errs.KindNotFound {
 			return "", "", nil, errs.Unauthorized("invalid api key")
@@ -304,6 +339,14 @@ func (s *Service) VerifyAPIKey(ctx context.Context, secret string) (userID, orgI
 		return "", "", nil, errs.Unauthorized("api key revoked")
 	}
 	_ = s.apiKeys.TouchLastUsed(ctx, key.ID, s.now())
+
+	if s.redis != nil {
+		ck := cachedKey{UserID: key.UserID, OrgID: key.OrgID, Scopes: key.Scopes}
+		if b, err := json.Marshal(ck); err == nil {
+			_ = s.redis.Set(ctx, cacheKey, b, 15*time.Minute).Err()
+		}
+	}
+
 	return key.UserID, key.OrgID, key.Scopes, nil
 }
 

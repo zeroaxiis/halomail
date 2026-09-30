@@ -42,7 +42,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 	svc := app.New(app.Repos{
 		Forms:    postgres.NewForms(d.Pool),
 		Messages: postgres.NewMessages(d.Pool, d.Limits),
-	}, limiter, nil)
+	}, limiter, nil, d.Redis)
 
 	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, d.IdentityURL)
 	h := rpc.NewHandlers(svc, authn.NewVerifier(d.JWTSecret), identClient)
