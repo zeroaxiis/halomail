@@ -33,3 +33,25 @@ func TestTokenParseRejectsOtherSecret(t *testing.T) {
 		t.Fatal("token signed with a different secret accepted")
 	}
 }
+
+func TestTokenParseRejectsExpiredAndIncomplete(t *testing.T) {
+	issuer := NewTokenIssuer(strings.Repeat("s", 32))
+
+	expired, _, err := issuer.Issue("usr_1", "org_1", -time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	noOrg, _, err := issuer.Issue("usr_1", "", time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	noUser, _, err := issuer.Issue("", "org_1", time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, token := range map[string]string{"expired": expired, "no org": noOrg, "no user": noUser, "garbage": "abc"} {
+		if _, err := issuer.Parse(token); err == nil {
+			t.Errorf("%s token accepted", name)
+		}
+	}
+}
