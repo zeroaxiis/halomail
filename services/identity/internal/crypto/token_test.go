@@ -23,3 +23,13 @@ func TestTokenIssueAndParse(t *testing.T) {
 		t.Fatalf("claims = %+v", claims)
 	}
 }
+
+func TestTokenParseRejectsOtherSecret(t *testing.T) {
+	token, _, err := NewTokenIssuer(strings.Repeat("a", 32)).Issue("usr_1", "org_1", time.Minute)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewTokenIssuer(strings.Repeat("b", 32)).Parse(token); err == nil {
+		t.Fatal("token signed with a different secret accepted")
+	}
+}
