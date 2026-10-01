@@ -63,3 +63,23 @@ func TestScoreIsClampedToOne(t *testing.T) {
 		t.Fatalf("score = %v, want 1", got)
 	}
 }
+
+func TestScoreSignals(t *testing.T) {
+	cases := []struct {
+		name   string
+		values []string
+		want   float64
+	}{
+		{"ordinary message", []string{"Hi, I'd like to book a call next week."}, 0},
+		{"very short body", []string{"hi"}, 0.2},
+		{"shouting", []string{"PLEASE CALL ME BACK TODAY"}, 0.2},
+		{"single link", []string{"My portfolio is at https://example.com/portfolio if useful."}, 0.35},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Score("Grace Hopper", "grace@example.com", tc.values); got != tc.want {
+				t.Fatalf("score = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
