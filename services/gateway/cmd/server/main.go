@@ -14,6 +14,7 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/log"
 	"github.com/aashishrajdev/halomail/services/shared/observability"
 	pg "github.com/aashishrajdev/halomail/services/shared/postgres"
+	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
 	rds "github.com/aashishrajdev/halomail/services/shared/redis"
 	"github.com/aashishrajdev/halomail/services/shared/server"
 
@@ -92,7 +93,7 @@ func main() {
 	// Host every service in-process.
 	identity.Mount(mux, identity.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
-		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Interceptors: interceptors,
+		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors,
 		Limits: cfg.Limits,
 	})
 	scheduling.Mount(mux, scheduling.Deps{
@@ -113,7 +114,13 @@ func main() {
 		Logger: logger, Interceptors: interceptors,
 	})
 
-	if err := server.Run(ctx, cfg.HTTP.Addr(), withCORS(mux), logger); err != nil {
+	// Initialize Gateway global rate limiter
+	limiter := ratelimit.New(redisClient, ratelimit.Config{
+		RPS:   float64(cfg.Rate.PublicRPS) * 2, // Slightly higher for global
+		Burst: cfg.Rate.PublicBurst * 2,
+	})
+
+	if err := server.Run(ctx, cfg.HTTP.Addr(), withRateLimit(withCORS(mux), limiter), logger); err != nil {
 		logger.Error("server stopped with error", "error", err.Error())
 		os.Exit(1)
 	}
@@ -139,6 +146,22 @@ func withCORS(next http.Handler) http.Handler {
 		h.Set("Access-Control-Max-Age", "86400")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// withRateLimit globally protects all gateway endpoints by IP
+func withRateLimit(next http.Handler, limiter ratelimit.Limiter) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			ip = r.RemoteAddr
+		}
+		key := "gateway:ip:" + ip
+		if ok, _ := limiter.Allow(r.Context(), key); !ok {
+			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 			return
 		}
 		next.ServeHTTP(w, r)

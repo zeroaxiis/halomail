@@ -85,7 +85,7 @@ func main() {
 	svc := app.New(app.Repos{
 		Forms:    cpg.NewForms(pool),
 		Messages: cpg.NewMessages(pool, cfg.Limits),
-	}, limiter, nil)
+	}, limiter, nil, redisClient)
 
 	identityURL := cfg.App.PublicAPIURL
 	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, identityURL)

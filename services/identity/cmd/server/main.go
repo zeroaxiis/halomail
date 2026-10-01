@@ -14,6 +14,7 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/log"
 	"github.com/aashishrajdev/halomail/services/shared/observability"
 	pg "github.com/aashishrajdev/halomail/services/shared/postgres"
+	rds "github.com/aashishrajdev/halomail/services/shared/redis"
 	"github.com/aashishrajdev/halomail/services/shared/server"
 )
 
@@ -56,6 +57,16 @@ func main() {
 	}
 	defer pool.Close()
 
+	var redisClient *rds.Client
+	if cfg.Redis.URL != "" {
+		if c, rerr := rds.New(ctx, cfg.Redis.URL); rerr != nil {
+			logger.Warn("redis unavailable for identity cache", "error", rerr.Error())
+		} else {
+			redisClient = c
+			defer func() { _ = redisClient.Close() }()
+		}
+	}
+
 	interceptors, err := connectutil.Default(logger)
 	if err != nil {
 		logger.Error("build interceptors", "error", err.Error())
@@ -69,7 +80,7 @@ func main() {
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
 
-	identity.Mount(mux, identity.Deps{Pool: pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL, APIKeyPrefix: cfg.Auth.APIKeyPrefix, Interceptors: interceptors, Limits: cfg.Limits})
+	identity.Mount(mux, identity.Deps{Pool: pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL, APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors, Limits: cfg.Limits})
 
 	if err := server.Run(ctx, cfg.HTTP.Addr(), mux, logger); err != nil {
 		logger.Error("server stopped with error", "error", err.Error())

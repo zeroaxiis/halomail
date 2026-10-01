@@ -11,6 +11,8 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/errs"
 	"github.com/aashishrajdev/halomail/services/shared/idgen"
 	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
+	"github.com/redis/go-redis/v9"
+	"encoding/json"
 )
 
 type Service struct {
@@ -18,15 +20,17 @@ type Service struct {
 	messages  MessageRepo
 	limiter   ratelimit.Limiter
 	forwarder Forwarder
+	redis     *redis.Client
 	now       func() time.Time
 }
 
-func New(r Repos, limiter ratelimit.Limiter, forwarder Forwarder) *Service {
+func New(r Repos, limiter ratelimit.Limiter, forwarder Forwarder, redisClient *redis.Client) *Service {
 	return &Service{
 		forms:     r.Forms,
 		messages:  r.Messages,
 		limiter:   limiter,
 		forwarder: forwarder,
+		redis:     redisClient,
 		now:       time.Now,
 	}
 }
@@ -76,13 +80,43 @@ func (s *Service) CreateForm(ctx context.Context, ownerID string, in FormInput) 
 }
 
 func (s *Service) GetForm(ctx context.Context, id, slug string) (*domain.Form, error) {
+	cacheKey := ""
 	if id != "" {
-		return s.forms.GetByID(ctx, id)
+		cacheKey = "form:id:" + id
+	} else if slug != "" {
+		cacheKey = "form:slug:" + slug
+	} else {
+		return nil, errs.Invalid("id or slug is required")
 	}
-	if slug != "" {
-		return s.forms.GetBySlug(ctx, slug)
+
+	if s.redis != nil {
+		if val, err := s.redis.Get(ctx, cacheKey).Result(); err == nil {
+			var f domain.Form
+			if json.Unmarshal([]byte(val), &f) == nil {
+				return &f, nil
+			}
+		}
 	}
-	return nil, errs.Invalid("id or slug is required")
+
+	var f *domain.Form
+	var err error
+	if id != "" {
+		f, err = s.forms.GetByID(ctx, id)
+	} else {
+		f, err = s.forms.GetBySlug(ctx, slug)
+	}
+	
+	if err != nil {
+		return nil, err
+	}
+
+	if s.redis != nil {
+		if b, err := json.Marshal(f); err == nil {
+			_ = s.redis.Set(ctx, cacheKey, b, 30*time.Minute).Err()
+		}
+	}
+
+	return f, nil
 }
 
 func (s *Service) ListForms(ctx context.Context, ownerID string) ([]domain.Form, error) {
@@ -116,11 +150,23 @@ func (s *Service) UpdateForm(ctx context.Context, ownerID, id string, in FormInp
 	if err := s.forms.Update(ctx, f); err != nil {
 		return nil, err
 	}
+
+	if s.redis != nil {
+		s.redis.Del(ctx, "form:id:"+f.ID)
+		s.redis.Del(ctx, "form:slug:"+f.Slug)
+	}
+
 	return f, nil
 }
 
 func (s *Service) DeleteForm(ctx context.Context, ownerID, id string) error {
-	return s.forms.Delete(ctx, id, ownerID)
+	f, _ := s.forms.GetByID(ctx, id)
+	err := s.forms.Delete(ctx, id, ownerID)
+	if err == nil && f != nil && s.redis != nil {
+		s.redis.Del(ctx, "form:id:"+f.ID)
+		s.redis.Del(ctx, "form:slug:"+f.Slug)
+	}
+	return err
 }
 
 // ---- Messages ------------------------------------------------------------
