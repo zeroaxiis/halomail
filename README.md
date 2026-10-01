@@ -117,15 +117,6 @@ Local UIs while developing:
 
 Full per-service instructions: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
-## Deploy for free
-
-HaloMail is designed to cost nothing to run at small scale:
-
-- **Backend** → one container ("monolith mode") on **Fly.io** / **Render** free tier
-- **Database** → **Neon** free Postgres
-- **Cache/limits** → **Upstash** free Redis (optional — falls back to in-memory)
-- **Email** → **Resend** free tier
-- **Web + docs** → **Vercel** free
 
 Step-by-step: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
