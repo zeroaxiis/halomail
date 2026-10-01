@@ -56,3 +56,10 @@ func TestUpperRatio(t *testing.T) {
 		}
 	}
 }
+
+func TestScoreIsClampedToOne(t *testing.T) {
+	got := Score("bot", "b@b.io", []string{"http://a.example http://b.example http://c.example http://d.example casino lottery"})
+	if got != 1 {
+		t.Fatalf("score = %v, want 1", got)
+	}
+}
