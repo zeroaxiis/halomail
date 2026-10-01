@@ -4,11 +4,11 @@ import "testing"
 
 func TestScore(t *testing.T) {
 	tests := []struct {
-		name        string
-		nameField   string
-		email       string
-		values      []string
-		wantSpam    bool
+		name      string
+		nameField string
+		email     string
+		values    []string
+		wantSpam  bool
 	}{
 		{
 			name:      "legit message",
@@ -39,5 +39,20 @@ func TestScore(t *testing.T) {
 				t.Fatalf("IsSpam=%v want %v (score=%.2f)", got, tc.wantSpam, Score(tc.nameField, tc.email, tc.values))
 			}
 		})
+	}
+}
+
+func TestUpperRatio(t *testing.T) {
+	cases := map[string]float64{
+		"":        0,
+		"1234 !!": 0,
+		"ABCD":    1,
+		"ABcd":    0.5,
+		"hello":   0,
+	}
+	for in, want := range cases {
+		if got := upperRatio(in); got != want {
+			t.Errorf("upperRatio(%q) = %v, want %v", in, got, want)
+		}
 	}
 }
