@@ -83,3 +83,19 @@ func TestScoreSignals(t *testing.T) {
 		})
 	}
 }
+
+func TestIsSpamThreshold(t *testing.T) {
+	if !IsSpam(Threshold) {
+		t.Fatal("a score equal to the threshold should be spam")
+	}
+	if IsSpam(Threshold - 0.01) {
+		t.Fatal("a score just under the threshold should not be spam")
+	}
+	// One link is fine on its own; a link plus a spammy keyword crosses the line.
+	if IsSpam(Score("Grace", "grace@example.com", []string{"My portfolio is at https://example.com/portfolio if useful."})) {
+		t.Fatal("a single link was flagged")
+	}
+	if !IsSpam(Score("x", "x@x.io", []string{"great casino offer at https://spam.example today"})) {
+		t.Fatal("link plus keyword was not flagged")
+	}
+}
