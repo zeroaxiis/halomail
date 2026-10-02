@@ -105,3 +105,19 @@ func TestComputeStepGranularity(t *testing.T) {
 		t.Fatalf("starts = %v, want %v", got, want)
 	}
 }
+
+func TestComputeBuffersWidenBusyIntervals(t *testing.T) {
+	p := Params{
+		Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 30, Now: monday,
+		Busy: []Interval{{Start: monday.Add(10 * time.Hour), End: monday.Add(10*time.Hour + 30*time.Minute)}},
+	}
+	if got, want := starts(Compute(p)), []string{"09:00", "09:30", "10:30"}; !equal(got, want) {
+		t.Fatalf("without buffers: starts = %v, want %v", got, want)
+	}
+
+	p.BufferBeforeMin, p.BufferAfterMin = 30, 30
+	if got, want := starts(Compute(p)), []string{"09:00"}; !equal(got, want) {
+		t.Fatalf("with buffers: starts = %v, want %v", got, want)
+	}
+}
