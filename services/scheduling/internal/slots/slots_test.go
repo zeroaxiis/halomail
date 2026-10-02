@@ -121,3 +121,13 @@ func TestComputeBuffersWidenBusyIntervals(t *testing.T) {
 		t.Fatalf("with buffers: starts = %v, want %v", got, want)
 	}
 }
+
+func TestComputeMaxSlots(t *testing.T) {
+	got := starts(Compute(Params{
+		Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 30, Now: monday, MaxSlots: 2,
+	}))
+	if want := []string{"09:00", "09:30"}; !equal(got, want) {
+		t.Fatalf("starts = %v, want %v", got, want)
+	}
+}
