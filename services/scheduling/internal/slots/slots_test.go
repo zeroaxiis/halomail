@@ -131,3 +131,31 @@ func TestComputeMaxSlots(t *testing.T) {
 		t.Fatalf("starts = %v, want %v", got, want)
 	}
 }
+
+func TestComputeOverrideReplacesRules(t *testing.T) {
+	base := Params{Rules: mondayRule, DurationMin: 60, Now: monday}
+
+	// A custom window replaces the weekly rule for that date.
+	p := base
+	p.FromDate, p.ToDate = "2026-06-01", "2026-06-01"
+	p.Overrides = []Override{{Date: "2026-06-01", StartMinute: 14 * 60, EndMinute: 15 * 60}}
+	if got, want := starts(Compute(p)), []string{"14:00"}; !equal(got, want) {
+		t.Fatalf("custom window: starts = %v, want %v", got, want)
+	}
+
+	// An override can open a day that has no weekly rule (Tuesday).
+	p = base
+	p.FromDate, p.ToDate = "2026-06-02", "2026-06-02"
+	p.Overrides = []Override{{Date: "2026-06-02", StartMinute: 10 * 60, EndMinute: 11 * 60}}
+	if got, want := starts(Compute(p)), []string{"10:00"}; !equal(got, want) {
+		t.Fatalf("opened day: starts = %v, want %v", got, want)
+	}
+
+	// An empty or inverted window blocks the day.
+	p = base
+	p.FromDate, p.ToDate = "2026-06-01", "2026-06-01"
+	p.Overrides = []Override{{Date: "2026-06-01", StartMinute: 15 * 60, EndMinute: 14 * 60}}
+	if got := Compute(p); len(got) != 0 {
+		t.Fatalf("inverted window produced slots: %+v", got)
+	}
+}
