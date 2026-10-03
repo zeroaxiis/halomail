@@ -182,3 +182,22 @@ func TestComputeReturnsUTCInstants(t *testing.T) {
 		t.Fatalf("nil location: %+v", got)
 	}
 }
+
+func TestComputeRejectsInvalidInput(t *testing.T) {
+	valid := Params{Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01", DurationMin: 60, Now: monday}
+
+	badFrom := valid
+	badFrom.FromDate = "01/06/2026"
+	badTo := valid
+	badTo.ToDate = ""
+	reversed := valid
+	reversed.FromDate, reversed.ToDate = "2026-06-02", "2026-06-01"
+	noDuration := valid
+	noDuration.DurationMin = 0
+
+	for name, p := range map[string]Params{"bad from": badFrom, "bad to": badTo, "reversed range": reversed, "zero duration": noDuration} {
+		if got := Compute(p); got != nil {
+			t.Errorf("%s: got %+v, want nil", name, got)
+		}
+	}
+}
