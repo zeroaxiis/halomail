@@ -201,3 +201,24 @@ func TestComputeRejectsInvalidInput(t *testing.T) {
 		}
 	}
 }
+
+func TestComputeSpansMultipleDays(t *testing.T) {
+	p := Params{
+		Rules: []Rule{
+			{Weekday: 1, StartMinute: 9 * 60, EndMinute: 10 * 60},
+			{Weekday: 3, StartMinute: 9 * 60, EndMinute: 10 * 60},
+		},
+		FromDate: "2026-06-01", ToDate: "2026-06-07",
+		DurationMin: 60, Now: monday,
+	}
+	got := Compute(p)
+	if len(got) != 2 || got[0].Start.Day() != 1 || got[1].Start.Day() != 3 {
+		t.Fatalf("one week: %+v", got)
+	}
+
+	// The end date is inclusive: extending to the next Monday adds its slot.
+	p.ToDate = "2026-06-08"
+	if got = Compute(p); len(got) != 3 || got[2].Start.Day() != 8 {
+		t.Fatalf("through next monday: %+v", got)
+	}
+}
