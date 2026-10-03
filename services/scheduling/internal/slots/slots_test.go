@@ -159,3 +159,26 @@ func TestComputeOverrideReplacesRules(t *testing.T) {
 		t.Fatalf("inverted window produced slots: %+v", got)
 	}
 }
+
+func TestComputeReturnsUTCInstants(t *testing.T) {
+	ist := time.FixedZone("IST", 5*3600+1800)
+	got := Compute(Params{
+		Location: ist,
+		Rules:    []Rule{{Weekday: 1, StartMinute: 9 * 60, EndMinute: 10 * 60}},
+		FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 60, Now: monday.AddDate(0, 0, -1),
+	})
+	if len(got) != 1 {
+		t.Fatalf("got %d slots, want 1", len(got))
+	}
+	// 09:00 IST is 03:30 UTC.
+	if want := time.Date(2026, 6, 1, 3, 30, 0, 0, time.UTC); !got[0].Start.Equal(want) || got[0].Start.Location() != time.UTC {
+		t.Fatalf("start = %v, want %v in UTC", got[0].Start, want)
+	}
+
+	// A nil location is treated as UTC.
+	got = Compute(Params{Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01", DurationMin: 120, Now: monday})
+	if len(got) != 1 || got[0].Start.Hour() != 9 {
+		t.Fatalf("nil location: %+v", got)
+	}
+}
