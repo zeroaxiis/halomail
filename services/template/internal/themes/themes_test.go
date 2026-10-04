@@ -41,3 +41,22 @@ func TestThemesGallery(t *testing.T) {
 		}
 	}
 }
+
+func TestReplaceVars(t *testing.T) {
+	cases := []struct {
+		in   string
+		vars map[string]string
+		want string
+	}{
+		{"Hi {{name}}", map[string]string{"name": "Grace"}, "Hi Grace"},
+		{"Hi {{ name }}!", map[string]string{"name": "Grace"}, "Hi Grace!"},
+		{"Hi {{unknown}}!", map[string]string{"name": "Grace"}, "Hi !"},
+		{"{{name}}", map[string]string{"name": "<b>Grace</b>"}, "&lt;b&gt;Grace&lt;/b&gt;"},
+		{"no variables", nil, "no variables"},
+	}
+	for _, tc := range cases {
+		if got := replaceVars(tc.in, tc.vars); got != tc.want {
+			t.Errorf("replaceVars(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+	}
+}
