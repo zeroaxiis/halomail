@@ -72,3 +72,18 @@ func TestRenderUnknownThemeFallsBackToMinimal(t *testing.T) {
 		t.Fatal("apple and minimal rendered identically")
 	}
 }
+
+func TestSplitParasAndFirstNonEmpty(t *testing.T) {
+	if got := strings.Join(splitParas("one\r\n\r\ntwo\n   \nthree"), "|"); got != "one|two|three" {
+		t.Errorf("splitParas = %q", got)
+	}
+	if got := splitParas(""); len(got) != 1 || got[0] != "" {
+		t.Errorf("empty body should yield one empty paragraph, got %q", got)
+	}
+	if got := firstNonEmpty("", "   ", "x", "y"); got != "x" {
+		t.Errorf("firstNonEmpty = %q", got)
+	}
+	if got := firstNonEmpty(); got != "" {
+		t.Errorf("firstNonEmpty() = %q", got)
+	}
+}
