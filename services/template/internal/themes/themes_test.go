@@ -60,3 +60,15 @@ func TestReplaceVars(t *testing.T) {
 		}
 	}
 }
+
+func TestRenderUnknownThemeFallsBackToMinimal(t *testing.T) {
+	vars := map[string]string{"heading": "Booked!", "body": "See you Monday."}
+	_, unknown := Render("does-not-exist", "s", vars)
+	_, minimal := Render(domain.ThemeMinimal, "s", vars)
+	if unknown != minimal {
+		t.Fatal("unknown theme did not render as minimal")
+	}
+	if _, apple := Render(domain.ThemeApple, "s", vars); apple == minimal {
+		t.Fatal("apple and minimal rendered identically")
+	}
+}
