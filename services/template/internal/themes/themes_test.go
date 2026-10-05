@@ -87,3 +87,21 @@ func TestSplitParasAndFirstNonEmpty(t *testing.T) {
 		t.Errorf("firstNonEmpty() = %q", got)
 	}
 }
+
+func TestRenderButton(t *testing.T) {
+	_, without := Render(domain.ThemeMinimal, "s", map[string]string{"body": "No call to action."})
+	if strings.Contains(without, "<a href") {
+		t.Fatal("button rendered without button_text")
+	}
+
+	_, with := Render(domain.ThemeMinimal, "s", map[string]string{
+		"button_text": "Open <now>",
+		"button_url":  `https://example.com/?a=1&b="x"`,
+	})
+	if !strings.Contains(with, `href="https://example.com/?a=1&amp;b=&#34;x&#34;"`) {
+		t.Fatalf("button url not escaped: %s", with)
+	}
+	if !strings.Contains(with, "Open &lt;now&gt;</a>") {
+		t.Fatalf("button text not escaped: %s", with)
+	}
+}
