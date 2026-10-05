@@ -17,3 +17,16 @@ func TestSecretLastFour(t *testing.T) {
 		}
 	}
 }
+
+func TestSubscribes(t *testing.T) {
+	hook := Webhook{Events: []string{EventBookingCreated, EventMessageReceived}}
+	if !hook.Subscribes(EventBookingCreated) || !hook.Subscribes(EventMessageReceived) {
+		t.Fatal("subscribed event not matched")
+	}
+	if hook.Subscribes(EventBookingCancelled) {
+		t.Fatal("unsubscribed event matched")
+	}
+	if (Webhook{}).Subscribes(EventBookingCreated) {
+		t.Fatal("webhook without events matched")
+	}
+}
