@@ -105,3 +105,15 @@ func TestRenderButton(t *testing.T) {
 		t.Fatalf("button text not escaped: %s", with)
 	}
 }
+
+func TestSubjectFallbacks(t *testing.T) {
+	if got, _ := Render(domain.ThemeMinimal, "", map[string]string{"subject": "From vars"}); got != "From vars" {
+		t.Errorf("subject = %q, want the subject variable", got)
+	}
+	if got, _ := Render(domain.ThemeMinimal, "{{missing}}", nil); got != "Hello from HaloMail" {
+		t.Errorf("subject = %q, want the default", got)
+	}
+	if got, _ := RenderCustom("<p>hi</p>", "   ", nil); got != "Hello from HaloMail" {
+		t.Errorf("custom subject = %q, want the default", got)
+	}
+}
