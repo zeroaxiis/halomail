@@ -38,16 +38,20 @@ type Sender interface {
 
 // ---- Resend --------------------------------------------------------------
 
+// ResendSender delivers mail through the Resend HTTP API.
 type ResendSender struct {
 	apiKey      string
 	defaultFrom string
 	client      *http.Client
 }
 
+// NewResend returns a sender that uses defaultFrom when a message has no From.
 func NewResend(apiKey, defaultFrom string) *ResendSender {
 	return &ResendSender{apiKey: apiKey, defaultFrom: defaultFrom, client: &http.Client{Timeout: 15 * time.Second}}
 }
 
+// Send posts msg to Resend. msg.ID is sent as the idempotency key so a retry
+// does not deliver the same mail twice.
 func (s *ResendSender) Send(ctx context.Context, msg Message) (string, string, error) {
 	from := firstNonEmpty(msg.From, s.defaultFrom)
 	payload := map[string]any{"from": from, "to": msg.To, "subject": msg.Subject}
@@ -90,15 +94,20 @@ func (s *ResendSender) Send(ctx context.Context, msg Message) (string, string, e
 
 // ---- SMTP (Mailpit / any relay) -----------------------------------------
 
+// SMTPSender delivers mail over SMTP, upgrading to TLS when the server offers
+// STARTTLS.
 type SMTPSender struct {
 	addr        string
 	defaultFrom string
 }
 
+// NewSMTP returns a sender for the relay at host:port.
 func NewSMTP(host string, port int, defaultFrom string) *SMTPSender {
 	return &SMTPSender{addr: fmt.Sprintf("%s:%d", host, port), defaultFrom: defaultFrom}
 }
 
+// Send delivers msg as an HTML mail. Addresses containing line breaks are
+// rejected to prevent header injection.
 func (s *SMTPSender) Send(ctx context.Context, msg Message) (string, string, error) {
 	from := firstNonEmpty(msg.From, s.defaultFrom)
 	fromAddr := addressOnly(from)
