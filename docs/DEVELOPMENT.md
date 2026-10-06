@@ -116,7 +116,8 @@ task docs        # docs site         → http://localhost:3001
 ## 8. Quality gates
 
 ```bash
-task api:test    # go test ./... -race across modules
+task test        # go test ./... -race in every service module
+task api:test    # same, gateway module only
 task api:lint    # go vet + golangci-lint
 task proto:lint  # buf lint
 pnpm lint        # biome (web, docs, sdk)
