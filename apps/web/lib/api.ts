@@ -34,7 +34,7 @@ export async function rpc<T = unknown>(
   });
   void token;
   let res = await request();
-  if (res.status === 401 && !procedure.includes("AuthService/Login") && !procedure.includes("AuthService/Register") && !procedure.includes("AuthService/RefreshSession") && !accessKey) {
+  if (res.status === 401 && !procedure.startsWith("v1/auth/otp/") && !procedure.includes("AuthService/Login") && !procedure.includes("AuthService/Register") && !procedure.includes("AuthService/RefreshSession") && !accessKey) {
     refreshing ??= fetch("/api/rpc/halomail.identity.v1.AuthService/RefreshSession", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
     }).then(response => response.ok).finally(() => { refreshing = null; });

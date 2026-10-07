@@ -80,7 +80,7 @@ func main() {
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
 
-	identity.Mount(mux, identity.Deps{Pool: pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL, APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors, Limits: cfg.Limits})
+	identity.Mount(mux, identity.Deps{Pool: pool, JWTSecret: cfg.Auth.JWTSecret, OTPDeliverySecret: cfg.Auth.OTPDeliverySecret, SessionTTL: cfg.Auth.SessionTTL, APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors, Limits: cfg.Limits})
 
 	if err := server.Run(ctx, cfg.HTTP.Addr(), mux, logger); err != nil {
 		logger.Error("server stopped with error", "error", err.Error())

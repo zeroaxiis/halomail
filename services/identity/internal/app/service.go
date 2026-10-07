@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"net/mail"
 	"strings"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"github.com/aashishrajdev/halomail/services/shared/errs"
 	"github.com/aashishrajdev/halomail/services/shared/idgen"
 	"github.com/redis/go-redis/v9"
-	"encoding/json"
 )
 
 // accessTokenTTL is the lifetime of an access JWT. Refresh tokens live longer
@@ -64,7 +64,7 @@ type IssuedSession struct {
 	AccessExpiresAt time.Time
 }
 
-// AuthResult is the output of Register/Login.
+// AuthResult carries an account and, only after OTP verification, a session.
 type AuthResult struct {
 	User    *domain.User
 	Session IssuedSession
@@ -108,15 +108,16 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (*
 		return nil, err // repo maps unique violation → Conflict
 	}
 
-	sess, err := s.issueSession(ctx, user)
-	if err != nil {
-		return nil, err
-	}
 	s.record(ctx, org.ID, user.ID, "user.registered", "user", user.ID)
-	return &AuthResult{User: user, Session: sess}, nil
+	return &AuthResult{User: user}, nil
 }
 
+// Login rejects legacy password-only clients; VerifyLoginOTP issues new sessions.
 func (s *Service) Login(ctx context.Context, email, password string) (*AuthResult, error) {
+	return nil, errs.Unauthorized("email verification required; request and verify a login code")
+}
+
+func (s *Service) checkCredentials(ctx context.Context, email, password string) (*domain.User, error) {
 	if len(password) > 1024 || len(email) > 254 {
 		return nil, errs.Unauthorized("invalid email or password")
 	}
@@ -132,12 +133,7 @@ func (s *Service) Login(ctx context.Context, email, password string) (*AuthResul
 		return nil, errs.Unauthorized("invalid email or password")
 	}
 
-	sess, err := s.issueSession(ctx, user)
-	if err != nil {
-		return nil, err
-	}
-	s.record(ctx, user.OrgID, user.ID, "user.login", "user", user.ID)
-	return &AuthResult{User: user, Session: sess}, nil
+	return user, nil
 }
 
 // Refresh rotates the session: the old refresh token is revoked and a new pair

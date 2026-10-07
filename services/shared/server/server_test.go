@@ -30,3 +30,19 @@ func TestProtectLimitsBodiesAndLoginAttempts(test *testing.T) {
 		test.Fatal("login attempts were not throttled")
 	}
 }
+
+func TestProtectLimitsOTPRequests(test *testing.T) {
+	for _, action := range []string{"request", "verify"} {
+		handler := Protect(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+			writer.WriteHeader(http.StatusNoContent)
+		}))
+		var response *httptest.ResponseRecorder
+		for range 11 {
+			response = httptest.NewRecorder()
+			handler.ServeHTTP(response, httptest.NewRequest("POST", "/v1/auth/otp/"+action, strings.NewReader("{}")))
+		}
+		if response.Code != http.StatusTooManyRequests {
+			test.Fatalf("OTP %s was not throttled", action)
+		}
+	}
+}

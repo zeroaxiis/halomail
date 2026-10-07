@@ -1,22 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { rpc } from "@/lib/api";
-import { saveSession, type SessionUser } from "@/lib/auth";
-
-interface RegisterResponse {
-  user: SessionUser;
-  session: { accessToken: string };
-}
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const [created, setCreated] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,15 +21,25 @@ export default function RegisterPage() {
     setError(null);
     setLoading(true);
     try {
-      const res = await rpc<RegisterResponse>("halomail.identity.v1.AuthService/Register", { name, email, password });
-      saveSession("", res.user);
-      router.push("/dashboard");
+      await rpc("halomail.identity.v1.AuthService/Register", { name, email, password });
+      setPassword("");
+      setCreated(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
     }
   }
+
+  if (created) return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl">Account created</CardTitle>
+        <CardDescription>Log in with your password and verify the code sent to your email to access your dashboard.</CardDescription>
+      </CardHeader>
+      <CardContent><Button asChild className="w-full"><Link href="/login">Continue to login</Link></Button></CardContent>
+    </Card>
+  );
 
   return (
     <Card>
