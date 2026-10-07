@@ -11,3 +11,16 @@ func TestFieldsEscapeUserHTML(test *testing.T) {
 		test.Fatal("unescaped user HTML")
 	}
 }
+
+func TestFieldsAreSortedByLabel(test *testing.T) {
+	body := Fields("Contact", map[string]string{"name": "Grace", "email": "grace@example.com", "message": "hi"})
+	email := strings.Index(body, "<strong>email</strong>")
+	message := strings.Index(body, "<strong>message</strong>")
+	name := strings.Index(body, "<strong>name</strong>")
+	if email < 0 || !(email < message && message < name) {
+		test.Fatalf("fields not in label order: %s", body)
+	}
+	if !strings.HasPrefix(body, "<h1>Contact</h1><dl>") || !strings.HasSuffix(body, "</dl>") {
+		test.Fatalf("unexpected layout: %s", body)
+	}
+}

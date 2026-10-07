@@ -1,3 +1,4 @@
+// Package accesskey resolves a scoped API key secret to the user who owns it.
 package accesskey
 
 import (
@@ -9,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Owner is the account an access key belongs to.
 type Owner struct {
 	ID     string
 	Email  string
@@ -16,6 +18,9 @@ type Owner struct {
 	Handle string
 }
 
+// Verify looks up the active key whose only scope matches feature ("meetings"
+// maps to meetings:book, anything else to forms:submit) and returns its owner.
+// Only the SHA-256 of secret is compared against the database.
 func Verify(ctx context.Context, pool *pgxpool.Pool, secret, feature string) (Owner, error) {
 	owner := Owner{}
 	if len(secret) < 32 || len(secret) > 128 {

@@ -13,11 +13,13 @@ import (
 // Check returns nil when the dependency is healthy.
 type Check func(ctx context.Context) error
 
+// Checker holds the registered readiness probes. It is safe for concurrent use.
 type Checker struct {
 	mu     sync.RWMutex
 	checks map[string]Check
 }
 
+// New returns a Checker with no probes registered.
 func New() *Checker { return &Checker{checks: make(map[string]Check)} }
 
 // Register adds a named readiness probe.

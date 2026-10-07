@@ -8,6 +8,7 @@ import (
 	"fmt"
 )
 
+// Kind classifies a domain error so adapters can pick a wire status code.
 type Kind int
 
 const (
@@ -41,6 +42,7 @@ func newf(k Kind, msg string, args ...any) *Error {
 	return &Error{Kind: k, Message: fmt.Sprintf(msg, args...)}
 }
 
+// One constructor per Kind. msg is a fmt format string.
 func Invalid(msg string, a ...any) *Error      { return newf(KindInvalid, msg, a...) }
 func NotFound(msg string, a ...any) *Error     { return newf(KindNotFound, msg, a...) }
 func Conflict(msg string, a ...any) *Error     { return newf(KindConflict, msg, a...) }
