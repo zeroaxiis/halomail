@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, Inbox, LayoutDashboard, Settings } from "lucide-react";
+import { CalendarClock, Inbox, LayoutDashboard, Settings, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
@@ -10,6 +10,7 @@ const nav = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/meetings", label: "Meetings", icon: CalendarClock },
   { href: "/dashboard/forms", label: "Forms", icon: Inbox },
+  { href: "/dashboard/billing", label: "Upgrade", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 

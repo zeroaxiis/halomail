@@ -1,0 +1,41 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "apps/web",
+      "framework": "nextjs"
+    },
+    "contact": {
+      "root": "services/contact",
+      "runtime": "go"
+    },
+    "gateway": {
+      "root": "services/gateway",
+      "runtime": "go"
+    },
+    "identity": {
+      "root": "services/identity",
+      "runtime": "go"
+    },
+    "notification": {
+      "root": "services/notification",
+      "runtime": "go"
+    },
+    "scheduling": {
+      "root": "services/scheduling",
+      "runtime": "go"
+    },
+    "template": {
+      "root": "services/template",
+      "runtime": "go"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "web"
+      }
+    }
+  ]
+}
