@@ -143,7 +143,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
 
   return (
     <div className="mt-14">
-      <div className="flex justify-center items-center gap-6 mb-12 flex-col sm:flex-row">
+      <div className="flex justify-center items-center mb-12">
         <div className="flex items-center gap-1 rounded-full border border-border p-1 bg-card/60 backdrop-blur">
           <button
             onClick={() => setBillingCycle("monthly")}
@@ -157,17 +157,6 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           >
             Yearly
           </button>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-muted-foreground font-medium">Currency:</label>
-          <select 
-            value={currency} 
-            onChange={(e) => setCurrency(e.target.value)}
-            className="bg-card/60 backdrop-blur border border-border rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand cursor-pointer"
-          >
-            {currencies.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
         </div>
       </div>
 
@@ -270,6 +259,18 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             <Link href="/contact-sales">Contact Sales</Link>
           </Button>
         </Card>
+      </div>
+
+      <div className="mt-10 text-center text-sm text-muted-foreground">
+        Prices shown in{" "}
+        <select 
+          value={currency} 
+          onChange={(e) => setCurrency(e.target.value)}
+          className="bg-transparent font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-4 hover:decoration-foreground cursor-pointer focus:outline-none"
+        >
+          {currencies.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        {" "}based on your location.
       </div>
     </div>
   );
