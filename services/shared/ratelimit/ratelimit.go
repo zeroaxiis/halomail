@@ -50,6 +50,8 @@ type bucket struct {
 	seen time.Time
 }
 
+// NewMemory returns a per-process token-bucket limiter. It starts a background
+// goroutine that evicts keys idle for ten minutes.
 func NewMemory(cfg Config) *memoryLimiter {
 	m := &memoryLimiter{cfg: cfg, buckets: make(map[string]*bucket)}
 	go m.gc()
@@ -95,6 +97,8 @@ type redisLimiter struct {
 	windowSec int64
 }
 
+// NewRedis returns a fixed one-second-window limiter shared across instances.
+// Burst is the allowance per window, falling back to RPS when unset.
 func NewRedis(client *redis.Client, cfg Config) *redisLimiter {
 	limit := int64(cfg.Burst)
 	if limit <= 0 {
