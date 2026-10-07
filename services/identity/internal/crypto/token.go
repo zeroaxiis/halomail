@@ -12,6 +12,7 @@ type TokenIssuer struct {
 	secret []byte
 }
 
+// NewTokenIssuer returns an issuer that signs and verifies with secret.
 func NewTokenIssuer(secret string) TokenIssuer {
 	return TokenIssuer{secret: []byte(secret)}
 }

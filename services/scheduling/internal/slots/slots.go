@@ -5,12 +5,16 @@ package slots
 
 import "time"
 
+// Rule is a weekly availability window. Weekday is 0=Sunday..6=Saturday and
+// the minutes count from midnight in the owner zone.
 type Rule struct {
 	Weekday     int
 	StartMinute int
 	EndMinute   int
 }
 
+// Override replaces the weekly rules for one date: it either blocks the day
+// or opens a single custom window.
 type Override struct {
 	Date        string // "2006-01-02"
 	Unavailable bool
@@ -30,6 +34,7 @@ type Slot struct {
 	End   time.Time
 }
 
+// Params is the input to Compute.
 type Params struct {
 	Location        *time.Location
 	Rules           []Rule

@@ -89,6 +89,11 @@ tasks:
     dir: "{{.API_DIR}}"
     cmds:
       - go test ./... -race -count=1
+  test:
+    desc: Run Go tests in every service module
+    cmds:
+      - for: [shared, gateway, identity, scheduling, contact, template, notification]
+        cmd: cd services/{{.ITEM}} && go test ./... -race -count=1
   api:lint:
     desc: Vet + golangci-lint
     dir: "{{.API_DIR}}"

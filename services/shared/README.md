@@ -19,6 +19,11 @@ running service; imported as a Go module:
 | `server`        | `Run(ctx, addr, handler, logger)` — h2c server, graceful shutdown |
 | `errs`          | transport-agnostic domain errors (`NotFound`, `Invalid`, …)       |
 | `idgen`         | `New()` — sortable UUIDv7 ids                                      |
+| `authn`         | `Verifier` — local HS256 access-token validation                   |
+| `httpx`         | JSON responses, error mapping and bearer auth for plain HTTP routes |
+| `accesskey`     | `Verify(...)` — resolve a scoped API key to its owner              |
+| `usage`         | free-tier allowance: `Policy`, `Consume`, `Read`                   |
+| `outbox`        | `Queue(...)` — transactional mail outbox; `Fields` HTML body       |
 | `gen`           | generated protobuf + ConnectRPC code (do not edit)                |
 
 ## Typical service bootstrap
