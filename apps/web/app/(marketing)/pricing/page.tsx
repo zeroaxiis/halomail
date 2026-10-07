@@ -1,69 +1,42 @@
-import { ArrowRight, ArrowUpRight, Check, Minus, Server, Sparkles } from "lucide-react";
+import { headers } from "next/headers";
+import { ArrowRight, ArrowUpRight, Check, Minus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PricingClient } from "./pricing-client";
 
 export const metadata = { title: "Pricing" };
-
-/* -------------------------------------------------------------------------- */
-/* Plans                                                                      */
-/* -------------------------------------------------------------------------- */
-
-const TIERS = [
-  {
-    name: "Self-host",
-    price: "$0",
-    unit: "forever",
-    blurb: "The entire platform, running on your own infrastructure. No feature is held back.",
-    cta: "Read the deploy guide",
-    href: "/docs/integrate.html",
-    featured: false,
-    features: [
-      "Every feature, nothing gated",
-      "Unlimited users, forms, and bookings",
-      "Google & Outlook calendar sync",
-      "Signed webhooks and scoped API keys",
-      "Your database, your data, your domain",
-      "MIT licensed, fork it if you like",
-    ],
-  },
-  {
-    name: "Hosted",
-    price: "$5",
-    unit: "/month",
-    blurb: "The same software, run for you. Upgrades, backups, and uptime are our problem.",
-    cta: "Start hosted",
-    href: "/register",
-    featured: true,
-    features: [
-      "Everything in Self-host",
-      "Managed Postgres with daily backups",
-      "Automatic updates and security patches",
-      "Email delivery configured out of the box",
-      "99.9% uptime target",
-      "Email support",
-    ],
-  },
-];
 
 /* -------------------------------------------------------------------------- */
 /* Comparison                                                                 */
 /* -------------------------------------------------------------------------- */
 
-const COMPARE: [string, string | boolean, string | boolean][] = [
-  ["Booking pages", "Unlimited", "Unlimited"],
-  ["Contact forms", "Unlimited", "Unlimited"],
-  ["Calendar sync (Google, Outlook)", true, true],
-  ["Signed webhooks", true, true],
-  ["Scoped API keys", true, true],
-  ["Email themes + custom HTML", true, true],
-  ["Audit log", true, true],
-  ["Database", "You run it", "Managed + backups"],
-  ["Updates", "git pull", "Automatic"],
-  ["Uptime target", "Yours to keep", "99.9%"],
-  ["Support", "GitHub issues", "Email"],
-  ["Data location", "Anywhere", "Singapore"],
+const COMPARE: [string, string | boolean, string | boolean, string | boolean, string | boolean][] = [
+  ["Users / included seats", "1", "1", "3", "Custom"],
+  ["Websites / projects", "1", "5", "25", "Custom"],
+  ["Forms", "3", "25", "100", "Custom"],
+  ["Form submissions / month", "100", "1,000", "2,500", "Custom"],
+  ["Submission history", "30 days", "1 year", "2 years", "Custom"],
+  ["Email notifications", true, true, true, true],
+  ["Spam protection", true, true, true, true],
+  ["Custom redirect", true, true, true, true],
+  ["Autoresponders", false, true, true, true],
+  ["Custom email templates", false, true, true, true],
+  ["Webhook endpoints", false, "3", "20", "Custom"],
+  ["File upload storage", false, "1 GB", "10 GB", "Custom"],
+  ["CSV / JSON export", false, true, true, true],
+  ["Meeting types", "1", "10", "Unlimited", "Unlimited"],
+  ["Meeting requests / month", "10", "100", "250", "Custom"],
+  ["Calendar connections", "1", "3", "10", "Custom"],
+  ["Approval-based booking", true, true, true, true],
+  ["Meeting links", true, true, true, true],
+  ["Reschedule / cancel", true, true, true, true],
+  ["Instant booking", false, true, true, true],
+  ["Custom availability", "Basic", true, true, true],
+  ["Automated reminders", false, true, true, true],
+  ["Team scheduling", false, false, true, true],
+  ["Round-robin / assignment", false, false, true, true],
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -72,34 +45,37 @@ const COMPARE: [string, string | boolean, string | boolean][] = [
 
 const FAQS = [
   {
-    q: "Is the free tier crippled?",
-    a: "No. Self-hosting gives you every feature in the codebase. There is no enterprise edition and no license key. You are paying for operations when you choose hosted, not for features.",
+    q: "Is there a free tier?",
+    a: "Yes. The Free plan is perfect for personal sites, offering 1 website, 3 forms, 100 submissions, and 10 meeting requests every month.",
   },
   {
-    q: "What does $5 actually cover?",
-    a: "A managed Postgres with daily backups, automatic deploys of new versions, configured email delivery, and someone to email when something breaks.",
+    q: "What does 'unlimited' meeting types mean?",
+    a: "You can create as many different meeting types as you need (e.g. 15-min intro, 60-min deep dive). Monthly meeting requests and other metered features retain their stated limits.",
   },
   {
-    q: "Can I move between them?",
-    a: "In both directions. It is the same schema and the same API, so a database dump moves your data either way. No export fees, no lock-in.",
+    q: "Do you charge extra for more users?",
+    a: "The Business plan includes 3 users by default. If you need more seats, shared workflows, or custom requirements, reach out for an Enterprise plan.",
   },
   {
-    q: "What does self-hosting really cost?",
-    a: "In monolith mode it fits the free tiers of a container host plus a managed Postgres, genuinely $0 at small scale. An always-on instance with more headroom runs roughly $5–10/month.",
+    q: "What happens if I go over my monthly limits?",
+    a: "We alert you at 80% and 100% of your usage. At the cap, we'll ask you to upgrade rather than surprise you with overage charges.",
   },
   {
-    q: "Do you charge per seat?",
-    a: "No. One price covers your whole team, however many people that is.",
+    q: "Is storage included?",
+    a: "Yes, Pro includes 1 GB and Business includes 10 GB of total stored bytes for file uploads.",
   },
   {
-    q: "Is there a trial or a refund?",
-    a: "Self-hosting is the trial: run the exact same software for as long as you like before paying anything. Cancel hosted whenever; billing stops at the end of the period.",
+    q: "Is there a contract?",
+    a: "Pro and Business plans are billed monthly or yearly, and you can cancel anytime. Enterprise agreements are negotiated separately.",
   },
 ];
 
 /* -------------------------------------------------------------------------- */
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const headersList = await headers();
+  const countryCode = headersList.get("x-vercel-ip-country") || "US";
+
   return (
     <>
       {/* Hero */}
@@ -117,76 +93,18 @@ export default function PricingPage() {
               <span className="font-normal text-muted-foreground">Pricing</span>
             </Badge>
             <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-              Free to run yourself. Five dollars not to.
+              A useful Free tier. A clear upgrade.
             </h1>
             <p className="mt-5 text-balance text-lg text-muted-foreground">
-              Every feature is in the open-source build. The paid plan buys operations —
-              backups, updates, uptime, not unlocked functionality.
+              ZeroAxiis connects forms, enquiries and approval-based meeting requests in one product. Free supports a real small-site workflow; Pro adds automation and capacity.
             </p>
           </div>
 
-          {/* Plans */}
-          <div className="mx-auto mt-14 grid max-w-4xl gap-5 md:grid-cols-2">
-            {TIERS.map((t) => (
-              <Card
-                key={t.name}
-                className={`relative p-7 ${
-                  t.featured ? "border-brand/40 shadow-xl" : ""
-                }`}
-              >
-                {t.featured ? (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge variant="brand">Recommended</Badge>
-                  </span>
-                ) : null}
+          {/* Dynamic Pricing Client */}
+          <PricingClient initialCountryCode={countryCode} />
 
-                <div className="flex items-center gap-2">
-                  {t.featured ? (
-                    <Sparkles className="size-4 text-brand" />
-                  ) : (
-                    <Server className="size-4 text-muted-foreground" />
-                  )}
-                  <span className="font-medium">{t.name}</span>
-                </div>
-
-                <div className="mt-4 flex items-baseline gap-1.5">
-                  <span className="text-5xl font-semibold tracking-tight">{t.price}</span>
-                  <span className="text-sm text-muted-foreground">{t.unit}</span>
-                </div>
-
-                <p className="mt-3 min-h-[48px] text-sm text-muted-foreground">{t.blurb}</p>
-
-                <Button
-                  asChild
-                  className="mt-6 w-full"
-                  size="lg"
-                  variant={t.featured ? "brand" : "outline"}
-                >
-                  {t.href.startsWith("/docs") ? (
-                    <a href={t.href}>
-                      {t.cta} <ArrowUpRight className="size-4" />
-                    </a>
-                  ) : (
-                    <Link href={t.href}>
-                      {t.cta} <ArrowRight className="size-4" />
-                    </Link>
-                  )}
-                </Button>
-
-                <ul className="mt-7 space-y-3 text-sm">
-                  {t.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5">
-                      <Check className="mt-0.5 size-4 shrink-0 text-brand" />
-                      <span className="text-muted-foreground">{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            ))}
-          </div>
-
-          <p className="mt-8 text-center text-xs text-muted-foreground">
-            No credit card to self-host · cancel hosted anytime · no per-seat pricing
+          <p className="mt-12 text-center text-xs text-muted-foreground max-w-2xl mx-auto">
+            Yearly is paid upfront. Features and monthly usage limits remain the same for both billing intervals. Prices are per workspace, including the seats listed in the matrix.
           </p>
         </div>
       </section>
@@ -195,86 +113,54 @@ export default function PricingPage() {
       <section className="container py-20 md:py-24">
         <div className="mb-10 flex flex-col items-center gap-4 text-center">
           <Badge variant="outline" className="bg-card/60 px-3 py-1 font-normal text-muted-foreground">
-            Side by side
+            Feature matrix
           </Badge>
           <h2 className="max-w-xl text-3xl font-semibold tracking-tight md:text-4xl">
-            The difference is who runs the server
+            Compare plans side by side
           </h2>
         </div>
 
-        <Card className="mx-auto max-w-4xl overflow-hidden p-0">
-          <div className="grid grid-cols-[1.6fr_1fr_1fr] border-b border-border px-6 py-3.5 text-[11px] uppercase tracking-wide text-muted-foreground">
+        <Card className="mx-auto max-w-5xl overflow-hidden p-0 overflow-x-auto">
+          <div className="min-w-[700px] grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] border-b border-border px-6 py-3.5 text-[11px] uppercase tracking-wide text-muted-foreground">
             <span>Feature</span>
-            <span className="text-center">Self-host</span>
-            <span className="text-center">Hosted · $5</span>
+            <span className="text-center">Free</span>
+            <span className="text-center">Pro</span>
+            <span className="text-center">Business</span>
+            <span className="text-center">Enterprise</span>
           </div>
 
-          {COMPARE.map(([label, free, paid]) => (
+          {COMPARE.map(([label, free, pro, business, enterprise]) => (
             <div
               key={label}
-              className="grid grid-cols-[1.6fr_1fr_1fr] items-center border-b border-border px-6 py-3.5 text-sm last:border-0"
+              className="min-w-[700px] grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] items-center border-b border-border px-6 py-3.5 text-sm last:border-0 hover:bg-muted/30 transition-colors"
             >
               <span className="pr-4 text-muted-foreground">{label}</span>
               <span className="text-center">
                 <Cell value={free} />
               </span>
               <span className="text-center">
-                <Cell value={paid} />
+                <Cell value={pro} />
+              </span>
+              <span className="text-center">
+                <Cell value={business} />
+              </span>
+              <span className="text-center">
+                <Cell value={enterprise} />
               </span>
             </div>
           ))}
         </Card>
       </section>
 
-      {/* Self-host cost breakdown */}
-      <section className="border-y border-border bg-card/30 py-20 md:py-24">
-        <div className="container grid items-center gap-12 lg:grid-cols-2">
-          <div>
-            <h2 className="max-w-md text-3xl font-semibold tracking-tight md:text-4xl">
-              What self-hosting actually costs
-            </h2>
-            <p className="mt-5 max-w-md text-muted-foreground">
-              In monolith mode HaloMail is one container plus a Postgres database. At
-              portfolio scale that fits inside free tiers. The guide walks through the
-              exact providers and settings.
-            </p>
-            <Button asChild variant="outline" size="lg" className="mt-8">
-              <a href="/docs/integrate.html">
-                Deploy it yourself <ArrowUpRight className="size-4" />
-              </a>
-            </Button>
-          </div>
-
-          <Card className="overflow-hidden p-0">
-            {[
-              ["Hobby · free tiers, monolith", "$0"],
-              ["Small · always-on 256 MB + managed Postgres", "$5–10"],
-              ["Growth · services scaled independently", "per service"],
-            ].map(([label, cost], i) => (
-              <div
-                key={label}
-                className={`flex items-center justify-between px-6 py-5 ${
-                  i === 0 ? "" : "border-t border-border"
-                }`}
-              >
-                <span className="pr-4 text-sm text-muted-foreground">{label}</span>
-                <span className="whitespace-nowrap font-mono text-sm font-medium">{cost}</span>
-              </div>
-            ))}
-          </Card>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section className="container py-20 md:py-24">
         <div className="grid gap-10 lg:grid-cols-2">
           <h2 className="max-w-sm text-3xl font-semibold tracking-tight md:text-4xl">
-            Questions about the money.
+            Frequently asked questions
           </h2>
           <div className="flex flex-col items-start gap-5">
             <p className="max-w-md text-muted-foreground">
-              Short version: the code is free and always will be. Five dollars a month
-              means you never have to think about Postgres upgrades again.
+              Have more questions? Feel free to reach out to our team or consult our detailed documentation for integration help.
             </p>
             <Button asChild variant="outline">
               <a href="/docs/index.html">
@@ -300,21 +186,16 @@ export default function PricingPage() {
           <div aria-hidden className="bg-spotlight pointer-events-none absolute inset-0" />
           <div className="relative flex flex-col items-center gap-5">
             <h2 className="max-w-xl text-3xl font-semibold tracking-tight md:text-4xl">
-              Start free. Upgrade only if you get tired of ops.
+              Start free. Upgrade when you need more.
             </h2>
             <p className="max-w-md text-muted-foreground">
-              Same software either way. Moving between them is a database dump.
+              Experience the platform with our generous free tier, and easily move to a paid plan as you grow.
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg">
                 <Link href="/register">
                   Create your account <ArrowRight className="size-4" />
                 </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href="https://github.com/aashishrajdev/halomail" target="_blank" rel="noreferrer">
-                  View on GitHub
-                </a>
               </Button>
             </div>
           </div>
@@ -328,5 +209,5 @@ export default function PricingPage() {
 function Cell({ value }: { value: string | boolean }) {
   if (value === true) return <Check className="mx-auto size-4 text-brand" />;
   if (value === false) return <Minus className="mx-auto size-4 text-muted-foreground/50" />;
-  return <span className="text-xs text-muted-foreground">{value}</span>;
+  return <span className="text-xs text-muted-foreground font-medium">{value}</span>;
 }
