@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendLoginCode } from "@/lib/otp-mail";
+
+export const runtime = "nodejs";
 
 const backend = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const auth = "halomail.identity.v1.AuthService/";
@@ -10,7 +13,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pr
   }
   const { procedure: parts } = await context.params;
   const procedure = parts.join("/");
-  if (!/^halomail\.(identity|scheduling|contact|template)\.v1\.[A-Za-z]+Service\/[A-Za-z]+$/.test(procedure) && !["v1/usage", "v1/meetings/info"].includes(procedure)) {
+  if (!/^halomail\.(identity|scheduling|contact|template)\.v1\.[A-Za-z]+Service\/[A-Za-z]+$/.test(procedure) && !["v1/usage", "v1/meetings/info", "v1/auth/otp/request", "v1/auth/otp/verify"].includes(procedure)) {
     return NextResponse.json({ message: "Unknown endpoint" }, { status: 404 });
   }
   let raw = "";
@@ -31,7 +34,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pr
   try { body = JSON.parse(raw || "{}"); }
   catch { return NextResponse.json({ message: "Invalid JSON" }, { status: 400 }); }
   if (!body || typeof body !== "object" || Array.isArray(body)) return NextResponse.json({ message: "Provide a JSON object" }, { status: 400 });
-  const signingIn = [auth + "Login", auth + "Register"].includes(procedure);
+  const requestingOTP = procedure === "v1/auth/otp/request";
+  const signingIn = procedure === "v1/auth/otp/verify";
+  const authResponse = signingIn || [auth + "Login", auth + "Register"].includes(procedure);
+  const deliverySecret = process.env.OTP_DELIVERY_SECRET || "";
+  if (requestingOTP && deliverySecret.length < 32) {
+    return NextResponse.json({ message: "Email login is not configured." }, { status: 503 });
+  }
   const refreshing = procedure === auth + "RefreshSession";
   const signingOut = procedure === auth + "Logout";
   if (refreshing || signingOut) body = { refreshToken: request.cookies.get("halomail_refresh")?.value || "" };
@@ -40,14 +49,30 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pr
       method: "POST", cache: "no-store", signal: AbortSignal.timeout(30000),
       headers: {
         "Content-Type": "application/json",
+        ...(requestingOTP ? { "X-OTP-Delivery-Secret": deliverySecret } : {}),
         ...(request.cookies.get("halomail_access")?.value ? { Authorization: `Bearer ${request.cookies.get("halomail_access")!.value}` } : {}),
         ...(request.headers.get("x-halomail-key") ? { "X-HaloMail-Key": request.headers.get("x-halomail-key")! } : {}),
       },
       body: JSON.stringify(body),
     });
     const data = await upstream.json();
+    if (requestingOTP && upstream.ok) {
+      try {
+        await sendLoginCode(data.email, data.code);
+      } catch {
+        // Revoke a code if delivery fails, even if the connection fails after acceptance.
+        await fetch(`${backend}/v1/auth/otp/cancel`, {
+          method: "POST", cache: "no-store", signal: AbortSignal.timeout(5000),
+          headers: { "Content-Type": "application/json", "X-OTP-Delivery-Secret": deliverySecret },
+          body: JSON.stringify({ challengeId: data.challengeId }),
+        }).catch(() => undefined);
+        return NextResponse.json({ message: "Could not send the code. Please wait a minute and try again." }, { status: 502 });
+      }
+      // Never expose the OTP, destination address, or any session to the browser here.
+      return NextResponse.json({ challengeId: data.challengeId, expiresIn: data.expiresIn }, { headers: { "Cache-Control": "no-store" } });
+    }
     const session = data.session;
-    if (signingIn || refreshing) delete data.session;
+    if (authResponse || refreshing) delete data.session;
     const response = NextResponse.json(data, { status: upstream.status, headers: { "Cache-Control": "no-store" } });
     if (upstream.ok && session && (signingIn || refreshing)) {
       response.cookies.set("halomail_access", session.accessToken, { ...cookieOptions, maxAge: 900 });

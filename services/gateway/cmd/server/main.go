@@ -92,7 +92,8 @@ func main() {
 
 	// Host every service in-process.
 	identity.Mount(mux, identity.Deps{
-		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
+		OTPDeliverySecret: cfg.Auth.OTPDeliverySecret,
+		Pool:              pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
 		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors,
 		Limits: cfg.Limits,
 	})

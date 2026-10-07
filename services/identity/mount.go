@@ -21,13 +21,14 @@ import (
 )
 
 type Deps struct {
-	Pool         *pgxpool.Pool
-	JWTSecret    string
-	SessionTTL   time.Duration
-	APIKeyPrefix string
-	Redis        *redis.Client
-	Interceptors []connect.Interceptor
-	Limits       usage.Policy
+	Pool              *pgxpool.Pool
+	JWTSecret         string
+	OTPDeliverySecret string
+	SessionTTL        time.Duration
+	APIKeyPrefix      string
+	Redis             *redis.Client
+	Interceptors      []connect.Interceptor
+	Limits            usage.Policy
 }
 
 // Mount registers the identity ConnectRPC handlers on mux.
@@ -43,6 +44,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 		APIKeyPrefix: d.APIKeyPrefix,
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
+	h.MountOTP(mux, d.OTPDeliverySecret)
 	opts := connect.WithInterceptors(d.Interceptors...)
 	mux.Handle(identityv1connect.NewAuthServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))

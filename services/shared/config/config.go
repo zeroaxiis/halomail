@@ -53,6 +53,7 @@ type Redis struct {
 }
 
 type Auth struct {
+	OTPDeliverySecret     string        `env:"OTP_DELIVERY_SECRET"`
 	JWTSecret             string        `env:"JWT_SECRET"`
 	SessionTTL            time.Duration `env:"SESSION_TTL" envDefault:"720h"`
 	APIKeyPrefix          string        `env:"API_KEY_PREFIX" envDefault:"hl_"`

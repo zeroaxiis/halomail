@@ -45,8 +45,7 @@ func (h *Handlers) Register(ctx context.Context, req *connect.Request[identityv1
 		return nil, connectutil.ToConnect(err)
 	}
 	return connect.NewResponse(&identityv1.RegisterResponse{
-		User:    toProtoUser(res.User),
-		Session: toProtoSession(res.Session),
+		User: toProtoUser(res.User),
 	}), nil
 }
 

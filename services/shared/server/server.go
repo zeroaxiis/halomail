@@ -65,7 +65,7 @@ func Protect(next http.Handler) http.Handler {
 		request.Body = http.MaxBytesReader(writer, request.Body, 64<<10)
 		if request.Method == http.MethodPost {
 			limiter := public
-			if strings.HasSuffix(request.URL.Path, "AuthService/Login") || strings.HasSuffix(request.URL.Path, "AuthService/Register") {
+			if strings.HasSuffix(request.URL.Path, "AuthService/Login") || strings.HasSuffix(request.URL.Path, "AuthService/Register") || strings.HasPrefix(request.URL.Path, "/v1/auth/otp/") {
 				limiter = login
 			}
 			allowed, err := limiter.Allow(request.Context(), httpx.Peer(request.RemoteAddr))
