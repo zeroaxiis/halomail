@@ -33,8 +33,10 @@ export function SiteFooter() {
           title="Company"
           links={[
             ["GitHub", "https://github.com/zeroaxiis/halomail"],
-            ["Privacy", "#"],
-            ["Terms", "#"],
+            ["Privacy Policy", "/privacy"],
+            ["Terms & Conditions", "/terms"],
+            ["Refund Policy", "/refund-policy"],
+            ["Contact Us", "mailto:support@halomail.zeroaxiis.tech"],
           ]}
         />
       </div>
