@@ -1,11 +1,11 @@
-go 1.24
+go 1.26
 
 use (
-	./services/shared
+	./services/contact
 	./services/gateway
 	./services/identity
-	./services/scheduling
-	./services/contact
-	./services/template
 	./services/notification
+	./services/scheduling
+	./services/shared
+	./services/template
 )

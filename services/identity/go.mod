@@ -1,6 +1,6 @@
 module github.com/aashishrajdev/halomail/services/identity
 
-go 1.24
+go 1.26
 
 require (
 	connectrpc.com/connect v1.18.1
@@ -24,6 +24,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/razorpay/razorpay-go v1.4.1 // indirect
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect

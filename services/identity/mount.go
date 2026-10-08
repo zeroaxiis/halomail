@@ -22,9 +22,10 @@ import (
 
 type Deps struct {
 	Pool              *pgxpool.Pool
-	JWTSecret         string
-	OTPDeliverySecret string
-	SessionTTL        time.Duration
+	JWTSecret             string
+	OTPDeliverySecret     string
+	RazorpayWebhookSecret string
+	SessionTTL            time.Duration
 	APIKeyPrefix      string
 	Redis             *redis.Client
 	Interceptors      []connect.Interceptor
@@ -45,6 +46,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	h.MountOTP(mux, d.OTPDeliverySecret)
+	h.MountBilling(mux, d.RazorpayWebhookSecret)
 	opts := connect.WithInterceptors(d.Interceptors...)
 	mux.Handle(identityv1connect.NewAuthServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))
