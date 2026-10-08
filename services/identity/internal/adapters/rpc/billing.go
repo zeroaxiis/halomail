@@ -1,12 +1,15 @@
 package rpc
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/aashishrajdev/halomail/services/shared/httpx"
@@ -72,14 +75,42 @@ func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
 			return
 		}
 
-		// TODO: Call app.Service to upgrade/downgrade the org!
-		// For now, we will just log it.
-		// h.app.ProcessSubscription(r.Context(), orgID, tier, sub.CustomerID, sub.ID, sub.Status, time.Unix(sub.CurrentEnd, 0))
+		if err := h.app.ProcessSubscription(r.Context(), orgID, sub.CustomerID, sub.ID, tier, sub.Status, time.Unix(sub.CurrentEnd, 0)); err != nil {
+			httpx.Error(w, err)
+			return
+		}
 
-		// TODO: Send Invoice via Resend if event == "subscription.charged"
+		if payload.Event == "subscription.charged" {
+			email := payload.Payload.Payment.Entity.Email
+			if email != "" {
+				go sendInvoiceEmail(email, tier) // run async
+			}
+		}
 
 		httpx.JSON(w, http.StatusOK, map[string]bool{"success": true})
 	})
+}
+
+func sendInvoiceEmail(to, tier string) {
+	apiKey := os.Getenv("RESEND_API_KEY")
+	if apiKey == "" {
+		return
+	}
+
+	body := map[string]any{
+		"from":    "HaloMail <no-reply@email.zeroaxiis.tech>",
+		"to":      []string{to},
+		"subject": "Payment Receipt & Invoice - HaloMail",
+		"html":    fmt.Sprintf("<h1>Payment Successful</h1><p>Thank you for subscribing to the <strong>%s</strong> plan!</p><p>Your features are now unlocked.</p><p>HaloMail Team</p>", tier),
+	}
+	bodyBytes, _ := json.Marshal(body)
+
+	req, _ := http.NewRequest(http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(bodyBytes))
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	client.Do(req)
 }
 
 func verifyRazorpaySignature(body []byte, signature, secret string) bool {

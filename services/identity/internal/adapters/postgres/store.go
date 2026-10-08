@@ -74,6 +74,14 @@ func (r *Users) UpdateUser(ctx context.Context, u *domain.User) error {
 	return mapWrite(err)
 }
 
+func (r *Users) UpdateOrgBilling(ctx context.Context, orgID, customerID, subID, tier string, cycleEnd time.Time) error {
+	_, err := r.pool.Exec(ctx,
+		`UPDATE orgs SET tier=$2, rzp_customer_id=$3, rzp_subscription_id=$4, billing_cycle_end=$5 WHERE id=$1`,
+		orgID, tier, customerID, subID, cycleEnd,
+	)
+	return mapWrite(err)
+}
+
 func scanUser(row pgx.Row) (*domain.User, error) {
 	var u domain.User
 	if err := row.Scan(&u.ID, &u.OrgID, &u.Email, &u.Name, &u.Handle, &u.AvatarURL,
