@@ -58,6 +58,12 @@ func Mount(mux *http.ServeMux, d Deps) {
 			httpx.Error(writer, err)
 			return
 		}
+		var tier string
+		_ = d.Pool.QueryRow(request.Context(), `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, owner).Scan(&tier)
+		if tier == "" {
+			tier = "free"
+		}
+
 		forms, err := usage.Read(request.Context(), d.Pool, d.Limits, owner, "forms")
 		if err != nil {
 			httpx.Error(writer, err)
@@ -68,6 +74,6 @@ func Mount(mux *http.ServeMux, d Deps) {
 			httpx.Error(writer, err)
 			return
 		}
-		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": "free"})
+		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": tier})
 	})
 }
