@@ -7,10 +7,10 @@ managed:
       value: github.com/aashishrajdev/halomail/services/shared/gen
 plugins:
   # ---- Go (server) ----
-  - remote: buf.build/protocolbuffers/go
+  - remote: buf.build/protocolbuffers/go:v1.34.2
     out: services/shared/gen
     opt: paths=source_relative
-  - remote: buf.build/connectrpc/go
+  - remote: buf.build/connectrpc/go:v1.16.2
     out: services/shared/gen
     opt: paths=source_relative
 
