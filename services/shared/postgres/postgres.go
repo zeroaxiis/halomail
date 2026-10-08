@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"time"
-
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -23,6 +23,10 @@ func New(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	cfg.MinConns = 1
 	cfg.MaxConnIdleTime = 5 * time.Minute
 	cfg.MaxConnLifetime = time.Hour
+	
+	// CRITICAL FIX: Neon uses PgBouncer in transaction mode.
+	// Prepared statements (which pgx uses by default) crash with "prepared statement name is already in use".
+	cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {

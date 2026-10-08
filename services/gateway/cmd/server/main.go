@@ -145,7 +145,10 @@ func withCORS(next http.Handler, allowedOrigin string) http.Handler {
 		// User requested using the API environment variable
 		strictDomain := os.Getenv("API")
 		if strictDomain != "" {
-			h.Set("Access-Control-Allow-Origin", "https://"+strictDomain)
+			if !strings.HasPrefix(strictDomain, "http") {
+				strictDomain = "https://" + strictDomain
+			}
+			h.Set("Access-Control-Allow-Origin", strictDomain)
 		} else if allowedOrigin != "" {
 			h.Set("Access-Control-Allow-Origin", allowedOrigin)
 		} else {
