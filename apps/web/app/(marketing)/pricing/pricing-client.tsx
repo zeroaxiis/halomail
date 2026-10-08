@@ -62,11 +62,23 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
     if (!isFetched) {
       async function detectLocation() {
         try {
-          const res = await fetch("https://get.geojs.io/v1/ip/country.json");
-          const data = await res.json();
-          setCurrency(getCurrencyForCountry(data.country));
+          let res = await fetch("https://api.country.is/");
+          if (res.ok) {
+            let data = await res.json();
+            if (data?.country) return setCurrency(getCurrencyForCountry(data.country));
+          }
         } catch (err) {
-          console.error("Failed to detect location", err);
+          // api.country.is failed (likely blocked), try geojs fallback
+        }
+
+        try {
+          let res = await fetch("https://get.geojs.io/v1/ip/country.json");
+          if (res.ok) {
+            let data = await res.json();
+            if (data?.country) setCurrency(getCurrencyForCountry(data.country));
+          }
+        } catch (err) {
+          // Silently ignore if both are blocked by extensions, will fallback to default currency
         } finally {
           setIsFetched(true);
         }

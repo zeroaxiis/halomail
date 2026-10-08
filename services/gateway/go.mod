@@ -1,6 +1,6 @@
 module github.com/aashishrajdev/halomail/services/gateway
 
-go 1.26
+go 1.25.1
 
 require (
 	github.com/aashishrajdev/halomail/services/contact v0.0.0
@@ -29,7 +29,6 @@ require (
 	github.com/jackc/pgx/v5 v5.7.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/razorpay/razorpay-go v1.4.1 // indirect
 	github.com/redis/go-redis/v9 v9.7.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect

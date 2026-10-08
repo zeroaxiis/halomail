@@ -127,11 +127,8 @@
 <header>
   <a class="brand" href="/" title="Back to HaloMail home"><span class="dot"></span> HaloMail <span class="muted" style="font-weight:400">docs</span></a>
   <nav class="nav">
-    <a href="#quickstart">Quickstart</a>
     <a href="integrate.html">Add to your site</a>
     <a href="#api">API</a>
-    <a href="#selfhost">Self-host</a>
-    <a href="https://github.com/aashishrajdev/halomail" target="_blank" rel="noopener">GitHub ↗</a>
     <button class="toggle" id="themeBtn" title="Toggle theme">◐</button>
   </nav>
 </header>
@@ -140,7 +137,6 @@
   <aside>
     <div class="group">Start</div>
     <a href="#intro">Introduction</a>
-    <a href="#quickstart">Quickstart</a>
     <a href="#auth">Authentication</a>
     <a href="integrate.html">Add to your site &rarr;</a>
     <div class="group">Concepts</div>
@@ -153,18 +149,16 @@
     <a href="#endpoints">Endpoints</a>
     <a href="#webhooks">Webhooks</a>
     <a href="#errors">Errors</a>
-    <div class="group">Operate</div>
-    <a href="#selfhost">Self-hosting</a>
   </aside>
 
   <main>
     <div class="hero">
       <div class="pills">
         <span class="pill">API-first</span><span class="pill">ConnectRPC</span>
-        <span class="pill">Go + Next.js</span><span class="pill">MIT</span>
+        <span class="pill">Go + Next.js</span>
       </div>
       <h1>HaloMail Documentation</h1>
-      <p class="lead">An open-source platform for meeting scheduling and portfolio
+      <p class="lead">A platform for meeting scheduling and portfolio
       contact forms — one typed API, a generated SDK, webhooks, and a polished dashboard.</p>
       <p class="muted" style="font-size:13px">Raw docs page — the seed of HaloMail's own docs engine. Real content, no external framework.</p>
     </div>
@@ -182,24 +176,6 @@
         <div class="card"><h4>Email designer</h4><p>Themes — Minimal, Apple, Notion, Glass, Terminal — plus custom HTML and live preview.</p></div>
         <div class="card"><h4>Developer</h4><p>API keys, signed webhooks, generated SDK, OpenAPI, audit logs.</p></div>
       </div>
-    </section>
-
-    <section id="quickstart">
-      <h2>Quickstart</h2>
-      <p>Run the whole stack locally. Full guide:
-      <a href="https://github.com/aashishrajdev/halomail/blob/main/docs/DEVELOPMENT.md" target="_blank" rel="noopener" style="color:var(--accent)">docs/DEVELOPMENT.md</a>.</p>
-      <pre><code><span class="tok-c"># 1. infra: postgres, redis, mailpit, jaeger</span>
-task up
-
-<span class="tok-c"># 2. generate code from the proto contracts</span>
-task proto
-
-<span class="tok-c"># 3. deps + database schema</span>
-task bootstrap && task migrate
-
-<span class="tok-c"># 4. run the API (all services in one process)</span>
-task api:run        <span class="tok-c"># http://localhost:8080</span></code></pre>
-      <div class="note">Locally, email is captured by Mailpit at <code>:8025</code> and traces by Jaeger at <code>:16686</code> — nothing leaves your machine.</div>
     </section>
 
     <section id="auth">
@@ -312,25 +288,10 @@ curl https://&lt;api-host&gt;/halomail.identity.v1.UserService/GetCurrentUser \
       </table>
     </section>
 
-    <section id="selfhost">
-      <h2>Self-hosting</h2>
-      <p>HaloMail is open source — run it wherever you can run a container. In
-      monolith mode it's a single binary backed by PostgreSQL and, optionally,
-      Redis.</p>
-      <pre><code><span class="tok-c"># build one image, run it anywhere</span>
-docker build -f deploy/Dockerfile --build-arg SERVICE=gateway -t halomail .
-docker run -p 8080:8080 --env-file .env halomail</code></pre>
-      <p class="muted">All configuration is via environment variables — see
-      <code>.env.example</code> in the repository.</p>
-    </section>
-
-    <hr />
-    <p class="muted" style="margin-top:24px">HaloMail is MIT-licensed and open to contributions —
-    see <a href="https://github.com/aashishrajdev/halomail/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p>
   </main>
 </div>
 
-<footer>© 2026 HaloMail contributors · MIT · <a href="https://github.com/aashishrajdev/halomail" target="_blank" rel="noopener" style="color:var(--accent)">github.com/aashishrajdev/halomail</a></footer>
+<footer>© 2026 HaloMail</footer>
 
 <script>
   // Theme toggle with persistence.
