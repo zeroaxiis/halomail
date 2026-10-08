@@ -31,6 +31,16 @@ type RazorpayWebhookPayload struct {
 				CurrentEnd int64 `json:"current_end"`
 			} `json:"entity"`
 		} `json:"subscription"`
+		Order struct {
+			Entity struct {
+				ID     string `json:"id"`
+				Status string `json:"status"`
+				Notes  struct {
+					OrgID string `json:"org_id"`
+					Tier  string `json:"tier"`
+				} `json:"notes"`
+			} `json:"entity"`
+		} `json:"order"`
 		Payment struct {
 			Entity struct {
 				Email string `json:"email"`
@@ -60,27 +70,39 @@ func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
 			return
 		}
 
-		// We only care about subscription events
-		sub := payload.Payload.Subscription.Entity
-		if sub.ID == "" {
-			httpx.JSON(w, http.StatusOK, map[string]bool{"success": true, "ignored": true})
-			return
+		var orgID, tier, customerID, entityID, status string
+		var cycleEnd time.Time
+
+		if payload.Event == "subscription.charged" || payload.Event == "subscription.halted" || payload.Event == "subscription.cancelled" {
+			sub := payload.Payload.Subscription.Entity
+			orgID = sub.Notes.OrgID
+			tier = sub.Notes.Tier
+			customerID = sub.CustomerID
+			entityID = sub.ID
+			status = sub.Status
+			cycleEnd = time.Unix(sub.CurrentEnd, 0)
+		} else if payload.Event == "order.paid" {
+			order := payload.Payload.Order.Entity
+			orgID = order.Notes.OrgID
+			tier = order.Notes.Tier
+			customerID = "" // orders don't always map to customer_id easily here
+			entityID = order.ID
+			status = order.Status
+			cycleEnd = time.Now().AddDate(0, 1, 0) // Default 1 month for orders
 		}
 
-		orgID := sub.Notes.OrgID
-		tier := sub.Notes.Tier
 		if orgID == "" {
 			// If org_id is missing, we can't upgrade anyone.
 			httpx.JSON(w, http.StatusOK, map[string]bool{"success": true, "ignored": true})
 			return
 		}
 
-		if err := h.app.ProcessSubscription(r.Context(), orgID, sub.CustomerID, sub.ID, tier, sub.Status, time.Unix(sub.CurrentEnd, 0)); err != nil {
+		if err := h.app.ProcessSubscription(r.Context(), orgID, customerID, entityID, tier, status, cycleEnd); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		if payload.Event == "subscription.charged" {
+		if payload.Event == "subscription.charged" || payload.Event == "order.paid" {
 			email := payload.Payload.Payment.Entity.Email
 			if email != "" {
 				go sendInvoiceEmail(email, tier) // run async

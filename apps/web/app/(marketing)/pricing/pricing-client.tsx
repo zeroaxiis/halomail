@@ -52,8 +52,12 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
   const [currency, setCurrency] = useState(getCurrencyForCountry(initialCountryCode));
   const [isFetched, setIsFetched] = useState(false);
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    import("@/lib/auth").then(({ getUser }) => {
+      setUser(getUser());
+    });
     // If Vercel headers are missing (e.g. running locally), detect via API
     if (!isFetched) {
       async function detectLocation() {
@@ -83,6 +87,11 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
   };
 
   const handleCheckout = async (planName: "Pro" | "Business") => {
+    if (!user) {
+      window.location.href = "/register";
+      return;
+    }
+
     setIsProcessing(planName);
     const amount = PRICING[planName][billingCycle][currency as keyof typeof PRICING.Pro.monthly];
 
@@ -97,7 +106,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, currency, plan: planName, billingCycle })
+        body: JSON.stringify({ amount, currency, plan: planName, billingCycle, orgId: user.org_id })
       });
       const order = await res.json();
 
