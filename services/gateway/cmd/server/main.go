@@ -121,7 +121,7 @@ func main() {
 		Burst: cfg.Rate.PublicBurst * 2,
 	})
 
-	if err := server.Run(ctx, cfg.HTTP.Addr(), withRateLimit(withCORS(mux), limiter), logger); err != nil {
+	if err := server.Run(ctx, cfg.HTTP.Addr(), withRateLimit(withCORS(mux, cfg.App.PublicWebURL), limiter), logger); err != nil {
 		logger.Error("server stopped with error", "error", err.Error())
 		os.Exit(1)
 	}
@@ -137,11 +137,20 @@ func root(w http.ResponseWriter, _ *http.Request) {
 }
 
 // withCORS allows the public surface (booking page, contact widget, SDK) to be
-// called cross-origin.
-func withCORS(next http.Handler) http.Handler {
+// called cross-origin, restricted to the official frontend domain.
+func withCORS(next http.Handler, allowedOrigin string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
-		h.Set("Access-Control-Allow-Origin", "*")
+		
+		// User requested using the API environment variable
+		strictDomain := os.Getenv("API")
+		if strictDomain != "" {
+			h.Set("Access-Control-Allow-Origin", "https://"+strictDomain)
+		} else if allowedOrigin != "" {
+			h.Set("Access-Control-Allow-Origin", allowedOrigin)
+		} else {
+			h.Set("Access-Control-Allow-Origin", "http://localhost:3000") // Fallback
+		}
 		h.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		h.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Connect-Protocol-Version, Connect-Timeout-Ms, X-Requested-With, X-HaloMail-Key")
 		h.Set("Access-Control-Max-Age", "86400")
