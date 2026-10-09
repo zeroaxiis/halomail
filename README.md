@@ -123,6 +123,7 @@ Full per-service instructions: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)   | System design, service boundaries, data flow, deploy modes |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)     | Requirements + how to run the app and every service locally |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)       | Production deployment |
+| [docs/BACKUP_AND_RECOVERY.md](docs/BACKUP_AND_RECOVERY.md) | Hourly Neon backups in R2, latest two batches, and recovery into a replacement database |
 | [services/README.md](services/README.md)       | Backend overview; each service has its own README |
 | [proto/README.md](proto/README.md)             | API contracts and code generation |
 | [CONTRIBUTING.md](CONTRIBUTING.md)             | How to contribute, coding standards, adding a service |
