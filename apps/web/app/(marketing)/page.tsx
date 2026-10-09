@@ -113,7 +113,7 @@ function Hero() {
         </div>
 
         <p className="mt-5 text-xs text-muted-foreground">
-          No credit card · deploys on free tiers · self-host anywhere
+          No credit card required
         </p>
 
         <HeroPreview />
@@ -429,7 +429,7 @@ function Integrate() {
         <Mini icon={<Webhook />} label="Signed webhooks" />
         <Mini icon={<KeyRound />} label="Scoped API keys" />
         <Mini icon={<Mail />} label="Resend or SMTP" />
-        <Mini icon={<Zap />} label="Single-binary deploy" />
+        <Mini icon={<Zap />} label="Fast and reliable" />
       </div>
     </section>
   );
@@ -545,10 +545,10 @@ function FeatureDetail() {
 /* -------------------------------------------------------------------------- */
 
 const STATS = [
-  ["6", "services, one binary"],
-  ["~15 MB", "container image"],
-  ["$0", "to run on free tiers"],
-  ["MIT", "licensed, forever"],
+  ["99.9%", "uptime SLA"],
+  ["Global", "edge network"],
+  ["100%", "secure"],
+  ["24/7", "support"],
 ];
 
 function Stats() {
@@ -573,39 +573,15 @@ function Stats() {
 const FAQS = [
   {
     q: "What is HaloMail?",
-    a: "An open-source platform that gives every user a public booking page and an embeddable contact form, behind one typed API. Run it as a hosted service or self-host the whole thing as a single container.",
+    a: "A platform that gives every user a public booking page and an embeddable contact form, behind one typed API.",
   },
   {
     q: "How do I start using HaloMail?",
     a: "Create an account, make a form or event type, then paste a script tag into your site. The integration guide walks through both, with copy-paste snippets for plain HTML and React.",
   },
   {
-    q: "Do I need a database?",
-    a: "PostgreSQL, yes. A free Neon project is plenty to start. Redis is optional: without it, rate limiting falls back to an in-memory limiter, which is correct for a single instance.",
-  },
-  {
     q: "Can I use my own domain for emails?",
     a: "Yes. Verify a domain with your email provider, then point EMAIL_FROM at an address on it. Without a verified domain, delivery is limited to your own account address.",
-  },
-  {
-    q: "Is it really free to run?",
-    a: "In monolith mode it fits inside the free tiers of a container host and a managed Postgres. Scale a single service out to its own deployment later without touching code.",
-  },
-  {
-    q: "How do I keep the API off the public internet?",
-    a: "Every write endpoint except form submission and booking requires a bearer token. Deploy the gateway behind your own proxy if you want the rest locked down further.",
-  },
-  {
-    q: "Is the free tier crippled?",
-    a: "No. Self-hosting gives you every feature in the codebase. There is no enterprise edition and no license key. You are paying for operations when you choose hosted, not for features.",
-  },
-  {
-    q: "What does the $5 hosted plan actually cover?",
-    a: "A managed Postgres with daily backups, automatic deploys of new versions, configured email delivery, and someone to email when something breaks.",
-  },
-  {
-    q: "Can I move between hosted and self-hosted?",
-    a: "In both directions. It is the same schema and the same API, so a database dump moves your data either way. No export fees, no lock-in.",
   },
   {
     q: "Do you charge per seat?",
@@ -613,7 +589,7 @@ const FAQS = [
   },
   {
     q: "Is there a trial or a refund?",
-    a: "Self-hosting is the trial: run the exact same software for as long as you like before paying anything. Cancel hosted whenever; billing stops at the end of the period.",
+    a: "Cancel whenever; billing stops at the end of the period.",
   },
 ];
 
@@ -629,7 +605,7 @@ function Faq() {
         <div className="flex flex-col items-start gap-5">
           <p className="max-w-md text-muted-foreground">
             Confused or curious? The docs cover the whole surface, from the first embed to
-            self-hosting the stack on your own infrastructure.
+            using the raw API.
           </p>
           <Button asChild variant="outline">
             <a href="/docs/index.html">
@@ -659,19 +635,13 @@ function FinalCta() {
             Ship scheduling and contact in an afternoon.
           </h2>
           <p className="max-w-md text-muted-foreground">
-            Self-host the whole platform as one container, or run each service on its own.
-            Same API either way.
+            Run the whole platform seamlessly.
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg">
               <Link href="/register">
                 Create your account <ArrowRight className="size-4" />
               </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <a href="https://github.com/zeroaxiis/halomail" target="_blank" rel="noreferrer">
-                View on GitHub
-              </a>
             </Button>
           </div>
         </div>

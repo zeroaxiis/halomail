@@ -22,9 +22,10 @@ import (
 
 type Deps struct {
 	Pool              *pgxpool.Pool
-	JWTSecret         string
-	OTPDeliverySecret string
-	SessionTTL        time.Duration
+	JWTSecret             string
+	OTPDeliverySecret     string
+	RazorpayWebhookSecret string
+	SessionTTL            time.Duration
 	APIKeyPrefix      string
 	Redis             *redis.Client
 	Interceptors      []connect.Interceptor
@@ -45,6 +46,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	h.MountOTP(mux, d.OTPDeliverySecret)
+	h.MountBilling(mux, d.RazorpayWebhookSecret)
 	opts := connect.WithInterceptors(d.Interceptors...)
 	mux.Handle(identityv1connect.NewAuthServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))
@@ -56,6 +58,12 @@ func Mount(mux *http.ServeMux, d Deps) {
 			httpx.Error(writer, err)
 			return
 		}
+		var tier string
+		_ = d.Pool.QueryRow(request.Context(), `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, owner).Scan(&tier)
+		if tier == "" {
+			tier = "free"
+		}
+
 		forms, err := usage.Read(request.Context(), d.Pool, d.Limits, owner, "forms")
 		if err != nil {
 			httpx.Error(writer, err)
@@ -66,6 +74,6 @@ func Mount(mux *http.ServeMux, d Deps) {
 			httpx.Error(writer, err)
 			return
 		}
-		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": "free"})
+		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": tier})
 	})
 }

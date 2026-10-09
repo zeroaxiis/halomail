@@ -58,6 +58,7 @@ type Auth struct {
 	SessionTTL            time.Duration `env:"SESSION_TTL" envDefault:"720h"`
 	APIKeyPrefix          string        `env:"API_KEY_PREFIX" envDefault:"hl_"`
 	CalendarEncryptionKey string        `env:"CALENDAR_ENCRYPTION_KEY"`
+	RazorpayWebhookSecret string        `env:"RAZORPAY_WEBHOOK_SECRET"`
 }
 
 type Email struct {

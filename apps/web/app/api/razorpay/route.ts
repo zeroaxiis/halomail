@@ -3,7 +3,7 @@ import Razorpay from "razorpay";
 
 export async function POST(req: NextRequest) {
   try {
-    const { amount, currency, plan, billingCycle } = await req.json();
+    const { amount, currency, plan, billingCycle, orgId } = await req.json();
 
     // Fallback to the provided keys if Next.js hasn't loaded them from the root .env yet
     const key_id = process.env.RAZERPAY_LIVE_API_KEY || "rzp_live_Tl8rjPPjJnFYHq";
@@ -18,6 +18,10 @@ export async function POST(req: NextRequest) {
       amount: amountInSubunits,
       currency: currency,
       receipt: `rcpt_${Date.now()}`,
+      notes: {
+        org_id: orgId,
+        tier: plan.toLowerCase()
+      }
     };
 
     const order = await instance.orders.create(options);

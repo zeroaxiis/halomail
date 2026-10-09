@@ -52,17 +52,33 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
   const [currency, setCurrency] = useState(getCurrencyForCountry(initialCountryCode));
   const [isFetched, setIsFetched] = useState(false);
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    import("@/lib/auth").then(({ getUser }) => {
+      setUser(getUser());
+    });
     // If Vercel headers are missing (e.g. running locally), detect via API
     if (!isFetched) {
       async function detectLocation() {
         try {
-          const res = await fetch("https://get.geojs.io/v1/ip/country.json");
-          const data = await res.json();
-          setCurrency(getCurrencyForCountry(data.country));
+          let res = await fetch("https://api.country.is/");
+          if (res.ok) {
+            let data = await res.json();
+            if (data?.country) return setCurrency(getCurrencyForCountry(data.country));
+          }
         } catch (err) {
-          console.error("Failed to detect location", err);
+          // api.country.is failed (likely blocked), try geojs fallback
+        }
+
+        try {
+          let res = await fetch("https://get.geojs.io/v1/ip/country.json");
+          if (res.ok) {
+            let data = await res.json();
+            if (data?.country) setCurrency(getCurrencyForCountry(data.country));
+          }
+        } catch (err) {
+          // Silently ignore if both are blocked by extensions, will fallback to default currency
         } finally {
           setIsFetched(true);
         }
@@ -83,6 +99,11 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
   };
 
   const handleCheckout = async (planName: "Pro" | "Business") => {
+    if (!user) {
+      window.location.href = "/register";
+      return;
+    }
+
     setIsProcessing(planName);
     const amount = PRICING[planName][billingCycle][currency as keyof typeof PRICING.Pro.monthly];
 
@@ -97,7 +118,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, currency, plan: planName, billingCycle })
+        body: JSON.stringify({ amount, currency, plan: planName, billingCycle, orgId: user.org_id })
       });
       const order = await res.json();
 

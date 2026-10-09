@@ -237,6 +237,13 @@ func (s *Service) UpdateUser(ctx context.Context, userID, name, handle, avatarUR
 	return user, nil
 }
 
+func (s *Service) ProcessSubscription(ctx context.Context, orgID, customerID, subID, tier, status string, cycleEnd time.Time) error {
+	if status == "cancelled" || status == "halted" {
+		tier = "free" // Downgrade on cancellation
+	}
+	return s.users.UpdateOrgBilling(ctx, orgID, customerID, subID, tier, cycleEnd)
+}
+
 // ---- API keys ------------------------------------------------------------
 
 func (s *Service) CreateAPIKey(ctx context.Context, userID, orgID, name string, scopes []string) (*domain.APIKey, string, error) {

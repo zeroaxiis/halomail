@@ -2,13 +2,13 @@
 
 # HaloMail
 
-**Open-source, API-first platform for meeting scheduling + portfolio contact forms.**
+**API-first platform for meeting scheduling + portfolio contact forms.**
 
-Minimal. Premium. Developer-focused. Deployable for free.
+Minimal. Premium. Developer-focused.
 
 [Architecture](docs/ARCHITECTURE.md) · [Development](docs/DEVELOPMENT.md) · [Deployment](docs/DEPLOYMENT.md) · [Contributing](CONTRIBUTING.md) · [Backend services](services/README.md)
 
-![status](https://img.shields.io/badge/status-alpha-orange) ![license](https://img.shields.io/badge/license-MIT-blue) ![go](https://img.shields.io/badge/Go-1.24-00ADD8) ![next](https://img.shields.io/badge/Next.js-15-black)
+![status](https://img.shields.io/badge/status-alpha-orange) ![go](https://img.shields.io/badge/Go-1.24-00ADD8) ![next](https://img.shields.io/badge/Next.js-15-black)
 
 </div>
 
@@ -24,7 +24,6 @@ HaloMail gives every user two things, behind one clean API:
    configure meeting types and availability, and share a booking button.
    Calendar-confirmed bookings receive Google Meet links and email notifications.
 
-Default free allowances are 25 form submissions and 10 bookings per month.
 Keys are shown once, masked thereafter, and must be deleted before replacement.
 See [Forms and Meetings setup, behavior and limitations](docs/FORMS_AND_MEETINGS.md)
 before running or deploying the new flow.
@@ -44,15 +43,13 @@ theme designer, and first-class OpenTelemetry observability.
 | **Contact forms**  | HTML/JSON submission endpoint, embeddable widget, honeypot/heuristic spam protection, quotas, storage and queued email forwarding |
 | **Email designer** | Built-in themes — Minimal, Apple, Notion, Glass, Terminal — plus custom HTML and live preview |
 | **Developer**      | API keys, signed webhooks, generated TypeScript SDK, OpenAPI docs, audit logs |
-| **Operations**     | OpenTelemetry traces, structured JSON logs, liveness/readiness probes, Docker, one-container "free" deploy mode |
+| **Operations**     | OpenTelemetry traces, structured JSON logs, liveness/readiness probes |
 
 ## How it's built
 
 A **monorepo** of independent, modular Go microservices that share a common
 platform library and speak ConnectRPC, plus a Next.js 15 frontend and an in-house
-docs site. It runs either as **one container** (cheap/free deploy) or as **separate
-services** (scale-out) — same code, a build-time choice. See
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+docs site. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```
 proto/        API contracts (source of truth)
@@ -60,7 +57,7 @@ services/     Go services: gateway, identity, scheduling, contact, template, not
 apps/web/     Next.js 15 dashboard, marketing, public booking + contact pages
 apps/docs/    In-house documentation site (raw now, docs engine later)
 packages/     generated TypeScript SDK
-deploy/       Dockerfiles, infra configs, free-tier deploy
+deploy/       Dockerfiles, infra configs
 ```
 
 | Backend | Protocol | Data | Email | Frontend | Docs | Observability |
@@ -118,7 +115,6 @@ Local UIs while developing:
 Full per-service instructions: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
 
-Step-by-step: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
 ## Documentation map
 
@@ -126,16 +122,17 @@ Step-by-step: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 | --- | ------- |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)   | System design, service boundaries, data flow, deploy modes |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)     | Requirements + how to run the app and every service locally |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)       | Free / low-cost production deployment |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)       | Production deployment |
+| [docs/BACKUP_AND_RECOVERY.md](docs/BACKUP_AND_RECOVERY.md) | Hourly Neon backups in R2, latest two batches, and recovery into a replacement database |
 | [services/README.md](services/README.md)       | Backend overview; each service has its own README |
 | [proto/README.md](proto/README.md)             | API contracts and code generation |
 | [CONTRIBUTING.md](CONTRIBUTING.md)             | How to contribute, coding standards, adding a service |
 
 ## Contributing
 
-HaloMail is open source (MIT) and built to be contributed to. Start with
+HaloMail is built to be contributed to. Start with
 [CONTRIBUTING.md](CONTRIBUTING.md) and look for `good first issue` labels.
 
 ## License
 
-[MIT](LICENSE) — © HaloMail contributors.
+© HaloMail.

@@ -54,7 +54,11 @@ docker build -f deploy/Dockerfile --build-arg SERVICE=gateway -t halomail-api .
 docker run -p 8080:8080 --env-file .env halomail-api
 ```
 
-Image is distroless + static binary → tiny and fast to cold-start.
+The runtime includes PostgreSQL backup/restore clients and the `/backup` CLI.
+Neon is the only active database. With R2 credentials configured, the gateway
+creates a full backup every hour and retains the latest two verified batches.
+See [backup and recovery setup](BACKUP_AND_RECOVERY.md) for configuration,
+monitoring and restoring the latest batch into a replacement Neon database.
 
 ### Deploy to Fly.io
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aashishrajdev/halomail/services/shared/backup"
 	"github.com/aashishrajdev/halomail/services/shared/config"
 	"github.com/aashishrajdev/halomail/services/shared/connectutil"
 	"github.com/aashishrajdev/halomail/services/shared/health"
@@ -66,6 +67,14 @@ func main() {
 	}
 	defer pool.Close()
 
+	backups, backupErr := backup.Open(cfg.Postgres.URL)
+	if backupErr != nil {
+		logger.Error("R2 backup unavailable; Neon service remains active", "error", backupErr.Error())
+	}
+	if backups != nil {
+		go backups.Run(ctx, logger)
+	}
+
 	var redisClient *rds.Client
 	if cfg.Redis.URL != "" {
 		if c, rerr := rds.New(ctx, cfg.Redis.URL); rerr != nil {
@@ -88,13 +97,25 @@ func main() {
 	hc.Register("postgres", func(ctx context.Context) error { return pool.Ping(ctx) })
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
+	backupHealth := health.New()
+	backupHealth.Register("r2_backup", func(ctx context.Context) error {
+		if backupErr != nil {
+			return backupErr
+		}
+		if backups == nil {
+			return fmt.Errorf("R2 backups are disabled or not configured")
+		}
+		return backups.Healthy(ctx)
+	})
+	mux.Handle("/backupz", backupHealth.Readiness())
 	mux.HandleFunc("/", root)
 	mux.HandleFunc("/health", healthHandler)
 
 	// Host every service in-process.
 	identity.Mount(mux, identity.Deps{
-		OTPDeliverySecret: cfg.Auth.OTPDeliverySecret,
-		Pool:              pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
+		OTPDeliverySecret:     cfg.Auth.OTPDeliverySecret,
+		RazorpayWebhookSecret: cfg.Auth.RazorpayWebhookSecret,
+		Pool:                  pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
 		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors,
 		Limits: cfg.Limits,
 	})
@@ -142,7 +163,7 @@ func root(w http.ResponseWriter, _ *http.Request) {
 func withCORS(next http.Handler, allowedOrigin string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
-		
+
 		// User requested using the API environment variable
 		strictDomain := os.Getenv("API")
 		if strictDomain != "" {
