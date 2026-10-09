@@ -14,6 +14,7 @@ type Verifier struct {
 	secret []byte
 }
 
+// NewVerifier returns a Verifier for tokens signed with secret.
 func NewVerifier(secret string) Verifier { return Verifier{secret: []byte(secret)} }
 
 // Claims mirrors the identity access-token payload (Subject = user id).

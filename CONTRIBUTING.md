@@ -9,7 +9,7 @@ add new functionality.
 - Be respectful — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 - Discuss large changes in an issue before opening a big PR.
 - Keep PRs focused: one logical change per PR.
-- Every change keeps the build green: `task api:test`, `task proto:lint`, `pnpm lint`.
+- Every change keeps the build green: `task test`, `task proto:lint`, `pnpm lint`.
 
 ## Project layout
 
@@ -55,7 +55,7 @@ The API contract lives in `proto/`. **Never hand-edit generated code** under
   (use cases), `internal/adapters` (db, rpc, external). Dependencies point
   inward; the domain imports nothing from `adapters`.
 - Return domain errors from `services/shared/errs`; let the RPC layer map them.
-- Table-driven tests; name them `TestXxx`. Run `task api:test` (`-race`).
+- Table-driven tests; name them `TestXxx`. Run `task test` (`-race`).
 
 **TypeScript**
 
@@ -80,7 +80,7 @@ The API contract lives in `proto/`. **Never hand-edit generated code** under
 
 ## Pull request checklist
 
-- [ ] Tests added/updated and passing (`task api:test`).
+- [ ] Tests added/updated and passing (`task test`).
 - [ ] `task proto:lint` and `pnpm lint` pass.
 - [ ] Docs/READMEs updated for user-facing or structural changes.
 - [ ] No secrets committed; `.env` stays local.

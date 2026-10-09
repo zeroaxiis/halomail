@@ -1,3 +1,4 @@
+// Package usage enforces the free-tier allowance per owner and feature.
 package usage
 
 import (
@@ -25,6 +26,7 @@ type Policy struct {
 	Monthly  bool `env:"FREE_LIMITS_MONTHLY" envDefault:"true"`
 }
 
+// Stats is the usage of one feature in the current window.
 type Stats struct {
 	Used      int        `json:"used"`
 	Limit     int        `json:"limit"`
@@ -58,6 +60,8 @@ func (policy Policy) Window(feature, tier string, now time.Time) (int, time.Time
 	return limit, period, reset
 }
 
+// Consume spends one unit of the allowance inside tx, returning a RateLimited
+// error once the limit is reached.
 func Consume(ctx context.Context, tx pgx.Tx, policy Policy, ownerID, feature string) error {
 	var tier string
 	err := tx.QueryRow(ctx, `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
@@ -79,6 +83,7 @@ func Consume(ctx context.Context, tx pgx.Tx, policy Policy, ownerID, feature str
 	return err
 }
 
+// Read reports the usage for the current window without consuming any.
 func Read(ctx context.Context, pool *pgxpool.Pool, policy Policy, ownerID, feature string) (Stats, error) {
 	var tier string
 	err := pool.QueryRow(ctx, `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)

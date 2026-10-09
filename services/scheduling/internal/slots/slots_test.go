@@ -42,8 +42,8 @@ func TestCompute(t *testing.T) {
 			name: "unavailable override yields nothing",
 			p: Params{
 				Location: loc, Rules: rules,
-				Overrides:   []Override{{Date: "2026-06-01", Unavailable: true}},
-				FromDate:    "2026-06-01", ToDate: "2026-06-01",
+				Overrides: []Override{{Date: "2026-06-01", Unavailable: true}},
+				FromDate:  "2026-06-01", ToDate: "2026-06-01",
 				DurationMin: 60, Now: now,
 			},
 			want: 0,
@@ -67,5 +67,158 @@ func TestCompute(t *testing.T) {
 				t.Fatalf("got %d slots, want %d: %+v", len(got), tc.want, got)
 			}
 		})
+	}
+}
+
+// monday is 2026-06-01; mondayRule opens 09:00-11:00 on Mondays.
+var (
+	monday     = time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)
+	mondayRule = []Rule{{Weekday: 1, StartMinute: 9 * 60, EndMinute: 11 * 60}}
+)
+
+func starts(slots []Slot) []string {
+	out := make([]string, 0, len(slots))
+	for _, s := range slots {
+		out = append(out, s.Start.Format("15:04"))
+	}
+	return out
+}
+
+func equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func TestComputeStepGranularity(t *testing.T) {
+	got := starts(Compute(Params{
+		Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 60, StepMin: 30, Now: monday,
+	}))
+	if want := []string{"09:00", "09:30", "10:00"}; !equal(got, want) {
+		t.Fatalf("starts = %v, want %v", got, want)
+	}
+}
+
+func TestComputeBuffersWidenBusyIntervals(t *testing.T) {
+	p := Params{
+		Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 30, Now: monday,
+		Busy: []Interval{{Start: monday.Add(10 * time.Hour), End: monday.Add(10*time.Hour + 30*time.Minute)}},
+	}
+	if got, want := starts(Compute(p)), []string{"09:00", "09:30", "10:30"}; !equal(got, want) {
+		t.Fatalf("without buffers: starts = %v, want %v", got, want)
+	}
+
+	p.BufferBeforeMin, p.BufferAfterMin = 30, 30
+	if got, want := starts(Compute(p)), []string{"09:00"}; !equal(got, want) {
+		t.Fatalf("with buffers: starts = %v, want %v", got, want)
+	}
+}
+
+func TestComputeMaxSlots(t *testing.T) {
+	got := starts(Compute(Params{
+		Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 30, Now: monday, MaxSlots: 2,
+	}))
+	if want := []string{"09:00", "09:30"}; !equal(got, want) {
+		t.Fatalf("starts = %v, want %v", got, want)
+	}
+}
+
+func TestComputeOverrideReplacesRules(t *testing.T) {
+	base := Params{Rules: mondayRule, DurationMin: 60, Now: monday}
+
+	// A custom window replaces the weekly rule for that date.
+	p := base
+	p.FromDate, p.ToDate = "2026-06-01", "2026-06-01"
+	p.Overrides = []Override{{Date: "2026-06-01", StartMinute: 14 * 60, EndMinute: 15 * 60}}
+	if got, want := starts(Compute(p)), []string{"14:00"}; !equal(got, want) {
+		t.Fatalf("custom window: starts = %v, want %v", got, want)
+	}
+
+	// An override can open a day that has no weekly rule (Tuesday).
+	p = base
+	p.FromDate, p.ToDate = "2026-06-02", "2026-06-02"
+	p.Overrides = []Override{{Date: "2026-06-02", StartMinute: 10 * 60, EndMinute: 11 * 60}}
+	if got, want := starts(Compute(p)), []string{"10:00"}; !equal(got, want) {
+		t.Fatalf("opened day: starts = %v, want %v", got, want)
+	}
+
+	// An empty or inverted window blocks the day.
+	p = base
+	p.FromDate, p.ToDate = "2026-06-01", "2026-06-01"
+	p.Overrides = []Override{{Date: "2026-06-01", StartMinute: 15 * 60, EndMinute: 14 * 60}}
+	if got := Compute(p); len(got) != 0 {
+		t.Fatalf("inverted window produced slots: %+v", got)
+	}
+}
+
+func TestComputeReturnsUTCInstants(t *testing.T) {
+	ist := time.FixedZone("IST", 5*3600+1800)
+	got := Compute(Params{
+		Location: ist,
+		Rules:    []Rule{{Weekday: 1, StartMinute: 9 * 60, EndMinute: 10 * 60}},
+		FromDate: "2026-06-01", ToDate: "2026-06-01",
+		DurationMin: 60, Now: monday.AddDate(0, 0, -1),
+	})
+	if len(got) != 1 {
+		t.Fatalf("got %d slots, want 1", len(got))
+	}
+	// 09:00 IST is 03:30 UTC.
+	if want := time.Date(2026, 6, 1, 3, 30, 0, 0, time.UTC); !got[0].Start.Equal(want) || got[0].Start.Location() != time.UTC {
+		t.Fatalf("start = %v, want %v in UTC", got[0].Start, want)
+	}
+
+	// A nil location is treated as UTC.
+	got = Compute(Params{Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01", DurationMin: 120, Now: monday})
+	if len(got) != 1 || got[0].Start.Hour() != 9 {
+		t.Fatalf("nil location: %+v", got)
+	}
+}
+
+func TestComputeRejectsInvalidInput(t *testing.T) {
+	valid := Params{Rules: mondayRule, FromDate: "2026-06-01", ToDate: "2026-06-01", DurationMin: 60, Now: monday}
+
+	badFrom := valid
+	badFrom.FromDate = "01/06/2026"
+	badTo := valid
+	badTo.ToDate = ""
+	reversed := valid
+	reversed.FromDate, reversed.ToDate = "2026-06-02", "2026-06-01"
+	noDuration := valid
+	noDuration.DurationMin = 0
+
+	for name, p := range map[string]Params{"bad from": badFrom, "bad to": badTo, "reversed range": reversed, "zero duration": noDuration} {
+		if got := Compute(p); got != nil {
+			t.Errorf("%s: got %+v, want nil", name, got)
+		}
+	}
+}
+
+func TestComputeSpansMultipleDays(t *testing.T) {
+	p := Params{
+		Rules: []Rule{
+			{Weekday: 1, StartMinute: 9 * 60, EndMinute: 10 * 60},
+			{Weekday: 3, StartMinute: 9 * 60, EndMinute: 10 * 60},
+		},
+		FromDate: "2026-06-01", ToDate: "2026-06-07",
+		DurationMin: 60, Now: monday,
+	}
+	got := Compute(p)
+	if len(got) != 2 || got[0].Start.Day() != 1 || got[1].Start.Day() != 3 {
+		t.Fatalf("one week: %+v", got)
+	}
+
+	// The end date is inclusive: extending to the next Monday adds its slot.
+	p.ToDate = "2026-06-08"
+	if got = Compute(p); len(got) != 3 || got[2].Start.Day() != 8 {
+		t.Fatalf("through next monday: %+v", got)
 	}
 }
