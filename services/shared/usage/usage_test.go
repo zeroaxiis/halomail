@@ -46,7 +46,7 @@ func TestConsumeExhaustedOrDisabled(test *testing.T) {
 
 func TestWindowDefaultsToFormsAndRollsOverYear(test *testing.T) {
 	policy := Policy{Forms: 25, Meetings: 10, Monthly: true}
-	limit, period, reset := policy.Window("unknown", time.Date(2026, 12, 15, 12, 0, 0, 0, time.UTC))
+	limit, period, reset := policy.Window("unknown", "free", time.Date(2026, 12, 15, 12, 0, 0, 0, time.UTC))
 	if limit != 25 {
 		test.Fatalf("unknown feature limit = %d, want the forms limit", limit)
 	}
