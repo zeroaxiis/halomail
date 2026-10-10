@@ -43,7 +43,13 @@ type RazorpayWebhookPayload struct {
 		} `json:"order"`
 		Payment struct {
 			Entity struct {
-				Email string `json:"email"`
+				ID     string `json:"id"`
+				Status string `json:"status"`
+				Email  string `json:"email"`
+				Notes  struct {
+					OrgID string `json:"org_id"`
+					Tier  string `json:"tier"`
+				} `json:"notes"`
 			} `json:"entity"`
 		} `json:"payment"`
 	} `json:"payload"`
@@ -81,14 +87,31 @@ func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
 			entityID = sub.ID
 			status = sub.Status
 			cycleEnd = time.Unix(sub.CurrentEnd, 0)
-		} else if payload.Event == "order.paid" {
+		} else if payload.Event == "order.paid" || payload.Event == "order.refunded" {
 			order := payload.Payload.Order.Entity
 			orgID = order.Notes.OrgID
 			tier = order.Notes.Tier
-			customerID = "" // orders don't always map to customer_id easily here
+			customerID = ""
 			entityID = order.ID
 			status = order.Status
+			if payload.Event == "order.refunded" {
+				status = "refunded"
+			}
 			cycleEnd = time.Now().AddDate(0, 1, 0) // Default 1 month for orders
+		} else if payload.Event == "payment.captured" || payload.Event == "payment.refunded" {
+			payment := payload.Payload.Payment.Entity
+			orgID = payment.Notes.OrgID
+			tier = payment.Notes.Tier
+			customerID = ""
+			entityID = payment.ID
+			status = payment.Status
+			if status == "" {
+				status = "captured"
+			}
+			if payload.Event == "payment.refunded" {
+				status = "refunded"
+			}
+			cycleEnd = time.Now().AddDate(0, 1, 0) // Default 1 month for payments
 		}
 
 		if orgID == "" {

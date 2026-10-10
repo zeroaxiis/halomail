@@ -59,7 +59,8 @@ func Mount(mux *http.ServeMux, d Deps) {
 			return
 		}
 		var tier string
-		_ = d.Pool.QueryRow(request.Context(), `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, owner).Scan(&tier)
+		var expiresAt *time.Time
+		_ = d.Pool.QueryRow(request.Context(), `SELECT o.tier, o.billing_cycle_end FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, owner).Scan(&tier, &expiresAt)
 		if tier == "" {
 			tier = "free"
 		}
@@ -74,6 +75,6 @@ func Mount(mux *http.ServeMux, d Deps) {
 			httpx.Error(writer, err)
 			return
 		}
-		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": tier})
+		httpx.JSON(writer, 200, map[string]any{"forms": forms, "meetings": meetings, "plan": tier, "expiresAt": expiresAt})
 	})
 }
