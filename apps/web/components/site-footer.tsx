@@ -30,20 +30,29 @@ export function SiteFooter() {
           ]}
         />
         <FooterCol
+          title="Legal"
+          links={[
+            ["Privacy Policy", "/privacy"],
+            ["Terms & Conditions", "/terms"],
+            ["Acceptable Use", "/aup"],
+            ["Data Processing", "/dpa"],
+            ["Cookie Policy", "/cookie-policy"],
+            ["Refund Policy", "/refund-policy"],
+          ]}
+        />
+        <FooterCol
           title="Company"
           links={[
             ["GitHub", "https://github.com/zeroaxiis/halomail"],
-            ["Privacy Policy", "/privacy"],
-            ["Terms & Conditions", "/terms"],
-            ["Refund Policy", "/refund-policy"],
-            ["Contact Us", "mailto:support@halomail.zeroaxiis.tech"],
+            ["Contact Us", "mailto:support@zeroaxiis.tech"],
           ]}
         />
       </div>
       <div className="border-t border-border">
         <div className="container flex h-12 items-center justify-between text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} HaloMail. MIT licensed.</span>
-          <span>Built with 👍🏻</span>
+          <span>© {new Date().getFullYear()} zeroaxiis. All rights reserved.</span>
+          <span className="hidden sm:inline-block italic">Launch your next big thing. Zero friction, no plastic required.</span>
+          <span>Build from zero</span>
         </div>
       </div>
     </footer>

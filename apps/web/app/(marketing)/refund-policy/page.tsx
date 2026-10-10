@@ -43,7 +43,7 @@ export default function RefundPolicyPage() {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-4">4. Process for Requesting a Refund</h2>
           <p>
-            To request a refund, please contact our support team at <strong>support@halomail.zeroaxiis.tech</strong> with your account details, transaction ID, and a detailed explanation of your request. Our team will review your request and typically respond within 48-72 hours.
+            To request a refund, please contact our support team at <strong>support@zeroaxiis.tech</strong> with your account details, transaction ID, and a detailed explanation of your request. Our team will review your request and typically respond within 48-72 hours.
           </p>
         </section>
 

@@ -62,10 +62,38 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
     if (!isFetched) {
       async function detectLocation() {
         try {
+          let res = await fetch("https://ipapi.co/json/");
+          if (res.ok) {
+            let data = await res.json();
+            if (data?.country_code) {
+              setCurrency(getCurrencyForCountry(data.country_code));
+              setIsFetched(true);
+              return;
+            }
+          }
+        } catch (err) {}
+
+        try {
+          let res = await fetch("https://ipwho.is/");
+          if (res.ok) {
+            let data = await res.json();
+            if (data?.country_code) {
+              setCurrency(getCurrencyForCountry(data.country_code));
+              setIsFetched(true);
+              return;
+            }
+          }
+        } catch (err) {}
+
+        try {
           let res = await fetch("https://api.country.is/");
           if (res.ok) {
             let data = await res.json();
-            if (data?.country) return setCurrency(getCurrencyForCountry(data.country));
+            if (data?.country) {
+              setCurrency(getCurrencyForCountry(data.country));
+              setIsFetched(true);
+              return;
+            }
           }
         } catch (err) {
           // api.country.is failed (likely blocked), try geojs fallback
@@ -75,10 +103,12 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           let res = await fetch("https://get.geojs.io/v1/ip/country.json");
           if (res.ok) {
             let data = await res.json();
-            if (data?.country) setCurrency(getCurrencyForCountry(data.country));
+            if (data?.country) {
+              setCurrency(getCurrencyForCountry(data.country));
+            }
           }
         } catch (err) {
-          // Silently ignore if both are blocked by extensions, will fallback to default currency
+          // Silently ignore if blocked by extensions, will fallback to default currency
         } finally {
           setIsFetched(true);
         }
