@@ -55,7 +55,7 @@ type RazorpayWebhookPayload struct {
 	} `json:"payload"`
 }
 
-func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
+func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string, internalSecret string) {
 	mux.HandleFunc("POST /v1/billing/razorpay/webhook", func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -63,11 +63,14 @@ func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
 			return
 		}
 
-		// Verify Signature
-		signature := r.Header.Get("X-Razorpay-Signature")
-		if !verifyRazorpaySignature(bodyBytes, signature, webhookSecret) {
-			http.Error(w, "Invalid signature", http.StatusUnauthorized)
-			return
+		// Verify Signature (Bypass if requested internally by Next.js using internal secret)
+		isInternal := r.Header.Get("X-Internal-Secret") == internalSecret && internalSecret != ""
+		if !isInternal {
+			signature := r.Header.Get("X-Razorpay-Signature")
+			if !verifyRazorpaySignature(bodyBytes, signature, webhookSecret) {
+				http.Error(w, "Invalid signature", http.StatusUnauthorized)
+				return
+			}
 		}
 
 		var payload RazorpayWebhookPayload
