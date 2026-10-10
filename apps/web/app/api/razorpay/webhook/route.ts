@@ -131,14 +131,18 @@ export async function POST(req: NextRequest) {
       // Forward the exact raw webhook to the Go backend so it updates the account tier in the database
       const backendUrl = process.env.PUBLIC_API_URL || "http://localhost:8080";
       try {
-        await fetch(`${backendUrl}/v1/billing/razorpay/webhook`, {
+        const goRes = await fetch(`${backendUrl}/v1/billing/razorpay/webhook`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-razorpay-signature": signature || ""
+            "x-razorpay-signature": signature || "",
+            "x-internal-secret": process.env.OTP_DELIVERY_SECRET || ""
           },
           body: rawBody
         });
+        if (!goRes.ok) {
+          console.error("Go Backend rejected webhook:", goRes.status, await goRes.text());
+        }
       } catch (err) {
         console.error("Failed to forward webhook to Go backend:", err);
       }

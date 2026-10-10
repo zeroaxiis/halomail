@@ -46,7 +46,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	h.MountOTP(mux, d.OTPDeliverySecret)
-	h.MountBilling(mux, d.RazorpayWebhookSecret)
+	h.MountBilling(mux, d.RazorpayWebhookSecret, d.OTPDeliverySecret)
 	opts := connect.WithInterceptors(d.Interceptors...)
 	mux.Handle(identityv1connect.NewAuthServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))
