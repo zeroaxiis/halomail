@@ -9,6 +9,10 @@ import { Card } from "@/components/ui/card";
 
 const PRICING = {
   Free: { monthly: { INR: 0, USD: 0, EUR: 0, GBP: 0, CAD: 0, AUD: 0, SGD: 0, AED: 0 }, yearly: { INR: 0, USD: 0, EUR: 0, GBP: 0, CAD: 0, AUD: 0, SGD: 0, AED: 0 } },
+  Test: {
+    monthly: { INR: 1, USD: 1, EUR: 1, GBP: 1, CAD: 1, AUD: 1, SGD: 1, AED: 1 },
+    yearly: { INR: 1, USD: 1, EUR: 1, GBP: 1, CAD: 1, AUD: 1, SGD: 1, AED: 1 }
+  },
   Pro: {
     monthly: { INR: 299, USD: 3.5, EUR: 3.0, GBP: 2.5, CAD: 5.0, AUD: 5.0, SGD: 4.5, AED: 12.0 },
     yearly: { INR: 2999, USD: 33.0, EUR: 29.5, GBP: 25.0, CAD: 46.5, AUD: 47.0, SGD: 42.0, AED: 119.5 }
@@ -128,14 +132,19 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
     });
   };
 
-  const handleCheckout = async (planName: "Pro" | "Business") => {
+  const handleCheckout = async (planName: "Pro" | "Business" | "Test") => {
     if (!user) {
       window.location.href = "/register";
       return;
     }
 
     setIsProcessing(planName);
-    const amount = PRICING[planName][billingCycle][currency as keyof typeof PRICING.Pro.monthly];
+    let amount = PRICING[planName][billingCycle][currency as keyof typeof PRICING.Pro.monthly];
+
+    // For testing: if user is logged in, force amount to 1 for all paid plans
+    if (user) {
+      amount = 1;
+    }
 
     const isLoaded = await loadRazorpayScript();
     if (!isLoaded) {
@@ -148,7 +157,16 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, currency, plan: planName, billingCycle, orgId: user.org_id })
+        body: JSON.stringify({ 
+          amount, 
+          currency, 
+          plan: planName, 
+          billingCycle, 
+          orgId: user.org_id,
+          userId: user.id,
+          name: user.name,
+          email: user.email
+        })
       });
       const order = await res.json();
 
@@ -159,7 +177,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
       }
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZERPAY_LIVE_API_KEY || "rzp_live_Tl8rjPPjJnFYHq",
+        key: process.env.NEXT_PUBLIC_RAZERPAY_LIVE_API_KEY,
         amount: order.amount,
         currency: order.currency,
         name: "ZeroAxiis",
@@ -184,7 +202,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
     }
   };
 
-  const getSavings = (planName: "Pro" | "Business") => {
+  const getSavings = (planName: "Pro" | "Business" | "Test") => {
     const m = PRICING[planName].monthly[currency as keyof typeof PRICING.Pro.monthly];
     const y = PRICING[planName].yearly[currency as keyof typeof PRICING.Pro.yearly];
     if (!m || !y) return 0;
@@ -241,7 +259,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           <div className="mt-4 flex flex-col min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
               <span className="text-4xl font-semibold tracking-tight">
-                {formatPrice(currency, PRICING.Pro[billingCycle][currency as keyof typeof PRICING.Pro.monthly])}
+                {formatPrice(currency, user ? 1 : PRICING.Pro[billingCycle][currency as keyof typeof PRICING.Pro.monthly])}
               </span>
               <span className="text-sm text-muted-foreground">
                 {billingCycle === "monthly" ? "/ month" : "/ year"}
@@ -272,7 +290,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           <div className="mt-4 flex flex-col min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
               <span className="text-4xl font-semibold tracking-tight">
-                {formatPrice(currency, PRICING.Business[billingCycle][currency as keyof typeof PRICING.Business.monthly])}
+                {formatPrice(currency, user ? 1 : PRICING.Business[billingCycle][currency as keyof typeof PRICING.Business.monthly])}
               </span>
               <span className="text-sm text-muted-foreground">
                 {billingCycle === "monthly" ? "/ month" : "/ year"}
@@ -293,6 +311,8 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             {isProcessing === "Business" ? "Processing..." : "Get Business"}
           </Button>
         </Card>
+
+
 
         {/* Enterprise Plan */}
         <Card className="relative p-7 flex flex-col bg-card/40 backdrop-blur">
