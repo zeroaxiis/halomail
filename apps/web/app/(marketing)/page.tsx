@@ -112,8 +112,8 @@ function Hero() {
           </Button>
         </div>
 
-        <p className="mt-5 text-xs text-muted-foreground">
-          No credit card required
+        <p className="mt-5 text-sm text-muted-foreground font-medium">
+          Zero friction for the Free tier — no credit or debit card required. Keep your plastic in your wallet.
         </p>
 
         <HeroPreview />

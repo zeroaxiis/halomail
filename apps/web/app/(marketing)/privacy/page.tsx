@@ -47,7 +47,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-4">5. Your Rights</h2>
           <p>
-            You have the right to access, update, or delete the personal information we hold about you. You can do this from your account dashboard or by contacting our support team at support@halomail.zeroaxiis.tech.
+            You have the right to access, update, or delete the personal information we hold about you. You can do this from your account dashboard or by contacting our support team at support@zeroaxiis.tech.
           </p>
         </section>
 

@@ -57,6 +57,16 @@ export default function TermsPage() {
             In no event shall HaloMail, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
           </p>
         </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold text-foreground mb-4">7. Contact Information</h2>
+          <p>
+            If you have any questions regarding these Terms, please contact us at <strong>support@zeroaxiis.tech</strong> or <strong>legal@zeroaxiis.tech</strong>.<br /><br />
+            <strong>zeroaxiis</strong><br />
+            Uttar Pradesh, 273004<br />
+            India
+          </p>
+        </section>
       </div>
     </div>
   );
