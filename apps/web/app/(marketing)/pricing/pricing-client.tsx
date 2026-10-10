@@ -275,9 +275,9 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             size="lg" 
             variant="brand"
             onClick={() => handleCheckout("Pro")}
-            disabled={isProcessing === "Pro"}
+            disabled={isProcessing === "Pro" || ["pro", "business", "enterprise"].includes(user?.plan?.toLowerCase())}
           >
-            {isProcessing === "Pro" ? "Processing..." : "Get Pro"}
+            {isProcessing === "Pro" ? "Processing..." : ["pro", "business", "enterprise"].includes(user?.plan?.toLowerCase()) ? "Current or lower plan" : "Get Pro"}
           </Button>
         </Card>
 
@@ -306,9 +306,9 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             size="lg" 
             variant="outline"
             onClick={() => handleCheckout("Business")}
-            disabled={isProcessing === "Business"}
+            disabled={isProcessing === "Business" || ["business", "enterprise"].includes(user?.plan?.toLowerCase())}
           >
-            {isProcessing === "Business" ? "Processing..." : "Get Business"}
+            {isProcessing === "Business" ? "Processing..." : ["business", "enterprise"].includes(user?.plan?.toLowerCase()) ? "Current or lower plan" : "Get Business"}
           </Button>
         </Card>
 

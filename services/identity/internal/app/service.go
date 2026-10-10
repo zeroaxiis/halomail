@@ -238,8 +238,8 @@ func (s *Service) UpdateUser(ctx context.Context, userID, name, handle, avatarUR
 }
 
 func (s *Service) ProcessSubscription(ctx context.Context, orgID, customerID, subID, tier, status string, cycleEnd time.Time) error {
-	if status == "cancelled" || status == "halted" {
-		tier = "free" // Downgrade on cancellation
+	if status == "cancelled" || status == "halted" || status == "refunded" {
+		tier = "free" // Downgrade on cancellation or refund
 	}
 	return s.users.UpdateOrgBilling(ctx, orgID, customerID, subID, tier, cycleEnd)
 }

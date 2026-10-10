@@ -9,11 +9,18 @@ import { Badge } from "@/components/ui/badge";
 
 export function CurrentPlanClient() {
   const [plan, setPlan] = useState("Free");
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+
   useEffect(() => {
-    fetch("/api/rpc/halomail.identity.v1.AuthService/GetCurrentUser", { method: "POST", body: "{}" })
+    fetch("/api/rpc/v1/usage", { method: "POST", body: "{}" })
       .then(res => res.json())
       .then(data => {
-        if (data.plan) setPlan(data.plan);
+        if (data.plan) {
+          setPlan(data.plan);
+        }
+        if (data.expiresAt) {
+          setExpiresAt(new Date(data.expiresAt).toLocaleDateString());
+        }
       })
       .catch(() => {});
   }, []);
@@ -22,7 +29,10 @@ export function CurrentPlanClient() {
     <div className="mb-8 p-5 bg-card/60 backdrop-blur border border-border shadow-sm rounded-xl flex items-center justify-between">
       <div>
         <h3 className="font-semibold text-lg text-foreground">Current Subscription</h3>
-        <p className="text-sm text-muted-foreground">You are currently on the {plan} plan.</p>
+        <p className="text-sm text-muted-foreground">
+          You are currently on the <span className="font-medium text-foreground capitalize">{plan}</span> plan.
+          {expiresAt && plan !== "free" && ` Your subscription expires on ${expiresAt}.`}
+        </p>
       </div>
       <Badge className="uppercase text-sm px-4 py-1.5">{plan}</Badge>
     </div>
@@ -52,6 +62,9 @@ export function InvoicesClient() {
 
   return (
     <div className="mt-6 flex flex-col gap-3">
+      <div className="mb-2 text-sm font-medium text-foreground">
+        Total Invoices: {invoices.length}
+      </div>
       {invoices.map((inv) => (
         <Card key={inv.key} className="p-4 flex items-center justify-between bg-card/40 backdrop-blur border-border hover:bg-card/60 transition-colors">
           <div className="flex items-center gap-4">
