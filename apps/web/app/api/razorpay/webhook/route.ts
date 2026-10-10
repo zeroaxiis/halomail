@@ -44,15 +44,15 @@ export async function POST(req: NextRequest) {
 
       // Only send invoice and upload to R2 if it's a successful payment, NOT a refund
       if (body.event === "payment.captured" || body.event === "order.paid") {
-        // Configure nodemailer using SMTP. Defaults to local Mailpit (port 1025) for dev
+        // Configure nodemailer. Use Resend SMTP in production if key is present, otherwise local Mailpit.
+        const useResend = !!process.env.RESEND_API_KEY;
         const transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST || "localhost",
-          port: parseInt(process.env.SMTP_PORT || "1025", 10),
-          secure: process.env.SMTP_PORT === "465",
-          auth: process.env.SMTP_USER ? {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          } : undefined,
+          host: useResend ? "smtp.resend.com" : (process.env.SMTP_HOST || "localhost"),
+          port: useResend ? 465 : parseInt(process.env.SMTP_PORT || "1025", 10),
+          secure: useResend ? true : (process.env.SMTP_PORT === "465"),
+          auth: useResend 
+            ? { user: "resend", pass: process.env.RESEND_API_KEY }
+            : (process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined),
         });
 
         const invoiceHTML = `
@@ -93,12 +93,16 @@ export async function POST(req: NextRequest) {
           </div>
         `;
 
-        await transporter.sendMail({
-          from: '"zeroaxiis Billing" <noreply@nts.email.zeroaxiis.tech>',
-          to: email,
-          subject: `Your receipt for ${product || "halomail"} [${payment?.id}]`,
-          html: invoiceHTML,
-        });
+        try {
+          await transporter.sendMail({
+            from: '"zeroaxiis Billing" <noreply@nts.email.zeroaxiis.tech>',
+            to: email,
+            subject: `Your receipt for ${product || "halomail"} [${payment?.id}]`,
+            html: invoiceHTML,
+          });
+        } catch (emailErr) {
+          console.error("Failed to send receipt email:", emailErr);
+        }
 
         // Upload Invoice to R2
         if (account_id && process.env.R2_ACCESS_KEY_ID) {
