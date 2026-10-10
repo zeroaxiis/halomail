@@ -51,7 +51,7 @@ export function SiteFooter() {
       <div className="border-t border-border">
         <div className="container flex h-12 items-center justify-between text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} zeroaxiis. All rights reserved.</span>
-          <span className="hidden sm:inline-block italic">Launch your next big thing. Zero friction, no plastic required.</span>
+          <span className="hidden sm:inline-block italic">Everything starts from zero.</span>
           <span>Build from zero</span>
         </div>
       </div>
