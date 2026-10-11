@@ -3,7 +3,7 @@ import { PricingClient } from "@/app/(marketing)/pricing/pricing-client";
 import { CurrentPlanClient, InvoicesClient } from "./invoices-client";
 
 export const metadata = {
-  title: "Billing & Upgrade",
+  title: "Billing",
 };
 
 export default async function BillingPage() {
@@ -13,7 +13,7 @@ export default async function BillingPage() {
   return (
     <div className="max-w-6xl mx-auto pb-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Billing & Upgrade</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Billing</h1>
         <p className="mt-2 text-muted-foreground">
           Manage your subscription or upgrade to unlock higher limits and more features.
         </p>
@@ -27,7 +27,7 @@ export default async function BillingPage() {
 
       <div className="border border-border rounded-xl bg-card p-6">
         <h2 className="text-xl font-semibold tracking-tight border-b border-border pb-4 mb-4">Payment History & Invoices</h2>
-        <p className="text-sm text-muted-foreground">Download your past transaction invoices here. Invoices are securely stored in Cloudflare R2.</p>
+        <p className="text-sm text-muted-foreground">Download your past transaction invoices here.</p>
         <InvoicesClient />
       </div>
     </div>

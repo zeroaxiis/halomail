@@ -54,3 +54,18 @@ func TestWindowDefaultsToFormsAndRollsOverYear(test *testing.T) {
 		test.Fatalf("wrong december window: %v %v", period, reset)
 	}
 }
+
+func TestPaidPlanQuotasMatchPublishedAllowances(t *testing.T) {
+	policy := Policy{Forms: 25, Meetings: 10, Monthly: false}
+	for _, tt := range []struct {
+		tier, feature string
+		want          int
+	}{
+		{"pro", "forms", 1000}, {"pro", "meetings", 100}, {"business", "forms", 2500}, {"business", "meetings", 250},
+	} {
+		limit, _, reset := policy.Window(tt.feature, tt.tier, time.Now())
+		if limit != tt.want || reset == nil {
+			t.Fatalf("%s %s: %d, reset %v", tt.tier, tt.feature, limit, reset)
+		}
+	}
+}

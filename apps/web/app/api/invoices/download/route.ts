@@ -1,33 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { BillingError, billingError, billingUser, invoiceStorage, ownsInvoice } from "@/lib/billing-server";
 export async function GET(req: NextRequest) {
-  const key = req.nextUrl.searchParams.get("key");
-  if (!key) return NextResponse.json({ error: "key required" }, { status: 400 });
-
   try {
-    const client = new S3Client({
-      region: process.env.R2_REGION || "auto",
-      endpoint: process.env.R2_ENDPOINT,
-      credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
-      },
-    });
-
-    const data = await client.send(new GetObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME || "halomail",
-      Key: key,
-    }));
-
-    return new NextResponse(data.Body as any, {
-      headers: {
-        "Content-Type": "text/html",
-        "Content-Disposition": `attachment; filename="${key.split("/").pop()}"`
-      }
-    });
-  } catch (error) {
-    console.error("Download failed:", error);
-    return NextResponse.json({ error: "Failed to download invoice" }, { status: 500 });
-  }
+    const user = await billingUser(req);
+    const key = req.nextUrl.searchParams.get("key") || "";
+    if (!ownsInvoice(key, user)) throw new BillingError("Invoice not found.", 404);
+    const { client, bucket } = invoiceStorage();
+    const data = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    if (!data.Body) throw new BillingError("Invoice not found.", 404);
+    return new NextResponse(new Uint8Array(await data.Body.transformToByteArray()).buffer, { headers: {
+      "Content-Type": "text/html; charset=utf-8", "Content-Disposition": `attachment; filename="${key.split("/").pop()}"`,
+      "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "sandbox",
+    } });
+  } catch (error) { return billingError(error); }
 }
