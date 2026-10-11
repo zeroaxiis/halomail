@@ -13,7 +13,7 @@ import (
 
 func GetTier(ctx context.Context, pool *pgxpool.Pool, ownerID string) string {
 	var tier string
-	err := pool.QueryRow(ctx, `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
+	err := pool.QueryRow(ctx, `SELECT CASE WHEN o.billing_cycle_end IS NOT NULL AND o.billing_cycle_end <= now() THEN 'free' ELSE o.tier END FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
 	if err != nil {
 		return "free"
 	}
@@ -40,18 +40,24 @@ func (policy Policy) Window(feature, tier string, now time.Time) (int, time.Time
 		limit = policy.Meetings
 	}
 
-	// Apply multipliers based on tier
+	// Paid quotas match the published plan, independent of configurable free limits.
 	if tier == "pro" {
-		limit = limit * 10
+		limit = 1000
+		if feature == "meetings" {
+			limit = 100
+		}
 	} else if tier == "business" {
-		limit = limit * 25
+		limit = 2500
+		if feature == "meetings" {
+			limit = 250
+		}
 	} else if tier == "enterprise" {
-		limit = limit * 1000 // effectively unlimited
+		limit *= 1000
 	}
 
 	period := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
 	var reset *time.Time
-	if policy.Monthly {
+	if policy.Monthly || tier == "pro" || tier == "business" {
 		current := now.UTC()
 		period = time.Date(current.Year(), current.Month(), 1, 0, 0, 0, 0, time.UTC)
 		next := period.AddDate(0, 1, 0)
@@ -64,7 +70,7 @@ func (policy Policy) Window(feature, tier string, now time.Time) (int, time.Time
 // error once the limit is reached.
 func Consume(ctx context.Context, tx pgx.Tx, policy Policy, ownerID, feature string) error {
 	var tier string
-	err := tx.QueryRow(ctx, `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
+	err := tx.QueryRow(ctx, `SELECT CASE WHEN o.billing_cycle_end IS NOT NULL AND o.billing_cycle_end <= now() THEN 'free' ELSE o.tier END FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
 	if err != nil {
 		tier = "free" // Fallback
 	}
@@ -86,7 +92,7 @@ func Consume(ctx context.Context, tx pgx.Tx, policy Policy, ownerID, feature str
 // Read reports the usage for the current window without consuming any.
 func Read(ctx context.Context, pool *pgxpool.Pool, policy Policy, ownerID, feature string) (Stats, error) {
 	var tier string
-	err := pool.QueryRow(ctx, `SELECT o.tier FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
+	err := pool.QueryRow(ctx, `SELECT CASE WHEN o.billing_cycle_end IS NOT NULL AND o.billing_cycle_end <= now() THEN 'free' ELSE o.tier END FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, ownerID).Scan(&tier)
 	if err != nil {
 		tier = "free" // Fallback
 	}

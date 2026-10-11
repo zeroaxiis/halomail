@@ -1,44 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
-
+import { BillingError, billingError, billingUser, invoiceStorage, razorpay, razorpayKeys } from "@/lib/billing-server";
+import { PRICING } from "@/lib/billing-pricing";
 export async function POST(req: NextRequest) {
   try {
-    const { amount, currency, plan, billingCycle, orgId, userId, name, email } = await req.json();
-
-    const key_id = process.env.RAZERPAY_LIVE_API_KEY;
-    const key_secret = process.env.RAZERPAY_LIVE_KEY_SECRET;
-
-    if (!key_id || !key_secret) {
-      throw new Error("Razorpay keys are missing from environment variables");
-    }
-
-    const instance = new Razorpay({ key_id, key_secret });
-
-    // Razorpay requires amount in subunits (paise, cents, etc.)
-    const amountInSubunits = Math.round(amount * 100);
-
-    const options = {
-      amount: amountInSubunits,
-      currency: currency,
-      receipt: `rcpt_${Date.now()}`,
-      notes: {
-        org_id: orgId,
-        tier: plan.toLowerCase(),
-        account_id: orgId,
-        user_id: userId,
-        name: name || "",
-        email: email || "",
-        product: "halomail"
-      }
-    };
-
-    const order = await instance.orders.create(options);
-    return NextResponse.json(order);
-  } catch (error: any) {
-    console.error("Razorpay Order Creation Error:", error);
-    return NextResponse.json(
-      { error: "Payment service is temporarily unavailable. Please try again later." },
-      { status: 500 }
-    );
-  }
+    const user = await billingUser(req);
+    const { currency, plan, billingCycle } = await req.json();
+    if (!["Pro", "Business"].includes(plan) || !["monthly", "yearly"].includes(billingCycle) || !["INR", "USD", "EUR", "GBP", "CAD", "AUD", "SGD", "AED"].includes(currency)) throw new BillingError("Invalid plan, billing cycle or currency.");
+    if (!process.env.RAZORPAY_WEBHOOK_SECRET) throw new BillingError("Payments are not configured.", 503);
+    invoiceStorage();
+    const prices = PRICING[plan as "Pro" | "Business"][billingCycle as "monthly" | "yearly"];
+    const order = await razorpay().orders.create({
+      amount: Math.round(prices[currency as keyof typeof prices] * 100), currency, receipt: `rcpt_${Date.now()}`,
+      notes: { org_id: user.orgId, account_id: user.orgId, user_id: user.id, tier: plan.toLowerCase(),
+        billing_cycle: billingCycle, name: user.name, email: user.email, product: "halomail" },
+    });
+    return NextResponse.json({ ...order, keyId: razorpayKeys().key_id }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) { return billingError(error); }
 }

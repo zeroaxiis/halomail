@@ -21,15 +21,15 @@ import (
 )
 
 type Deps struct {
-	Pool              *pgxpool.Pool
+	Pool                  *pgxpool.Pool
 	JWTSecret             string
 	OTPDeliverySecret     string
 	RazorpayWebhookSecret string
 	SessionTTL            time.Duration
-	APIKeyPrefix      string
-	Redis             *redis.Client
-	Interceptors      []connect.Interceptor
-	Limits            usage.Policy
+	APIKeyPrefix          string
+	Redis                 *redis.Client
+	Interceptors          []connect.Interceptor
+	Limits                usage.Policy
 }
 
 // Mount registers the identity ConnectRPC handlers on mux.
@@ -46,7 +46,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	h.MountOTP(mux, d.OTPDeliverySecret)
-	h.MountBilling(mux, d.RazorpayWebhookSecret, d.OTPDeliverySecret)
+	h.MountBilling(mux, d.RazorpayWebhookSecret)
 	opts := connect.WithInterceptors(d.Interceptors...)
 	mux.Handle(identityv1connect.NewAuthServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))
@@ -60,7 +60,11 @@ func Mount(mux *http.ServeMux, d Deps) {
 		}
 		var tier string
 		var expiresAt *time.Time
-		_ = d.Pool.QueryRow(request.Context(), `SELECT o.tier, o.billing_cycle_end FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, owner).Scan(&tier, &expiresAt)
+		err = d.Pool.QueryRow(request.Context(), `SELECT CASE WHEN o.billing_cycle_end IS NOT NULL AND o.billing_cycle_end <= now() THEN 'free' ELSE o.tier END, o.billing_cycle_end FROM users u JOIN orgs o ON u.org_id = o.id WHERE u.id = $1`, owner).Scan(&tier, &expiresAt)
+		if err != nil {
+			httpx.Error(writer, err)
+			return
+		}
 		if tier == "" {
 			tier = "free"
 		}

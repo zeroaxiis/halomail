@@ -459,3 +459,17 @@ func emptyJSON(s string) string {
 	}
 	return s
 }
+
+func (s *Service) ProcessPayment(ctx context.Context, userID, orgID, orderID, paymentID, tier string, paidAt, cycleEnd time.Time) (*domain.User, error) {
+	user, err := s.users.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if orgID != "" && orgID != user.OrgID {
+		return nil, errs.Forbidden("payment account mismatch")
+	}
+	if err := s.users.ApplyPayment(ctx, user.OrgID, orderID, paymentID, tier, paidAt, cycleEnd); err != nil {
+		return nil, err
+	}
+	return user, nil
+}

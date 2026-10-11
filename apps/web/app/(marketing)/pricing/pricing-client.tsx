@@ -7,21 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-const PRICING = {
-  Free: { monthly: { INR: 0, USD: 0, EUR: 0, GBP: 0, CAD: 0, AUD: 0, SGD: 0, AED: 0 }, yearly: { INR: 0, USD: 0, EUR: 0, GBP: 0, CAD: 0, AUD: 0, SGD: 0, AED: 0 } },
-  Test: {
-    monthly: { INR: 1, USD: 1, EUR: 1, GBP: 1, CAD: 1, AUD: 1, SGD: 1, AED: 1 },
-    yearly: { INR: 1, USD: 1, EUR: 1, GBP: 1, CAD: 1, AUD: 1, SGD: 1, AED: 1 }
-  },
-  Pro: {
-    monthly: { INR: 299, USD: 3.5, EUR: 3.0, GBP: 2.5, CAD: 5.0, AUD: 5.0, SGD: 4.5, AED: 12.0 },
-    yearly: { INR: 2999, USD: 33.0, EUR: 29.5, GBP: 25.0, CAD: 46.5, AUD: 47.0, SGD: 42.0, AED: 119.5 }
-  },
-  Business: {
-    monthly: { INR: 799, USD: 9.0, EUR: 8.0, GBP: 7.0, CAD: 12.5, AUD: 12.5, SGD: 11.5, AED: 32.0 },
-    yearly: { INR: 7999, USD: 87.0, EUR: 78.0, GBP: 66.0, CAD: 124.0, AUD: 125.0, SGD: 111.5, AED: 319.0 }
-  }
-};
+import { PRICING } from "@/lib/billing-pricing";
+import { rpc } from "@/lib/api";
 
 const euroCountries = ["AT", "BE", "CY", "EE", "FI", "FR", "DE", "GR", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK", "SI", "ES", "HR"];
 
@@ -60,7 +47,9 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
 
   useEffect(() => {
     import("@/lib/auth").then(({ getUser }) => {
-      setUser(getUser());
+      const session = getUser();
+      setUser(session);
+      if (session) rpc<{ plan: string }>("v1/usage").then(data => setUser({ ...session, plan: data.plan })).catch(() => {});
     });
     // If Vercel headers are missing (e.g. running locally), detect via API
     if (!isFetched) {
@@ -139,13 +128,6 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
     }
 
     setIsProcessing(planName);
-    let amount = PRICING[planName][billingCycle][currency as keyof typeof PRICING.Pro.monthly];
-
-    // For testing: if user is logged in, force amount to 1 for all paid plans
-    if (user) {
-      amount = 1;
-    }
-
     const isLoaded = await loadRazorpayScript();
     if (!isLoaded) {
       alert("Failed to load Razorpay SDK. Please check your connection.");
@@ -157,47 +139,52 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          amount, 
-          currency, 
-          plan: planName, 
-          billingCycle, 
-          orgId: user.org_id,
-          userId: user.id,
-          name: user.name,
-          email: user.email
-        })
+        body: JSON.stringify({ currency, plan: planName, billingCycle })
       });
       const order = await res.json();
 
-      if (order.error) {
+      if (!res.ok) {
         alert("Failed to create order: " + order.error);
         setIsProcessing(null);
         return;
       }
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZERPAY_LIVE_API_KEY,
+        key: order.keyId,
         amount: order.amount,
         currency: order.currency,
         name: "ZeroAxiis",
         description: `Upgrade to ${planName} Plan (${billingCycle})`,
         order_id: order.id,
-        handler: function (response: any) {
-          alert(`Payment successful! Payment ID: ${response.razorpay_payment_id}`);
+        handler: async function (response: any) {
+          sessionStorage.setItem("halomail_pending_payment", response.razorpay_payment_id);
+          try {
+            const verification = await fetch("/api/razorpay/verify", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+            const result = await verification.json();
+            if (!verification.ok) throw new Error(result.error);
+            sessionStorage.removeItem("halomail_pending_payment");
+            window.location.href = "/dashboard/billing?payment=success";
+          } catch (error) {
+            alert(error instanceof Error ? error.message : "Payment received. Open Billing to sync it; do not pay again.");
+            window.location.href = "/dashboard/billing";
+          }
         },
+        modal: { ondismiss: () => setIsProcessing(null) },
         theme: { color: "#000000" } // Dark theme
       };
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on("payment.failed", function (response: any) {
         alert("Payment failed: " + response.error.description);
+        setIsProcessing(null);
       });
       rzp.open();
     } catch (err) {
       console.error(err);
       alert("Something went wrong during checkout.");
-    } finally {
       setIsProcessing(null);
     }
   };
@@ -205,7 +192,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
   const getSavings = (planName: "Pro" | "Business" | "Test") => {
     const m = PRICING[planName].monthly[currency as keyof typeof PRICING.Pro.monthly];
     const y = PRICING[planName].yearly[currency as keyof typeof PRICING.Pro.yearly];
-    if (!m || !y) return 0;
+    if (!m || !y || m === y) return 0;
     const savings = 1 - (y / (12 * m));
     return Math.floor(savings * 100);
   };
@@ -259,13 +246,13 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           <div className="mt-4 flex flex-col min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
               <span className="text-4xl font-semibold tracking-tight">
-                {formatPrice(currency, user ? 1 : PRICING.Pro[billingCycle][currency as keyof typeof PRICING.Pro.monthly])}
+                {formatPrice(currency, PRICING.Pro[billingCycle][currency as keyof typeof PRICING.Pro.monthly])}
               </span>
               <span className="text-sm text-muted-foreground">
                 {billingCycle === "monthly" ? "/ month" : "/ year"}
               </span>
             </div>
-            {billingCycle === "yearly" && (
+            {billingCycle === "yearly" && getSavings("Pro") > 0 && (
               <span className="text-xs text-brand font-medium mt-1">Save {getSavings("Pro")}% with yearly</span>
             )}
           </div>
@@ -275,7 +262,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             size="lg" 
             variant="brand"
             onClick={() => handleCheckout("Pro")}
-            disabled={isProcessing === "Pro" || ["pro", "business", "enterprise"].includes(user?.plan?.toLowerCase())}
+            disabled={isProcessing !== null || ["pro", "business", "enterprise"].includes(user?.plan?.toLowerCase())}
           >
             {isProcessing === "Pro" ? "Processing..." : ["pro", "business", "enterprise"].includes(user?.plan?.toLowerCase()) ? "Current or lower plan" : "Get Pro"}
           </Button>
@@ -290,13 +277,13 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           <div className="mt-4 flex flex-col min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
               <span className="text-4xl font-semibold tracking-tight">
-                {formatPrice(currency, user ? 1 : PRICING.Business[billingCycle][currency as keyof typeof PRICING.Business.monthly])}
+                {formatPrice(currency, PRICING.Business[billingCycle][currency as keyof typeof PRICING.Business.monthly])}
               </span>
               <span className="text-sm text-muted-foreground">
                 {billingCycle === "monthly" ? "/ month" : "/ year"}
               </span>
             </div>
-            {billingCycle === "yearly" && (
+            {billingCycle === "yearly" && getSavings("Business") > 0 && (
               <span className="text-xs text-brand font-medium mt-1">Save {getSavings("Business")}% with yearly</span>
             )}
           </div>
@@ -306,7 +293,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             size="lg" 
             variant="outline"
             onClick={() => handleCheckout("Business")}
-            disabled={isProcessing === "Business" || ["business", "enterprise"].includes(user?.plan?.toLowerCase())}
+            disabled={isProcessing !== null || ["business", "enterprise"].includes(user?.plan?.toLowerCase())}
           >
             {isProcessing === "Business" ? "Processing..." : ["business", "enterprise"].includes(user?.plan?.toLowerCase()) ? "Current or lower plan" : "Get Business"}
           </Button>
