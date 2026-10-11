@@ -6,7 +6,7 @@ import styles from "./login.module.css";
 // Official mark from zeroaxiis/zeroaxiis, components/icons/brand.tsx.
 function ZeroAxiisMark() {
   return (
-    <svg width="28" height="28" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+    <svg className={styles.parentMark} width="28" height="28" viewBox="0 0 100 100" fill="none" aria-hidden="true">
       <circle cx="50" cy="50" r="46" fill="#FFCC00" stroke="#1A1C20" strokeWidth="6" />
       <g stroke="#1A1C20" strokeWidth="6">
         <path d="M50 4v92" />

@@ -45,6 +45,7 @@
 .offers p { margin-top: 7px; color: var(--login-muted); font-size: 11px; line-height: 1.7; max-width: 140px; }
 .formArea { display: flex; align-items: center; justify-content: center; min-width: 0; }
 .company { display: flex; align-items: center; gap: 28px; }
+.parentMark { display: block; transform: rotate(-10deg); }
 .parentBrand { display: flex; align-items: center; gap: 9px; }
 .parentBrand > span { display: grid; gap: 1px; }
 .productOf { color: var(--login-muted); font-size: 10px; line-height: 1.4; }
