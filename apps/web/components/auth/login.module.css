@@ -157,6 +157,19 @@
   .legal { gap: 8px; }
 }
 
+/* The extra registration field also fits on shorter phone screens. */
+@media (max-width: 800px) and (max-height: 640px) {
+  .shell[data-auth-mode="register"] { gap: 8px; }
+  .shell[data-auth-mode="register"] .content { gap: 8px; }
+  .registerForm .formTitle { margin-bottom: 12px; }
+  .registerForm .formDescription { display: none; }
+  .registerForm .fields { gap: 8px; }
+  .registerForm .field { gap: 4px; }
+  .registerForm .field input { height: 36px; }
+  .registerForm .passwordToggle { height: 30px; }
+  .registerForm .formRegister { margin-top: 8px; }
+}
+
 /* Keep the form reachable when a phone's keyboard or browser zoom leaves very
    little vertical space. The normal desktop and phone layouts fit one screen. */
 @media (max-height: 480px) {

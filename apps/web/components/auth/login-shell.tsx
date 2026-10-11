@@ -23,15 +23,18 @@ const offers = [
   { title: "Email & API", detail: "Your templates. Your integrations." },
 ];
 
-export function LoginShell({ children }: { children: React.ReactNode }) {
+export function LoginShell({ children, isRegister = false }: { children: React.ReactNode; isRegister?: boolean }) {
   return (
-    <main className={styles.shell}>
+    <main className={styles.shell} data-auth-mode={isRegister ? "register" : "login"}>
       <header className={styles.header}>
         <Link href="/" aria-label="HaloMail home" className={styles.homeLink}>
           <Logo className="text-xl" />
         </Link>
         <div className={styles.headerActions}>
-          <Link href="/register" className={styles.registerLink}>New here? <span>Create an account</span></Link>
+          <Link href={isRegister ? "/login" : "/register"} className={styles.registerLink}>
+            {isRegister ? "Already have an account?" : "New here?"}
+            <span>{isRegister ? "Log in" : "Create an account"}</span>
+          </Link>
           <ThemeToggle />
         </div>
       </header>
@@ -53,7 +56,7 @@ export function LoginShell({ children }: { children: React.ReactNode }) {
           </ul>
         </section>
 
-        <section className={styles.formArea} aria-label="Sign in to HaloMail">
+        <section className={styles.formArea} aria-label={isRegister ? "Create a HaloMail account" : "Sign in to HaloMail"}>
           {children}
         </section>
       </div>
