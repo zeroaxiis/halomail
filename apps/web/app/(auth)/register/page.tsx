@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import styles from "@/components/auth/login.module.css";
 import { rpc } from "@/lib/api";
 
 export default function RegisterPage() {
@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -32,47 +33,49 @@ export default function RegisterPage() {
   }
 
   if (created) return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">Account created</CardTitle>
-        <CardDescription>Log in with your password and verify the code sent to your email to access your dashboard.</CardDescription>
-      </CardHeader>
-      <CardContent><Button asChild className="w-full"><Link href="/login">Continue to login</Link></Button></CardContent>
-    </Card>
+    <div className={styles.form} aria-live="polite">
+      <h2 className={styles.formTitle}>Account created.</h2>
+      <p className={styles.formDescription}>Log in with your password and verify the code sent to your email to access your dashboard.</p>
+      <Button asChild className={`${styles.submit} w-full`}><Link href="/login">Continue to login</Link></Button>
+    </div>
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">Create your account</CardTitle>
-        <CardDescription>Start scheduling and collecting messages in minutes.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-1.5">
+    <div className={`${styles.form} ${styles.registerForm}`}>
+      <h2 className={styles.formTitle}>Create your account.</h2>
+      <p className={styles.formDescription}>Start your HaloMail workspace.</p>
+        <form onSubmit={onSubmit} className={styles.fields} aria-busy={loading}>
+          <div className={styles.field}>
             <Label htmlFor="name">Name</Label>
-            <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" />
+            <Input id="name" autoComplete="name" required disabled={loading} value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          <div className={styles.field}>
+            <Label htmlFor="email">Email address</Label>
+            <Input id="email" type="email" autoComplete="email" required disabled={loading} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
           </div>
-          <div className="space-y-1.5">
+          <div className={styles.field}>
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
+            <div className={styles.passwordWrap}>
+              <Input id="password" type={showPassword ? "text" : "password"} autoComplete="new-password" required minLength={8} disabled={loading} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
+              <button type="button" className={styles.passwordToggle} disabled={loading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword} aria-controls="password"
+                onClick={() => setShowPassword((visible) => !visible)}>
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" className="w-full" disabled={loading}>
+          {error && <p role="alert" className={styles.error}>{error}</p>}
+          <Button type="submit" className={styles.submit} disabled={loading}>
             {loading ? "Creating…" : "Create account"}
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className={styles.formRegister}>
           Already have an account?{" "}
-          <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
+          <Link href="/login">
             Log in
           </Link>
         </p>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

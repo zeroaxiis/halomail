@@ -1,0 +1,179 @@
+﻿.shell {
+  --login-ink: #292334;
+  --login-muted: #6a6076;
+  --login-accent: #7145a4;
+  --login-line: rgb(76 51 106 / .14);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 28px;
+  height: 100svh;
+  height: 100dvh;
+  padding: 30px clamp(24px, 6vw, 100px);
+  color: var(--login-ink);
+  background:
+    radial-gradient(ellipse at 0% 100%, rgb(213 180 185 / .28), transparent 58%),
+    linear-gradient(110deg, #e9e1f2 0%, #eee7f5 28%, #f5f1f9 58%, #faf9fc 100%);
+}
+
+:global(.dark) .shell {
+  --login-ink: #f2eef8;
+  --login-muted: #b0a3bf;
+  --login-accent: #c5a6f0;
+  --login-line: rgb(219 191 249 / .17);
+  background:
+    radial-gradient(ellipse at 0% 100%, rgb(155 91 94 / .12), transparent 62%),
+    radial-gradient(ellipse at 12% 30%, rgb(116 62 150 / .16), transparent 64%),
+    linear-gradient(110deg, #22182f 0%, #1c1526 28%, #120f19 58%, #0b0b10 100%);
+}
+
+.header, .content, .footer { width: 100%; max-width: 1536px; margin: 0 auto; }
+.header, .footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.homeLink { display: inline-flex; }
+.headerActions { display: flex; align-items: center; gap: 25px; }
+.registerLink { color: var(--login-muted); font-size: 12px; }
+.registerLink span { margin-left: 8px; color: var(--login-ink); }
+.registerLink:hover span { text-decoration: underline; text-underline-offset: 4px; }
+.content { display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: clamp(40px, 6vw, 100px); min-height: 0; }
+.story { min-width: 0; }
+.kicker { margin-bottom: 23px; color: var(--login-muted); font-size: 13px; }
+.headline { font-size: clamp(42px, 4.4vw, 72px); font-weight: 550; letter-spacing: -.065em; line-height: 1.13; }
+.headline span { color: var(--login-accent); }
+.intro { margin-top: 26px; color: var(--login-muted); font-size: 15px; line-height: 1.8; }
+.offers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; max-width: 555px; margin-top: 45px; padding-top: 23px; border-top: 1px solid var(--login-line); }
+.offers h2 { font-size: 13px; font-weight: 550; }
+.offers p { margin-top: 7px; color: var(--login-muted); font-size: 11px; line-height: 1.7; max-width: 140px; }
+.formArea { display: flex; align-items: center; justify-content: center; min-width: 0; }
+.company { display: flex; align-items: center; gap: 28px; }
+.parentBrand { display: flex; align-items: center; gap: 9px; }
+.parentBrand > span { display: grid; gap: 1px; }
+.productOf { color: var(--login-muted); font-size: 10px; line-height: 1.4; }
+.parentBrand strong { font-size: 14px; font-weight: 600; letter-spacing: -.03em; line-height: 1.4; }
+.aboutLink { display: grid; gap: 2px; padding-left: 25px; border-left: 1px solid var(--login-line); font-size: 11px; line-height: 1.4; }
+.aboutLink span:last-child { font-size: 10px; color: var(--login-muted); }
+.aboutLink:hover span:first-child { text-decoration: underline; text-underline-offset: 4px; }
+.legal { display: flex; align-items: center; gap: 18px; color: var(--login-muted); font-size: 10px; }
+.legal > span { margin-right: 10px; }
+.legal a:hover { color: var(--login-ink); }
+.shell a:focus-visible { outline: 2px solid var(--login-accent); outline-offset: 5px; border-radius: 2px; }
+
+.form { width: 100%; max-width: 350px; }
+.formTitle { font-size: 30px; font-weight: 550; letter-spacing: -.045em; line-height: 1.25; }
+.formDescription { margin: 10px 0 29px; font-size: 13px; line-height: 1.65; color: var(--login-muted); overflow-wrap: anywhere; }
+.fields { display: grid; gap: 20px; }
+.field { display: grid; gap: 9px; }
+.field label { font-size: 12px; font-weight: 500; }
+.field input { height: 46px; border-radius: 7px; padding: 0 14px; font-size: 14px; box-shadow: none; border-color: var(--login-line); background: rgb(255 255 255 / .25); color: var(--login-ink); }
+:global(.dark) .field input { background: rgb(255 255 255 / .035); }
+.field input::placeholder { color: var(--login-muted); opacity: .7; }
+.field input:focus-visible { outline: 2px solid var(--login-accent); outline-offset: 2px; box-shadow: none; }
+.passwordWrap { position: relative; }
+.passwordWrap input { padding-right: 62px; }
+.passwordToggle { position: absolute; top: 3px; right: 3px; display: grid; place-items: center; width: 50px; height: 40px; color: var(--login-muted); font-size: 11px; border-radius: 4px; }
+.passwordToggle:hover { color: var(--login-ink); }
+.passwordToggle:focus-visible { outline: 2px solid var(--login-accent); }
+.passwordToggle:disabled { opacity: .5; }
+.submit { margin-top: 3px; height: 46px; padding: 0 16px; border-radius: 7px; font-size: 13px; background: #372846; color: #faf7ff; }
+.submit:hover { background: #4b355e; }
+:global(.dark) .submit { background: #e8dcf8; color: #271935; }
+:global(.dark) .submit:hover { background: #f3ebfd; }
+.formNote { margin-top: 14px; color: var(--login-muted); text-align: center; font-size: 10px; line-height: 1.6; }
+.formRegister { margin-top: 25px; text-align: center; font-size: 12px; color: var(--login-muted); }
+.formRegister a { margin-left: 4px; color: var(--login-ink); text-decoration: underline; text-underline-offset: 4px; }
+.codeInput { text-align: center; letter-spacing: .4em; font-size: 21px !important; }
+.codeHelp { font-size: 11px; line-height: 1.6; color: var(--login-muted); }
+.codeActions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+.codeActions button { font-size: 12px; }
+.error { padding: 9px 12px; border-radius: 6px; border: 1px solid hsl(var(--destructive) / .3); background: hsl(var(--destructive) / .08); color: #b42336; font-size: 12px; line-height: 1.5; }
+:global(.dark) .error { color: #ffadb6; }
+
+@media (min-width: 801px) and (max-height: 680px) {
+  .shell { padding-top: 20px; padding-bottom: 20px; gap: 18px; }
+  .kicker { margin-bottom: 16px; }
+  .headline { font-size: clamp(40px, 4.2vw, 60px); }
+  .intro { margin-top: 20px; font-size: 13px; }
+  .offers { margin-top: 25px; padding-top: 18px; }
+  .formDescription { margin-bottom: 20px; }
+  .fields { gap: 15px; }
+  .formRegister { margin-top: 18px; }
+}
+
+@media (max-width: 800px) {
+  .shell { padding: 20px 24px; gap: 18px; }
+  .headerActions { gap: 0; }
+  .registerLink { display: none; }
+  .content { grid-template-columns: 1fr; align-content: center; gap: 30px; width: 100%; max-width: 360px; }
+  .kicker { display: none; }
+  .headline { font-size: 34px; line-height: 1.1; letter-spacing: -.05em; }
+  .headline br { display: none; }
+  .intro { display: none; }
+  .offers { display: flex; flex-wrap: wrap; gap: 7px 16px; margin-top: 15px; padding: 0; border: 0; }
+  .offers h2 { font-size: 11px; font-weight: 400; color: var(--login-muted); }
+  .offers p { display: none; }
+  .form { max-width: none; }
+  .formTitle { font-size: 25px; }
+  .formDescription { font-size: 12px; margin: 8px 0 20px; }
+  .fields { gap: 16px; }
+  .field { gap: 7px; }
+  .field input { font-size: 16px; height: 44px; }
+  .passwordToggle { height: 38px; }
+  .submit { height: 44px; }
+  .formNote { margin-top: 11px; font-size: 9px; }
+  .formRegister { margin-top: 17px; font-size: 11px; }
+  .company { gap: 15px; }
+  .parentBrand { gap: 7px; }
+  .parentBrand svg { width: 24px; height: 24px; }
+  .parentBrand strong { font-size: 12px; }
+  .productOf { font-size: 9px; }
+  .aboutLink { border: 0; padding-left: 0; font-size: 10px; }
+  .aboutLink span:last-child { font-size: 9px; }
+  .legal { gap: 10px; font-size: 9px; }
+  .legal > span { display: none; }
+  .footer { gap: 12px; }
+}
+
+@media (max-width: 800px) and (max-height: 710px) {
+  .shell { padding: 14px 20px; gap: 12px; }
+  .content { gap: 19px; }
+  .headline { font-size: 28px; }
+  .offers { margin-top: 10px; gap: 6px 12px; }
+  .offers h2 { font-size: 10px; }
+  .formTitle { font-size: 22px; }
+  .formDescription { margin: 6px 0 15px; font-size: 11px; }
+  .fields { gap: 12px; }
+  .field { gap: 6px; }
+  .field input { height: 40px; }
+  .passwordToggle { height: 34px; }
+  .submit { height: 40px; margin-top: 0; }
+  .formNote { margin-top: 8px; }
+  .formRegister { margin-top: 12px; }
+  .error { padding: 6px 9px; font-size: 11px; }
+}
+
+@media (max-width: 359px) {
+  .shell { padding-left: 16px; padding-right: 16px; }
+  .company { gap: 10px; }
+  .parentBrand svg { width: 21px; height: 21px; }
+  .legal { gap: 8px; }
+}
+
+/* The extra registration field also fits on shorter phone screens. */
+@media (max-width: 800px) and (max-height: 640px) {
+  .shell[data-auth-mode="register"] { gap: 8px; }
+  .shell[data-auth-mode="register"] .content { gap: 8px; }
+  .registerForm .formTitle { margin-bottom: 12px; }
+  .registerForm .formDescription { display: none; }
+  .registerForm .fields { gap: 8px; }
+  .registerForm .field { gap: 4px; }
+  .registerForm .field input { height: 36px; }
+  .registerForm .passwordToggle { height: 30px; }
+  .registerForm .formRegister { margin-top: 8px; }
+}
+
+/* Keep the form reachable when a phone's keyboard or browser zoom leaves very
+   little vertical space. The normal desktop and phone layouts fit one screen. */
+@media (max-height: 480px) {
+  .shell { height: auto; min-height: 100svh; }
+  .content { padding: 10px 0; }
+}
+

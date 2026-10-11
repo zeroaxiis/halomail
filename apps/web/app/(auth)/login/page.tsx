@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import styles from "@/components/auth/login.module.css";
 import { rpc } from "@/lib/api";
 import { saveSession, type SessionUser } from "@/lib/auth";
 
@@ -14,6 +14,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [challengeId, setChallengeId] = useState("");
   const [code, setCode] = useState("");
   const [expiresAt, setExpiresAt] = useState(0);
@@ -67,56 +68,62 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">{challengeId ? "Check your email" : "Welcome back"}</CardTitle>
-        <CardDescription>
-          {challengeId ? `Enter the 6-digit code sent to ${email}.` : "Enter your password, then verify your email to log in."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+    <div className={styles.form}>
+      <h2 className={styles.formTitle}>{challengeId ? "Check your email." : "Welcome back."}</h2>
+      <p className={styles.formDescription}>
+        {challengeId ? `Enter the 6-digit code we sent to ${email}.` : "Sign in to your HaloMail workspace."}
+      </p>
+        <form onSubmit={onSubmit} className={styles.fields} aria-busy={loading}>
           {challengeId ? (
-            <div className="space-y-1.5">
+            <div className={styles.field}>
               <Label htmlFor="code">Verification code</Label>
               <Input id="code" type="text" inputMode="numeric" autoComplete="one-time-code" autoFocus required
                 pattern="[0-9]{6}" minLength={6} maxLength={6} value={code} disabled={loading || remaining === 0}
+                className={styles.codeInput} aria-describedby="code-help"
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder="000000" />
-              <p className="text-sm text-muted-foreground">
+              <p id="code-help" className={styles.codeHelp}>
                 {remaining > 0 ? `Code expires in ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}.` : "Your code has expired. Request a new one below."}
               </p>
             </div>
           ) : (
             <>
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+              <div className={styles.field}>
+                <Label htmlFor="email">Email address</Label>
                 <Input id="email" type="email" autoComplete="email" required disabled={loading} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
               </div>
-              <div className="space-y-1.5">
+              <div className={styles.field}>
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" autoComplete="current-password" required disabled={loading} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" />
+                <div className={styles.passwordWrap}>
+                  <Input id="password" type={showPassword ? "text" : "password"} autoComplete="current-password" required disabled={loading} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" />
+                  <button type="button" className={styles.passwordToggle} disabled={loading}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword} aria-controls="password"
+                    onClick={() => setShowPassword((visible) => !visible)}>
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
               </div>
             </>
           )}
-          {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" className="w-full" disabled={loading || (!!challengeId && (remaining === 0 || code.length !== 6))}>
+          {error && <p role="alert" className={styles.error}>{error}</p>}
+          <Button type="submit" className={styles.submit} disabled={loading || (!!challengeId && (remaining === 0 || code.length !== 6))}>
             {loading ? "Please wait..." : challengeId ? "Verify and log in" : "Send login code"}
           </Button>
           {challengeId && (
-            <div className="flex justify-between gap-2">
+            <div className={styles.codeActions}>
               <Button type="button" variant="ghost" disabled={loading || resendIn > 0} onClick={requestCode}>
                 {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
               </Button>
-              <Button type="button" variant="ghost" disabled={loading} onClick={() => { setChallengeId(""); setCode(""); setPassword(""); setError(null); }}>
+              <Button type="button" variant="ghost" disabled={loading} onClick={() => { setChallengeId(""); setCode(""); setPassword(""); setShowPassword(false); setError(null); }}>
                 Change account
               </Button>
             </div>
           )}
         </form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          No account? <Link href="/register" className="text-foreground underline-offset-4 hover:underline">Create one</Link>
+        {!challengeId && <p className={styles.formNote}>We&apos;ll email you a verification code after this step.</p>}
+        <p className={styles.formRegister}>
+          New to HaloMail? <Link href="/register">Create your account</Link>
         </p>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
