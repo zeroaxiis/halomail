@@ -12,8 +12,8 @@
   padding: 30px clamp(24px, 6vw, 100px);
   color: var(--login-ink);
   background:
-    radial-gradient(ellipse at 0% 100%, rgb(213 180 185 / .28), transparent 58%),
-    linear-gradient(110deg, #e9e1f2 0%, #eee7f5 28%, #f5f1f9 58%, #faf9fc 100%);
+    radial-gradient(ellipse at 0% 100%, rgb(213 180 185 / .19), transparent 58%),
+    linear-gradient(110deg, #ede9f3 0%, #f2eef6 28%, #f7f5fa 58%, #fbfafc 100%);
 }
 
 :global(.dark) .shell {
@@ -22,9 +22,9 @@
   --login-accent: #c5a6f0;
   --login-line: rgb(219 191 249 / .17);
   background:
-    radial-gradient(ellipse at 0% 100%, rgb(155 91 94 / .12), transparent 62%),
-    radial-gradient(ellipse at 12% 30%, rgb(116 62 150 / .16), transparent 64%),
-    linear-gradient(110deg, #22182f 0%, #1c1526 28%, #120f19 58%, #0b0b10 100%);
+    radial-gradient(ellipse at 0% 100%, rgb(155 91 94 / .08), transparent 62%),
+    radial-gradient(ellipse at 12% 30%, rgb(116 62 150 / .105), transparent 64%),
+    linear-gradient(110deg, #1e1827 0%, #1a1521 28%, #110f16 58%, #0b0b0f 100%);
 }
 
 .header, .content, .footer { width: 100%; max-width: 1536px; margin: 0 auto; }
@@ -45,6 +45,7 @@
 .offers p { margin-top: 7px; color: var(--login-muted); font-size: 11px; line-height: 1.7; max-width: 140px; }
 .formArea { display: flex; align-items: center; justify-content: center; min-width: 0; }
 .company { display: flex; align-items: center; gap: 28px; }
+.parentMark { display: block; transform: rotate(-10deg); }
 .parentBrand { display: flex; align-items: center; gap: 9px; }
 .parentBrand > span { display: grid; gap: 1px; }
 .productOf { color: var(--login-muted); font-size: 10px; line-height: 1.4; }
