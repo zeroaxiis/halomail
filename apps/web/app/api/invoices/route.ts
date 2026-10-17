@@ -12,8 +12,10 @@ export async function GET(req: NextRequest) {
         const data = await client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: token }));
         for (const object of data.Contents || []) {
           if (!object.Key || !ownsInvoice(object.Key, user)) continue;
-          const id = object.Key.split("/").pop()!.replace(".html", "");
-          if (!invoices.has(id)) invoices.set(id, { key: object.Key, id, date: object.LastModified?.toISOString() || "" });
+          const id = object.Key.split("/").pop()!.replace(/\.(html|pdf)$/, "");
+          if (!invoices.has(id) || object.Key.endsWith(".pdf")) {
+            invoices.set(id, { key: object.Key, id, date: object.LastModified?.toISOString() || "" });
+          }
         }
         token = data.IsTruncated ? data.NextContinuationToken : undefined;
       } while (token);

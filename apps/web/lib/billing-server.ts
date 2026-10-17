@@ -1,4 +1,5 @@
 import { sendBillingReceipt } from "./billing-mail";
+import { generateInvoiceHTML, generateInvoicePDF, getInvoiceDetails, type InvoiceData } from "./invoice-generator";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
@@ -50,10 +51,78 @@ export function invoiceStorage() {
 export function invoicePrefix() { return (process.env.R2_INVOICE_PREFIX || "halomail/invice").replace(/^\/+|\/+$/g, ""); }
 export function invoicePrefixes(user: BillingUser) { return [`${invoicePrefix()}/${user.orgId}/${user.id}/`, `invoices/${user.orgId}/`]; }
 export function ownsInvoice(key: string, user: BillingUser) {
-  return invoicePrefixes(user).some(prefix => key.startsWith(prefix) && /^invoice_pay_[A-Za-z0-9]+\.html$/.test(key.slice(prefix.length)));
+  return invoicePrefixes(user).some(prefix => key.startsWith(prefix) && /^invoice_pay_[A-Za-z0-9]+\.(html|pdf)$/.test(key.slice(prefix.length)));
 }
-function escapeHTML(value: unknown) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+
+type RefundPayment = { id: string; order_id: string; status: string; amount: number | string; currency: string };
+type RefundOrder = { id: string; status: string; amount: number | string; currency: string; notes?: unknown };
+type ProcessedRefund = { id: string; payment_id: string; status: string; amount: number; currency: string; created_at: number };
+type ProviderRefund = Omit<ProcessedRefund, "amount"> & { amount?: number };
+
+// Only completed refunds count. Provider payment totals can include refunds still being processed.
+async function syncPaymentRefunds(provider: ReturnType<typeof razorpay>, payment: RefundPayment, order: RefundOrder, trigger?: ProviderRefund) {
+  const notes = (order.notes || {}) as Record<string, string>;
+  const amount = Number(payment.amount);
+  if (notes.product !== "halomail" || !notes.user_id || !["pro", "business"].includes(notes.tier) ||
+      order.id !== payment.order_id || order.status !== "paid" || !["captured", "refunded"].includes(payment.status) ||
+      !Number.isSafeInteger(amount) || amount <= 0 || Number(order.amount) !== amount || order.currency !== payment.currency) {
+    throw new BillingError("Refund does not match a HaloMail purchase.", 422);
+  }
+  const refunds = new Map<string, ProcessedRefund>();
+  const add = (refund: ProviderRefund) => {
+    if (!/^rfnd_[A-Za-z0-9]+$/.test(refund.id) || refund.payment_id !== payment.id || refund.currency !== payment.currency ||
+        typeof refund.amount !== "number" || !Number.isSafeInteger(refund.amount) || refund.amount <= 0 || refund.amount > amount ||
+        !Number.isSafeInteger(refund.created_at) || refund.created_at <= 0) {
+      throw new BillingError("Invalid refund details returned by the payment provider.", 503);
+    }
+    if (refund.status === "processed") refunds.set(refund.id, {
+      id: refund.id, payment_id: refund.payment_id, amount: refund.amount, currency: refund.currency,
+      status: refund.status, created_at: refund.created_at,
+    });
+  };
+  if (trigger) add(trigger);
+  const seen = new Set<string>();
+  for (let skip = 0; ; skip += 100) {
+    const page = await provider.payments.fetchMultipleRefund(payment.id, { count: 100, skip });
+    if (!Array.isArray(page.items)) throw new BillingError("Refund history is unavailable.", 503);
+    const previousSize = seen.size;
+    for (const refund of page.items) { seen.add(refund.id); add(refund); }
+    if (page.items.length < 100) break;
+    if (seen.size === previousSize) throw new BillingError("Refund history pagination did not advance.", 503);
+  }
+  if (!refunds.size) return { fullyRefunded: false, downgraded: false };
+  const total = [...refunds.values()].reduce((sum, refund) => sum + refund.amount, 0);
+  if (!Number.isSafeInteger(total) || total > amount) throw new BillingError("Refund amounts exceed the payment.", 503);
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  if (!secret) throw new BillingError("Refund verification is not configured.", 503);
+  const body = JSON.stringify({ event: "refund.processed", payload: {
+    order: { entity: order }, payment: { entity: payment }, refunds: { items: [...refunds.values()] },
+  } });
+  const response = await fetch(`${backendURL()}/v1/billing/razorpay/webhook`, {
+    method: "POST", cache: "no-store", signal: AbortSignal.timeout(20000),
+    headers: { "Content-Type": "application/json", "X-Razorpay-Signature": createHmac("sha256", secret).update(body).digest("hex") }, body,
+  });
+  const result = response.ok ? await response.json() : null;
+  if (!result?.success || !result.orgId || result.userId !== notes.user_id ||
+      typeof result.fullyRefunded !== "boolean" || typeof result.downgraded !== "boolean") {
+    throw new BillingError("Refund received, but the account update is pending. Retry the webhook.", 503);
+  }
+  return { fullyRefunded: result.fullyRefunded as boolean, downgraded: result.downgraded as boolean };
+}
+
+export async function reconcileRefund(refundId: string) {
+  if (!/^rfnd_[A-Za-z0-9]+$/.test(refundId)) throw new BillingError("Invalid refund ID.", 400);
+  const provider = razorpay();
+  const refund = await provider.refunds.fetch(refundId);
+  if (refund.id !== refundId || refund.status !== "processed" || !/^pay_[A-Za-z0-9]+$/.test(refund.payment_id)) {
+    throw new BillingError("Refund processing has not been confirmed. Retry the webhook.", 503);
+  }
+  const payment = await provider.payments.fetch(refund.payment_id);
+  if (payment.id !== refund.payment_id || !payment.order_id) throw new BillingError("Refund payment could not be verified.", 422);
+  const order = await provider.orders.fetch(payment.order_id);
+  if ((order.notes as Record<string, string> | undefined)?.product !== "halomail") return { ignored: true };
+  const result = await syncPaymentRefunds(provider, payment, order, refund);
+  return { success: true, paymentId: payment.id, ...result };
 }
 
 // Fetch the payment AND order: payment notes need not contain the order notes.
@@ -69,8 +138,13 @@ export async function fulfillPayment(paymentId: string, user?: BillingUser, expe
   }
   if (user && ((notes.org_id && notes.org_id !== user.orgId) || notes.user_id !== user.id)) throw new BillingError("This payment belongs to another account.", 403);
   if (expectedOrderId && order.id !== expectedOrderId) throw new BillingError("Payment does not match the checkout order.", 403);
-  if (payment.status !== "captured" || order.status !== "paid") throw new BillingError("Payment is awaiting capture. Retry after it is captured; do not pay again.", 409);
-  if (Number(payment.amount) !== Number(order.amount) || payment.currency !== order.currency || Number(payment.amount_refunded) > 0) throw new BillingError("Payment amount or refund status does not match the order.", 409);
+  if (!["captured", "refunded"].includes(payment.status) || order.status !== "paid") throw new BillingError("Payment is awaiting capture. Retry after it is captured; do not pay again.", 409);
+  if (Number(payment.amount) !== Number(order.amount) || payment.currency !== order.currency) throw new BillingError("Payment amount does not match the order.", 409);
+  if (payment.status === "refunded" || Number(payment.amount_refunded) > 0) {
+    const refund = await syncPaymentRefunds(provider, payment, order);
+    if (refund.fullyRefunded) return { success: true, refunded: true, paymentId: payment.id, ...refund };
+    if (payment.status !== "captured") throw new BillingError("Refund is still processing. Retry after it is completed.", 409);
+  }
   const cycle = notes.billing_cycle || "monthly";
   if (!["monthly", "yearly"].includes(cycle)) throw new BillingError("Invalid billing cycle.");
   const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
@@ -84,25 +158,42 @@ export async function fulfillPayment(paymentId: string, user?: BillingUser, expe
   if (!activated?.success || !activated.orgId || activated.userId !== notes.user_id) throw new BillingError("Payment received, but plan activation is pending. Retry; do not pay again.", 503);
   notes.org_id = activated.orgId;
   const date = new Date(payment.created_at * 1000).toISOString();
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>HaloMail Invoice ${escapeHTML(payment.id)}</title></head>
-<body style="font-family:Arial,sans-serif;max-width:720px;margin:40px auto;padding:24px;color:#111827">
-<h1>HaloMail — Payment Receipt / Invoice</h1><p>Paid on ${escapeHTML(date)}</p>
-<p>Billed to: ${escapeHTML(notes.name)} (${escapeHTML(notes.email || payment.email)})</p>
-<table cellpadding="10"><tr><th>Plan</th><td>${escapeHTML(notes.tier)} (${escapeHTML(cycle)})</td></tr>
-<tr><th>Amount paid</th><td>${escapeHTML(payment.currency)} ${(Number(payment.amount) / 100).toFixed(2)}</td></tr>
-<tr><th>Payment ID</th><td>${escapeHTML(payment.id)}</td></tr><tr><th>Order ID</th><td>${escapeHTML(order.id)}</td></tr>
-<tr><th>Account ID</th><td>${escapeHTML(notes.org_id)}</td></tr></table>
-<p>Payment received through Razorpay. For assistance: support@zeroaxiis.tech</p></body></html>`;
+  const invoiceData: InvoiceData = {
+    paymentId: payment.id,
+    orderId: order.id,
+    amountMinor: Number(payment.amount),
+    currency: payment.currency,
+    date,
+    customerName: notes.name || (user?.name ?? "Customer"),
+    customerEmail: notes.email || payment.email || (user?.email ?? ""),
+    tier: notes.tier,
+    billingCycle: cycle,
+  };
+  const html = generateInvoiceHTML(invoiceData);
+  const pdfBuffer = await generateInvoicePDF(invoiceData);
+
   const { client, bucket } = invoiceStorage();
-  const key = `${invoicePrefix()}/${notes.org_id}/${notes.user_id}/invoice_${payment.id}.html`;
-  let created = true;
-  try {
-    await client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: html, ContentType: "text/html; charset=utf-8",
-    Metadata: { "payment-id": payment.id, "paid-at": date }, IfNoneMatch: "*" }));
-  } catch (error) {
-    if ((error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode !== 412) throw error;
-    created = false;
+  const htmlKey = `${invoicePrefix()}/${notes.org_id}/${notes.user_id}/invoice_${payment.id}.html`;
+  const pdfKey = `${invoicePrefix()}/${notes.org_id}/${notes.user_id}/invoice_${payment.id}.pdf`;
+  let created = false;
+  for (const document of [
+    { Key: htmlKey, Body: html, ContentType: "text/html; charset=utf-8" },
+    { Key: pdfKey, Body: pdfBuffer, ContentType: "application/pdf" },
+  ]) {
+    try {
+      await client.send(new PutObjectCommand({ Bucket: bucket, ...document,
+        Metadata: { "payment-id": payment.id, "paid-at": date }, IfNoneMatch: "*" }));
+      if (document.Key === pdfKey) created = true;
+    } catch (error) {
+      if ((error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode !== 412) throw error;
+    }
   }
-  if (created) await sendBillingReceipt(notes.email || payment.email, payment.id, html);
-  return { success: true, plan: notes.tier, paymentId: payment.id, invoiceKey: key };
+  if (created) {
+    const downloadURL = new URL("/api/invoices/download", process.env.PUBLIC_WEB_URL || "https://halomail.zeroaxiis.tech");
+    downloadURL.searchParams.set("key", pdfKey);
+    await sendBillingReceipt(invoiceData.customerEmail, payment.id, pdfBuffer, {
+      ...getInvoiceDetails(invoiceData), downloadURL: downloadURL.href,
+    });
+  }
+  return { success: true, plan: notes.tier, paymentId: payment.id, invoiceKey: pdfKey };
 }

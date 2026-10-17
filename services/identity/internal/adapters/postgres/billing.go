@@ -35,7 +35,11 @@ func (r *Users) ApplyPayment(ctx context.Context, orgID, orderID, paymentID, tie
 		return tx.Commit(ctx)
 	}
 	_, err = tx.Exec(ctx, `UPDATE orgs SET tier=$2, rzp_subscription_id=$3, billing_cycle_end=$4, billing_paid_at=$5
- WHERE id=$1 AND (billing_paid_at IS NULL OR billing_paid_at <= $5)`, orgID, tier, orderID, cycleEnd, paidAt)
+ WHERE id=$1 AND (billing_paid_at IS NULL OR billing_paid_at <= $5)
+ AND NOT EXISTS (
+   SELECT 1 FROM billing_refunds WHERE payment_id=$6 OR order_id=$3
+   GROUP BY payment_id HAVING SUM(amount) >= MAX(payment_amount)
+ )`, orgID, tier, orderID, cycleEnd, paidAt, paymentID)
 	if err != nil {
 		return err
 	}

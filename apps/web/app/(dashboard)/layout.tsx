@@ -2,32 +2,48 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
 import { saveSession, type SessionUser } from "@/lib/auth";
 import { rpc } from "@/lib/api";
+import { WorkspaceProvider } from "@/components/dashboard/workspace-context";
+import "./dashboard.css";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState<SessionUser | null>(null);
 
   useEffect(() => {
-    rpc<{ user: SessionUser }>("halomail.identity.v1.AuthService/GetCurrentUser")
-      .then(result => { saveSession("", result.user); setReady(true); })
+    rpc<{ user: SessionUser }>(
+      "halomail.identity.v1.AuthService/GetCurrentUser",
+    )
+      .then((result) => {
+        saveSession("", result.user);
+        setUser(result.user);
+      })
       .catch(() => router.replace("/login"));
   }, [router]);
 
-  if (!ready) {
-    return <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">Loading…</div>;
-  }
+  if (!user)
+    return (
+      <div className="dashboard-shell workspace-loading" role="status">
+        <span className="workspace-wordmark">HaloMail</span>
+        <p>Opening your workspace…</p>
+      </div>
+    );
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
+    <WorkspaceProvider initialUser={user}>
+      <div className="dashboard-shell min-h-screen">
+        <a href="#workspace-content" className="dashboard-skip-link">
+          Skip to content
+        </a>
         <Topbar />
-        <main className="flex-1 p-6 md:p-8">{children}</main>
+        <main id="workspace-content" tabIndex={-1} className="dashboard-main">
+          {children}
+        </main>
       </div>
-    </div>
+    </WorkspaceProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { billingError, fulfillPayment, validSignature } from "@/lib/billing-server";
+import { billingError, fulfillPayment, reconcileRefund, validSignature } from "@/lib/billing-server";
 export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
   try {
@@ -8,7 +8,12 @@ export async function POST(req: NextRequest) {
     if (!validSignature(raw, req.headers.get("x-razorpay-signature"), process.env.RAZORPAY_WEBHOOK_SECRET)) return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     let event;
     try { event = JSON.parse(raw); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
-    if (!["payment.captured", "order.paid"].includes(event.event)) return NextResponse.json({ ignored: true });
+    if (event?.event === "refund.processed") {
+      const refundId = event.payload?.refund?.entity?.id;
+      if (typeof refundId !== "string") return NextResponse.json({ error: "Missing refund" }, { status: 400 });
+      return NextResponse.json(await reconcileRefund(refundId));
+    }
+    if (!["payment.captured", "order.paid"].includes(event?.event)) return NextResponse.json({ ignored: true });
     const paymentId = event.payload?.payment?.entity?.id;
     if (!paymentId) return NextResponse.json({ error: "Missing payment" }, { status: 400 });
     return NextResponse.json(await fulfillPayment(paymentId));
