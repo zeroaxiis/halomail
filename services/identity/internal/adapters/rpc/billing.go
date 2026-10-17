@@ -13,6 +13,7 @@ import (
 )
 
 type billingNotes struct {
+	Product      string `json:"product"`
 	UserID       string `json:"user_id"`
 	OrgID        string `json:"org_id"`
 	Tier         string `json:"tier"`
@@ -37,6 +38,14 @@ type billingEntity struct {
 	CreatedAt int64        `json:"created_at"`
 	Notes     billingNotes `json:"notes"`
 }
+type refundEntity struct {
+	ID        string `json:"id"`
+	PaymentID string `json:"payment_id"`
+	Status    string `json:"status"`
+	Amount    int64  `json:"amount"`
+	Currency  string `json:"currency"`
+	CreatedAt int64  `json:"created_at"`
+}
 type RazorpayWebhookPayload struct {
 	Event   string `json:"event"`
 	Payload struct {
@@ -46,6 +55,9 @@ type RazorpayWebhookPayload struct {
 		Payment struct {
 			Entity billingEntity `json:"entity"`
 		} `json:"payment"`
+		Refunds struct {
+			Items []refundEntity `json:"items"`
+		} `json:"refunds"`
 	} `json:"payload"`
 }
 
@@ -64,6 +76,10 @@ func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
 		var payload RazorpayWebhookPayload
 		if err := json.Unmarshal(body, &payload); err != nil {
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+		if payload.Event == "refund.processed" {
+			h.processBillingRefunds(w, r, payload)
 			return
 		}
 		if payload.Event != "order.paid" && payload.Event != "payment.captured" {

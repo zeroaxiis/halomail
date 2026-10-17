@@ -20,6 +20,7 @@ type UserRepo interface {
 	GetUserByHandle(ctx context.Context, handle string) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
 	ApplyPayment(ctx context.Context, orgID, orderID, paymentID, tier string, paidAt, cycleEnd time.Time) error
+	ApplyRefunds(ctx context.Context, orgID, orderID, paymentID, currency string, paymentAmount int64, refunds []domain.BillingRefund) (domain.RefundResult, error)
 	UpdateOrgBilling(ctx context.Context, orgID, customerID, subID, tier string, cycleEnd time.Time) error
 }
 

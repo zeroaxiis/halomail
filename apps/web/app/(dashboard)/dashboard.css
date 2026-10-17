@@ -1,0 +1,1031 @@
+/* The signed-in workspace: quiet surfaces, clear records. Dashboard scope only. */
+.dashboard-shell {
+	--background: 45 20% 97%;
+	--foreground: 40 9% 13%;
+	--card: 45 20% 97%;
+	--card-foreground: 40 9% 13%;
+	--primary: 40 9% 13%;
+	--primary-foreground: 45 20% 97%;
+	--secondary: 40 10% 92%;
+	--secondary-foreground: 40 9% 13%;
+	--muted: 40 10% 92%;
+	--muted-foreground: 40 5% 43%;
+	--accent: 40 10% 92%;
+	--accent-foreground: 40 9% 13%;
+	--border: 40 8% 82%;
+	--input: 40 8% 77%;
+	--brand: 252 40% 43%;
+	--ring: 252 40% 43%;
+	--radius: 0.375rem;
+	color: hsl(var(--foreground));
+	background: hsl(var(--background));
+	color-scheme: light;
+}
+.dark .dashboard-shell {
+	--background: 45 5% 9%;
+	--foreground: 43 15% 89%;
+	--card: 45 5% 9%;
+	--card-foreground: 43 15% 89%;
+	--primary: 43 15% 89%;
+	--primary-foreground: 45 5% 9%;
+	--secondary: 45 4% 15%;
+	--secondary-foreground: 43 15% 89%;
+	--muted: 45 4% 15%;
+	--muted-foreground: 43 5% 59%;
+	--accent: 45 4% 17%;
+	--accent-foreground: 43 15% 89%;
+	--border: 45 4% 25%;
+	--input: 45 4% 34%;
+	--brand: 253 55% 77%;
+	--ring: 253 55% 77%;
+	color-scheme: dark;
+}
+.dashboard-shell
+	:is(a, button, summary, input, select, textarea):focus-visible {
+	outline: 2px solid hsl(var(--ring));
+	outline-offset: 4px;
+}
+.dashboard-shell :is(button, input, select, textarea) {
+	border-radius: 4px;
+}
+.dashboard-shell :is(button, a).bg-brand {
+	color: hsl(var(--primary-foreground));
+	background: hsl(var(--primary));
+}
+.dashboard-shell :is(button, a).bg-brand:hover {
+	opacity: 0.85;
+}
+.dashboard-shell input[type="checkbox"] {
+	accent-color: hsl(var(--foreground));
+}
+.dashboard-shell button {
+	font-size: 12px;
+}
+.dashboard-shell input:disabled {
+	cursor: not-allowed;
+}
+.dashboard-shell ::selection {
+	background: hsl(var(--brand) / 0.2);
+}
+.workspace-masthead {
+	border-bottom: 1px solid hsl(var(--border) / 0.5);
+}
+.workspace-masthead-inner {
+	max-width: 1280px;
+	min-height: 82px;
+	margin: 0 auto;
+	padding: 0 48px;
+	display: flex;
+	align-items: center;
+	gap: 58px;
+}
+.workspace-wordmark {
+	flex-shrink: 0;
+	font-size: 26px;
+	font-weight: 650;
+	letter-spacing: -1.4px;
+	line-height: 1;
+}
+.workspace-wordmark span {
+	margin-left: 2px;
+	color: hsl(var(--brand));
+}
+.workspace-navigation {
+	display: flex;
+	align-self: stretch;
+	align-items: stretch;
+	gap: 28px;
+}
+.workspace-nav-link {
+	display: flex;
+	position: relative;
+	align-items: center;
+	padding: 1px 0 0;
+	font-size: 13px;
+	color: hsl(var(--muted-foreground));
+	transition: color 140ms ease;
+	white-space: nowrap;
+}
+.workspace-nav-link:hover {
+	color: hsl(var(--foreground));
+}
+.workspace-nav-link.is-active {
+	color: hsl(var(--foreground));
+	font-weight: 550;
+}
+.workspace-nav-link.is-active::after {
+	content: "";
+	position: absolute;
+	height: 2px;
+	bottom: -1px;
+	left: 0;
+	right: 0;
+	background: hsl(var(--foreground));
+}
+.workspace-utilities {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	white-space: nowrap;
+}
+.workspace-utilities button {
+	font-size: 11px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-utilities button:hover {
+	color: hsl(var(--foreground));
+}
+.workspace-context-inner {
+	max-width: 1280px;
+	margin: 0 auto;
+	min-height: 38px;
+	padding: 0 48px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	font-size: 11px;
+	color: hsl(var(--muted-foreground));
+}
+.dashboard-main {
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 48px 48px 90px;
+}
+.workspace-page-heading {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	margin-bottom: 36px;
+}
+.workspace-page-heading h1 {
+	font-size: clamp(28px, 3vw, 36px);
+	font-weight: 500;
+	letter-spacing: -0.045em;
+	line-height: 1.15;
+}
+.workspace-page-heading p {
+	max-width: 640px;
+	margin-top: 11px;
+	color: hsl(var(--muted-foreground));
+	font-size: 13px;
+	line-height: 1.7;
+}
+.workspace-page-action {
+	font-size: 12px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-section-heading {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	padding: 0 0 18px;
+}
+.workspace-section-heading h2 {
+	font-size: 15px;
+	font-weight: 550;
+	letter-spacing: -0.015em;
+}
+.workspace-section-heading p {
+	margin-top: 6px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-label {
+	font-size: 12px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-metrics {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-bottom: 48px;
+}
+.workspace-metric {
+	padding: 8px 28px 12px;
+	min-width: 0;
+}
+.workspace-metric:first-child {
+	padding-left: 0;
+}
+.workspace-metric:last-child {
+	padding-right: 0;
+}
+.workspace-metric-label {
+	font-size: 13px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-metric-value {
+	margin: 13px 0 9px;
+	font-size: clamp(32px, 4vw, 44px);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.06em;
+	font-variant-numeric: tabular-nums;
+}
+.workspace-metric-note {
+	font-size: 12px;
+	line-height: 1.6;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-overview-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 280px;
+	gap: 48px;
+	align-items: start;
+}
+.workspace-content-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 310px;
+	gap: 44px;
+	align-items: start;
+}
+.workspace-rail {
+	padding: 24px;
+	background: hsl(var(--secondary) / 0.5);
+	border-radius: 8px;
+	min-width: 0;
+}
+.workspace-table-labels {
+	display: grid;
+	grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1.2fr) 88px;
+	gap: 20px;
+	padding: 12px 14px;
+	border-radius: 5px;
+	background: hsl(var(--secondary) / 0.5);
+}
+.workspace-table-row {
+	display: grid;
+	grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1.2fr) 88px;
+	align-items: center;
+	gap: 20px;
+	min-height: 64px;
+	padding: 18px 14px;
+	font-size: 13px;
+	border-radius: 5px;
+}
+.workspace-table-row:hover {
+	background: hsl(var(--secondary) / 0.45);
+}
+.workspace-table-row > * {
+	min-width: 0;
+}
+.workspace-table-row p {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.workspace-text-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 12px;
+	text-underline-offset: 4px;
+}
+.workspace-text-link:hover {
+	text-decoration: underline;
+}
+.workspace-connection {
+	display: block;
+	padding: 13px 0;
+}
+.workspace-connection:hover .connection-name {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+.connection-name {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 12px;
+	font-weight: 500;
+}
+.connection-note {
+	margin-top: 7px;
+	font-size: 11px;
+	color: hsl(var(--muted-foreground));
+	line-height: 1.5;
+}
+.connection-status {
+	color: hsl(var(--brand));
+	font-size: 11px;
+	font-weight: 400;
+}
+.workspace-shortcuts {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 32px;
+	margin-top: 40px;
+}
+.workspace-shortcut {
+	display: block;
+	padding: 16px 0;
+}
+.workspace-shortcut > span {
+	display: flex;
+	justify-content: flex-start;
+	gap: 12px;
+	align-items: center;
+	font-size: 13px;
+	font-weight: 500;
+}
+.workspace-shortcut > span > span {
+	font-size: 14px;
+	transition: transform 150ms;
+}
+.workspace-shortcut:hover > span > span {
+	transform: translate(2px, -2px);
+}
+.workspace-shortcut p {
+	margin-top: 9px;
+	color: hsl(var(--muted-foreground));
+	font-size: 12px;
+	line-height: 1.7;
+}
+.workspace-empty {
+	display: flex;
+	min-height: 200px;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 30px 14px;
+}
+.workspace-empty h3 {
+	font-size: 14px;
+	font-weight: 500;
+}
+.workspace-empty > p:last-of-type {
+	max-width: 360px;
+	margin-top: 9px;
+	font-size: 12px;
+	line-height: 1.75;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-loading-rows > div {
+	display: flex;
+	justify-content: space-between;
+	padding: 30px 0;
+}
+.workspace-loading-rows > div > span {
+	width: 40%;
+	height: 8px;
+	background: hsl(var(--secondary));
+}
+.workspace-loading-rows > div > span:last-child {
+	width: 15%;
+}
+.workspace-loading {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 25px;
+}
+.workspace-loading p {
+	font-size: 12px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-usage {
+	font-size: 12px;
+}
+.workspace-usage > div:first-child {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 10px;
+}
+.workspace-usage-track {
+	height: 3px;
+	background: hsl(var(--border) / 0.55);
+}
+.workspace-usage-track > span {
+	display: block;
+	height: 100%;
+	background: hsl(var(--foreground));
+}
+.workspace-key {
+	min-width: 0;
+}
+.workspace-key-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 10px;
+	margin-bottom: 18px;
+}
+.workspace-key-header h2 {
+	font-size: 15px;
+	font-weight: 550;
+}
+.workspace-key code {
+	display: block;
+	padding: 12px;
+	border-radius: 4px;
+	background: hsl(var(--background) / 0.75);
+	overflow-wrap: anywhere;
+	font-size: 11px;
+	line-height: 1.8;
+}
+.workspace-key-note {
+	margin: 14px 0;
+	color: hsl(var(--muted-foreground));
+	font-size: 11px;
+	line-height: 1.65;
+}
+.workspace-key-controls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-top: 14px;
+}
+.workspace-key-usage {
+	margin-top: 32px;
+	padding-top: 0;
+}
+.workspace-embed {
+	margin-top: 20px;
+}
+.workspace-embed summary {
+	cursor: pointer;
+	list-style: none;
+	padding: 8px 0;
+	font-size: 12px;
+	font-weight: 500;
+}
+.workspace-embed summary::-webkit-details-marker {
+	display: none;
+}
+.workspace-embed summary::after {
+	content: "+";
+	float: right;
+	color: hsl(var(--muted-foreground));
+	font-size: 16px;
+	line-height: 1;
+}
+.workspace-embed[open] summary::after {
+	content: "−";
+}
+.workspace-embed pre {
+	max-width: 100%;
+	overflow-x: auto;
+	padding: 12px;
+	background: hsl(var(--background) / 0.75);
+	font-size: 10px;
+	line-height: 1.8;
+}
+.workspace-embed pre code {
+	border: 0;
+	padding: 0;
+	background: transparent;
+}
+.workspace-submission summary {
+	list-style: none;
+	cursor: pointer;
+}
+.workspace-submission summary::-webkit-details-marker {
+	display: none;
+}
+.workspace-submission[open] {
+	border-radius: 5px;
+	background: hsl(var(--secondary) / 0.35);
+}
+.workspace-submission-body {
+	padding: 12px 20px 24px;
+}
+.workspace-submission-body dl {
+	display: grid;
+	grid-template-columns: 110px minmax(0, 1fr);
+	gap: 17px;
+	font-size: 12px;
+	line-height: 1.8;
+}
+.workspace-submission-body dt {
+	color: hsl(var(--muted-foreground));
+	overflow-wrap: anywhere;
+}
+.workspace-submission-body dd {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.workspace-submission-hint {
+	font-size: 11px;
+	margin: 14px 14px 0;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-booking {
+	display: grid;
+	grid-template-columns: 90px minmax(0, 1fr) auto;
+	gap: 23px;
+	border-radius: 5px;
+	align-items: start;
+	padding: 18px 14px;
+}
+.workspace-booking-date {
+	font-family: var(--font-geist-mono), monospace;
+	font-size: 12px;
+	line-height: 1.8;
+}
+.workspace-booking-date span {
+	display: block;
+	font-size: 10px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-booking-name {
+	font-size: 13px;
+	font-weight: 500;
+}
+.workspace-booking-email {
+	margin-top: 6px;
+	font-size: 11px;
+	overflow-wrap: anywhere;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-status {
+	display: inline-block;
+	font-size: 10px;
+	font-family: var(--font-geist-mono), monospace;
+	text-transform: capitalize;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-status.confirmed {
+	color: hsl(var(--brand));
+}
+.workspace-setup {
+	margin-top: 40px;
+	padding-top: 0;
+}
+.workspace-setup-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 60px;
+}
+.workspace-settings-section {
+	padding-top: 0;
+}
+.workspace-settings-section + .workspace-settings-section {
+	margin-top: 32px;
+}
+.workspace-form {
+	display: grid;
+	gap: 22px;
+}
+.workspace-form label {
+	display: block;
+	margin-bottom: 9px;
+	font-size: 12px;
+}
+.workspace-form :is(input, select) {
+	font-size: 12px;
+	background: transparent;
+	box-shadow: none;
+}
+.workspace-schedule-day {
+	display: flex;
+	flex-wrap: wrap;
+	min-height: 49px;
+	align-items: center;
+	gap: 12px;
+	padding: 9px 0;
+	font-size: 12px;
+}
+.workspace-schedule-day label {
+	width: 102px;
+	margin: 0;
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	font-weight: 400;
+}
+.workspace-schedule-day input[type="time"] {
+	width: 109px;
+	border: 1px solid hsl(var(--input));
+	padding: 5px 7px;
+	font-family: var(--font-geist-mono), monospace;
+	font-size: 11px;
+}
+.workspace-settings-grid {
+	display: grid;
+	grid-template-columns: 200px minmax(0, 570px);
+	gap: 50px;
+	padding: 12px 0 44px;
+}
+.workspace-settings-grid h2 {
+	font-size: 14px;
+	font-weight: 550;
+}
+.workspace-settings-grid > div > p {
+	font-size: 12px;
+	margin-top: 8px;
+	line-height: 1.8;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-account-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	padding: 12px 0;
+	font-size: 12px;
+}
+.workspace-account-row:first-child {
+	padding-top: 0;
+}
+.workspace-account-row:last-child {
+	border-bottom: 0;
+}
+.workspace-billing-current {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	padding: 24px;
+	margin-bottom: 42px;
+	border-radius: 8px;
+	background: hsl(var(--secondary) / 0.5);
+}
+.workspace-billing-current h2 {
+	font-size: 14px;
+	font-weight: 550;
+}
+.workspace-billing-current p {
+	font-size: 12px;
+	line-height: 1.8;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-billing-current > span {
+	font-size: 24px;
+	letter-spacing: -0.04em;
+	text-transform: capitalize;
+}
+.workspace-billing-pricing {
+	margin: 26px 0 52px;
+}
+.workspace-billing-pricing > div {
+	margin-top: 0;
+}
+.workspace-billing-pricing > div > div:first-child {
+	justify-content: flex-start;
+	margin-bottom: 24px;
+}
+.workspace-billing-pricing > div > div:first-child > div {
+	background: transparent;
+	border-radius: 4px;
+	backdrop-filter: none;
+}
+.workspace-billing-pricing > div > div:first-child button {
+	border-radius: 3px;
+	padding: 8px 18px;
+}
+.workspace-billing-pricing > div > .grid {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-width: none;
+	margin-top: 0;
+}
+.workspace-billing-pricing > div > .grid > div {
+	display: grid;
+	grid-template-columns: 0.7fr 1fr 1.3fr 160px;
+	align-items: center;
+	gap: 26px;
+	border: 0;
+	border-radius: 6px;
+	padding: 24px 16px;
+	box-shadow: none;
+	background: hsl(var(--secondary) / 0.35);
+	backdrop-filter: none;
+	min-width: 0;
+}
+.workspace-billing-pricing > div > .grid > div > span.absolute {
+	display: none;
+}
+.workspace-billing-pricing > div > .grid > div > div,
+.workspace-billing-pricing > div > .grid > div > p,
+.workspace-billing-pricing > div > .grid > div > :is(button, a) {
+	margin: 0;
+	min-height: 0;
+}
+.workspace-billing-pricing .grid svg {
+	display: none;
+}
+.workspace-billing-pricing .grid .text-4xl {
+	font-size: 25px;
+	font-weight: 450;
+}
+.workspace-billing-pricing .grid .text-lg {
+	font-size: 14px;
+}
+.workspace-billing-pricing .grid p {
+	font-size: 12px;
+	line-height: 1.8;
+}
+.workspace-billing-pricing .grid :is(button, a) {
+	height: 36px;
+	font-size: 11px;
+}
+.workspace-billing-pricing .shadow-sm {
+	box-shadow: none;
+}
+.dashboard-notice,
+.dashboard-error {
+	padding: 10px 0;
+	font-size: 12px;
+	line-height: 1.7;
+	margin-bottom: 20px;
+}
+.dashboard-notice {
+	color: hsl(var(--brand));
+}
+.dashboard-error {
+	color: hsl(var(--destructive));
+}
+.dashboard-shell .dashboard-panel {
+	border-radius: 4px;
+	box-shadow: none;
+	background: transparent;
+}
+.dashboard-skip-link {
+	position: fixed;
+	top: 0;
+	left: 16px;
+	z-index: 100;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	background: hsl(var(--card));
+}
+.dashboard-skip-link:focus {
+	top: 16px;
+	width: auto;
+	height: auto;
+	padding: 12px 18px;
+	clip-path: none;
+}
+
+.workspace-booking:nth-child(even) {
+	background: hsl(var(--secondary) / 0.3);
+}
+.workspace-setup > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 20px;
+	border-radius: 6px;
+	background: hsl(var(--secondary) / 0.5);
+	cursor: pointer;
+	list-style: none;
+	font-size: 14px;
+	font-weight: 500;
+}
+.workspace-setup > summary::-webkit-details-marker {
+	display: none;
+}
+.workspace-setup > summary::after {
+	content: "+";
+	font-size: 18px;
+	color: hsl(var(--muted-foreground));
+}
+.workspace-setup[open] > summary::after {
+	content: "−";
+}
+.workspace-setup-grid {
+	padding-top: 28px;
+}
+.workspace-shortcut:hover {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+@media (max-width: 1150px) {
+	.workspace-masthead-inner {
+		gap: 36px;
+		padding: 0 32px;
+	}
+	.workspace-navigation {
+		gap: 22px;
+	}
+	.workspace-context-inner {
+		padding: 0 32px;
+	}
+	.dashboard-main {
+		padding: 40px 32px 70px;
+	}
+	.workspace-overview-grid {
+		gap: 40px;
+	}
+	.workspace-content-grid {
+		grid-template-columns: minmax(0, 1fr) 270px;
+		gap: 30px;
+	}
+	.workspace-rail {
+		padding: 20px;
+	}
+}
+@media (max-width: 959px) {
+	.workspace-masthead-inner {
+		min-height: auto;
+		flex-wrap: wrap;
+		column-gap: 20px;
+		row-gap: 0;
+		padding-top: 24px;
+	}
+	.workspace-wordmark {
+		order: 0;
+	}
+	.workspace-utilities {
+		order: 1;
+	}
+	.workspace-navigation {
+		width: 100%;
+		order: 2;
+		margin-top: 20px;
+		gap: 30px;
+		min-height: 48px;
+	}
+	.workspace-content-grid,
+	.workspace-overview-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 40px;
+	}
+	.workspace-rail {
+		padding: 24px;
+	}
+	.workspace-key {
+		max-width: 600px;
+	}
+	.workspace-setup-grid {
+		gap: 35px;
+	}
+	.workspace-settings-grid {
+		grid-template-columns: 170px minmax(0, 1fr);
+		gap: 30px;
+	}
+	.workspace-billing-pricing > div > .grid > div {
+		grid-template-columns: 0.6fr 1fr 150px;
+		gap: 16px;
+	}
+	.workspace-billing-pricing > div > .grid > div > p {
+		grid-column: 1 / 3;
+		grid-row: 2;
+	}
+	.workspace-billing-pricing > div > .grid > div > :is(button, a) {
+		grid-column: 3;
+		grid-row: 1 / 3;
+	}
+}
+@media (max-width: 639px) {
+	.workspace-masthead-inner {
+		padding: 23px 20px 0;
+	}
+	.workspace-wordmark {
+		font-size: 24px;
+	}
+	.workspace-utilities {
+		gap: 17px;
+	}
+	.workspace-context-inner {
+		padding: 0 20px;
+		font-size: 10px;
+		min-height: 43px;
+	}
+	.workspace-navigation {
+		gap: 0;
+		justify-content: space-between;
+	}
+	.workspace-nav-link {
+		font-size: 12px;
+	}
+	.dashboard-main {
+		padding: 33px 20px 60px;
+	}
+	.workspace-page-heading {
+		margin-bottom: 30px;
+	}
+	.workspace-page-heading p {
+		font-size: 12px;
+	}
+	.workspace-metrics {
+		margin-bottom: 34px;
+	}
+	.workspace-metric {
+		padding: 8px 13px 12px;
+	}
+	.workspace-metric-label,
+	.workspace-metric-note {
+		font-size: 11px;
+	}
+	.workspace-metric-value {
+		font-size: 36px;
+	}
+	.workspace-table-labels {
+		grid-template-columns: minmax(0, 1fr) 72px;
+		gap: 12px;
+	}
+	.workspace-table-labels > span:nth-child(2) {
+		display: none;
+	}
+	.workspace-table-row {
+		grid-template-columns: minmax(0, 1fr) 72px;
+		gap: 5px 12px;
+	}
+	.workspace-table-row > :nth-child(2) {
+		grid-column: 1;
+		grid-row: 2;
+	}
+	.workspace-table-row > :nth-child(3) {
+		grid-column: 2;
+		grid-row: 1 / 3;
+	}
+	.workspace-shortcuts {
+		grid-template-columns: 1fr;
+		gap: 8px;
+		margin-top: 30px;
+	}
+	.workspace-shortcut > span {
+		font-size: 13px;
+	}
+	.workspace-submission-body {
+		padding: 20px 12px;
+	}
+	.workspace-submission-body dl {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+	.workspace-submission-body dd {
+		margin-bottom: 14px;
+	}
+	.workspace-booking {
+		grid-template-columns: 65px minmax(0, 1fr);
+		gap: 12px;
+	}
+	.workspace-booking > :last-child {
+		grid-column: 2;
+	}
+	.workspace-setup-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 36px;
+	}
+	.workspace-settings-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+	}
+	.workspace-schedule-day {
+		gap: 7px;
+	}
+	.workspace-schedule-day label {
+		width: 89px;
+		gap: 6px;
+		font-size: 11px;
+	}
+	.workspace-schedule-day input[type="time"] {
+		width: 92px;
+		padding: 5px;
+		font-size: 10px;
+	}
+	.workspace-billing-pricing > div > .grid > div {
+		grid-template-columns: 0.6fr 1fr;
+		padding: 22px 16px;
+	}
+	.workspace-billing-pricing > div > .grid > div > p {
+		grid-column: 1 / -1;
+		grid-row: auto;
+	}
+	.workspace-billing-pricing > div > .grid > div > :is(button, a) {
+		grid-column: 1 / -1;
+		grid-row: auto;
+		width: auto;
+		justify-self: start;
+	}
+}
+@media (max-width: 359px) {
+	.workspace-schedule-day label {
+		width: 100%;
+	}
+	.workspace-metric {
+		padding-right: 8px;
+		padding-left: 8px;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.dashboard-shell *,
+	.dashboard-shell *::before,
+	.dashboard-shell *::after {
+		animation: none !important;
+		transition: none !important;
+		scroll-behavior: auto !important;
+	}
+	.workspace-shortcut:hover > span > span {
+		transform: none;
+	}
+}

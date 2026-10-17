@@ -9,9 +9,13 @@ export async function GET(req: NextRequest) {
     const { client, bucket } = invoiceStorage();
     const data = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
     if (!data.Body) throw new BillingError("Invoice not found.", 404);
+    const isPdf = key.endsWith(".pdf");
     return new NextResponse(new Uint8Array(await data.Body.transformToByteArray()).buffer, { headers: {
-      "Content-Type": "text/html; charset=utf-8", "Content-Disposition": `attachment; filename="${key.split("/").pop()}"`,
-      "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "sandbox",
+      "Content-Type": isPdf ? "application/pdf" : "text/html; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${key.split("/").pop()}"`,
+      "Cache-Control": "private, no-store",
+      "X-Content-Type-Options": "nosniff",
+      ...(isPdf ? {} : { "Content-Security-Policy": "sandbox" }),
     } });
   } catch (error) { return billingError(error); }
 }

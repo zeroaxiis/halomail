@@ -22,6 +22,9 @@ type billingRepo struct {
 	org, tier, payment string
 	end                time.Time
 	err                error
+	refundCalls        int
+	refunds            []domain.BillingRefund
+	refundResult       domain.RefundResult
 }
 
 func (r *billingRepo) GetUserByID(context.Context, string) (*domain.User, error) {
@@ -34,6 +37,98 @@ func (r *billingRepo) ApplyPayment(_ context.Context, org, order, payment, tier 
 	r.payment = payment
 	r.end = end
 	return r.err
+}
+func (r *billingRepo) ApplyRefunds(_ context.Context, org, order, payment, currency string, amount int64, refunds []domain.BillingRefund) (domain.RefundResult, error) {
+	r.refundCalls++
+	r.org = org
+	r.payment = payment
+	r.refunds = refunds
+	return r.refundResult, r.err
+}
+
+func refundPayload(amounts ...int64) RazorpayWebhookPayload {
+	var payload RazorpayWebhookPayload
+	json.Unmarshal([]byte(paidPayload("monthly")), &payload)
+	payload.Event = "refund.processed"
+	payload.Payload.Order.Entity.Notes.Product = "halomail"
+	for i, amount := range amounts {
+		payload.Payload.Refunds.Items = append(payload.Payload.Refunds.Items, refundEntity{
+			ID: "rfnd_" + strings.Repeat("x", i+1), PaymentID: "pay_1", Status: "processed",
+			Amount: amount, Currency: "INR", CreatedAt: 1791676900,
+		})
+	}
+	return payload
+}
+
+func TestBillingRefundUsesCanonicalAccountAndCompletedAmounts(t *testing.T) {
+	for _, full := range []bool{false, true} {
+		payload := refundPayload(40)
+		if full {
+			payload = refundPayload(40, 60)
+		}
+		body, _ := json.Marshal(payload)
+		repo := &billingRepo{refundResult: domain.RefundResult{FullyRefunded: full, Downgraded: full}}
+		response := billingRequest(repo, string(body), "secret")
+		if response.Code != 200 || repo.refundCalls != 1 || repo.calls != 0 || repo.org != "org" || repo.payment != "pay_1" {
+			t.Fatalf("refund was not processed: %d %s %+v", response.Code, response.Body.String(), repo)
+		}
+		var result map[string]any
+		json.Unmarshal(response.Body.Bytes(), &result)
+		if result["fullyRefunded"] != full || result["downgraded"] != full {
+			t.Fatalf("wrong refund response: %v", result)
+		}
+		if repo.refunds[0].Amount != 40 {
+			t.Fatal("wrong refund amount")
+		}
+	}
+}
+
+func TestBillingRefundRejectsInvalidAndConflictingDetails(t *testing.T) {
+	for _, mutate := range []func(*RazorpayWebhookPayload){
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].Status = "pending" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].Status = "failed" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].PaymentID = "pay_other" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].Currency = "USD" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].Amount = 0 },
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].Amount = 101 },
+		func(p *RazorpayWebhookPayload) { p.Payload.Refunds.Items[0].CreatedAt = 0 },
+		func(p *RazorpayWebhookPayload) {
+			p.Payload.Refunds.Items = append(p.Payload.Refunds.Items, p.Payload.Refunds.Items[0])
+		},
+		func(p *RazorpayWebhookPayload) { p.Payload.Payment.Entity.OrderID = "order_other" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Payment.Entity.Status = "authorized" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Order.Entity.Notes.Product = "other" },
+		func(p *RazorpayWebhookPayload) { p.Payload.Order.Entity.Notes.OrgID = "other_org" },
+	} {
+		payload := refundPayload(100)
+		mutate(&payload)
+		body, _ := json.Marshal(payload)
+		repo := &billingRepo{}
+		response := billingRequest(repo, string(body), "secret")
+		if response.Code < 400 || repo.refundCalls != 0 {
+			t.Fatalf("invalid refund accepted: %d %s", response.Code, body)
+		}
+	}
+	for _, event := range []string{"refund.created", "refund.failed"} {
+		payload := refundPayload(100)
+		payload.Event = event
+		body, _ := json.Marshal(payload)
+		repo := &billingRepo{}
+		if response := billingRequest(repo, string(body), "secret"); response.Code != 200 || repo.refundCalls != 0 {
+			t.Fatal("unprocessed refund applied")
+		}
+	}
+}
+
+func TestBillingRefundFailuresAreNotAcknowledged(t *testing.T) {
+	payload := refundPayload(100)
+	body, _ := json.Marshal(payload)
+	if response := billingRequest(&billingRepo{}, string(body), ""); response.Code != 401 {
+		t.Fatal("unsigned refund accepted")
+	}
+	if response := billingRequest(&billingRepo{err: errors.New("database down")}, string(body), "secret"); response.Code < 500 {
+		t.Fatal("database failure acknowledged")
+	}
 }
 func billingRequest(repo *billingRepo, raw, secret string) *httptest.ResponseRecorder {
 	mux := http.NewServeMux()
