@@ -19,7 +19,7 @@ export function Topbar() {
 	useEffect(() => setMounted(true), []);
 
 	async function logout() {
-		await rpc("halomail.identity.v1.AuthService/Logout").catch(() => {});
+		await rpc("halomail.identity.v1.AuthService/Logout").catch(() => { });
 		clearSession();
 		router.replace("/login");
 	}
@@ -32,7 +32,7 @@ export function Topbar() {
 					className="workspace-wordmark"
 					aria-label="HaloMail dashboard"
 				>
-					<LogoMark monochrome className="size-6 shrink-0" />
+					<LogoMark className="size-7 shrink-0" />
 					<span>HaloMail</span>
 				</Link>
 				<Sidebar />
