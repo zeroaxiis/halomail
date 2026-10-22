@@ -1,6 +1,6 @@
 # Billing operations
 
-The current checkout intentionally charges **1 unit of the selected currency** for Pro and Business, monthly and yearly, while testing. Both display and server-side order amounts use `apps/web/lib/billing-pricing.ts`.
+Checkout uses published plan pricing from `apps/web/lib/billing-pricing.ts` for Pro and Business, monthly and yearly. Both display and server-side order amounts use `apps/web/lib/billing-pricing.ts`.
 
 ## Deployment
 

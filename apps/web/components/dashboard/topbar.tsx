@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { Sun, Moon, LogOut } from "lucide-react";
 import { clearSession } from "@/lib/auth";
 import { rpc } from "@/lib/api";
+import { LogoMark } from "@/components/logo";
 import { Sidebar } from "./sidebar";
 import { useWorkspace } from "./workspace-context";
 
@@ -30,44 +32,64 @@ export function Topbar() {
 					className="workspace-wordmark"
 					aria-label="HaloMail dashboard"
 				>
-					HaloMail
+					<LogoMark monochrome className="size-6 shrink-0" />
+					<span>HaloMail</span>
 				</Link>
 				<Sidebar />
 				<div className="workspace-utilities">
-					<button
-						type="button"
-						onClick={() =>
-							setTheme(resolvedTheme === "dark" ? "light" : "dark")
-						}
-						aria-label="Toggle theme"
+					<a
+						href="/docs/index.html"
+						target="_blank"
+						rel="noreferrer"
+						className="hidden sm:inline"
 					>
-						{mounted && resolvedTheme === "dark" ? "Light mode" : "Dark mode"}
-					</button>
-					<button type="button" onClick={logout}>
-						Sign out
-					</button>
-				</div>
-			</div>
-			<div className="workspace-context-line">
-				<div className="workspace-context-inner">
-					<Link href="/dashboard/settings" className="truncate">
-						Personal workspace
+						Documentation
+					</a>
+					<Link
+						href="/dashboard/billing"
+						className="workspace-plan-tag"
+						title="Manage billing"
+					>
+						{usage.data?.plan || "Free"}
 					</Link>
-					<div className="flex shrink-0 items-center gap-5">
-						<a
-							href="/docs/index.html"
-							target="_blank"
-							rel="noreferrer"
-							className="hidden hover:underline sm:inline"
+					<div
+						className="workspace-action-pill"
+						role="group"
+						aria-label="Workspace controls"
+					>
+						<button
+							type="button"
+							onClick={() =>
+								setTheme(resolvedTheme === "dark" ? "light" : "dark")
+							}
+							className="workspace-pill-btn workspace-theme-toggle"
+							aria-label={
+								mounted && resolvedTheme === "dark"
+									? "Switch to light mode"
+									: "Switch to dark mode"
+							}
+							title={
+								mounted && resolvedTheme === "dark"
+									? "Switch to light mode"
+									: "Switch to dark mode"
+							}
 						>
-							Documentation
-						</a>
-						<Link
-							href="/dashboard/billing"
-							className="capitalize hover:underline"
+							{mounted && resolvedTheme === "dark" ? (
+								<Sun className="size-3.5 sun-icon" />
+							) : (
+								<Moon className="size-3.5 moon-icon" />
+							)}
+						</button>
+						<span className="workspace-pill-divider" aria-hidden="true" />
+						<button
+							type="button"
+							onClick={logout}
+							className="workspace-pill-btn workspace-signout-btn"
+							aria-label="Sign out"
+							title="Sign out"
 						>
-							{usage.data ? `${usage.data.plan} plan` : "Your plan"}
-						</Link>
+							<LogOut className="size-3.5 signout-icon" />
+						</button>
 					</div>
 				</div>
 			</div>
