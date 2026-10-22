@@ -1,43 +1,43 @@
 /* The signed-in workspace: quiet surfaces, clear records. Dashboard scope only. */
 .dashboard-shell {
-	--background: 45 20% 97%;
-	--foreground: 40 9% 13%;
-	--card: 45 20% 97%;
-	--card-foreground: 40 9% 13%;
-	--primary: 40 9% 13%;
-	--primary-foreground: 45 20% 97%;
-	--secondary: 40 10% 92%;
-	--secondary-foreground: 40 9% 13%;
-	--muted: 40 10% 92%;
-	--muted-foreground: 40 5% 43%;
-	--accent: 40 10% 92%;
-	--accent-foreground: 40 9% 13%;
-	--border: 40 8% 82%;
-	--input: 40 8% 77%;
-	--brand: 252 40% 43%;
-	--ring: 252 40% 43%;
+	--background: 0 0% 100%;
+	--foreground: 0 0% 6%;
+	--card: 0 0% 100%;
+	--card-foreground: 0 0% 6%;
+	--primary: 0 0% 9%;
+	--primary-foreground: 0 0% 98%;
+	--secondary: 0 0% 96%;
+	--secondary-foreground: 0 0% 9%;
+	--muted: 0 0% 96%;
+	--muted-foreground: 0 0% 42%;
+	--accent: 0 0% 96%;
+	--accent-foreground: 0 0% 9%;
+	--border: 0 0% 90%;
+	--input: 0 0% 90%;
+	--brand: 248 90% 66%;
+	--ring: 0 0% 9%;
 	--radius: 0.375rem;
 	color: hsl(var(--foreground));
 	background: hsl(var(--background));
 	color-scheme: light;
 }
 .dark .dashboard-shell {
-	--background: 45 5% 9%;
-	--foreground: 43 15% 89%;
-	--card: 45 5% 9%;
-	--card-foreground: 43 15% 89%;
-	--primary: 43 15% 89%;
-	--primary-foreground: 45 5% 9%;
-	--secondary: 45 4% 15%;
-	--secondary-foreground: 43 15% 89%;
-	--muted: 45 4% 15%;
-	--muted-foreground: 43 5% 59%;
-	--accent: 45 4% 17%;
-	--accent-foreground: 43 15% 89%;
-	--border: 45 4% 25%;
-	--input: 45 4% 34%;
-	--brand: 253 55% 77%;
-	--ring: 253 55% 77%;
+	--background: 40 3% 6.8%;
+	--foreground: 40 4% 91%;
+	--card: 40 3% 9%;
+	--card-foreground: 40 4% 91%;
+	--primary: 40 4% 94%;
+	--primary-foreground: 40 3% 7%;
+	--secondary: 40 2% 12.5%;
+	--secondary-foreground: 40 4% 91%;
+	--muted: 40 2% 12.5%;
+	--muted-foreground: 40 3% 60%;
+	--accent: 40 2% 14.5%;
+	--accent-foreground: 40 4% 91%;
+	--border: 40 2% 16.5%;
+	--input: 40 2% 18.5%;
+	--brand: 248 90% 70%;
+	--ring: 0 0% 83%;
 	color-scheme: dark;
 }
 .dashboard-shell
@@ -75,22 +75,30 @@
 	min-height: 82px;
 	margin: 0 auto;
 	padding: 0 48px;
-	display: flex;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	align-items: center;
-	gap: 58px;
+	column-gap: 24px;
 }
 .workspace-wordmark {
+	justify-self: start;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin-left: -34px;
 	flex-shrink: 0;
-	font-size: 26px;
+	font-size: 24px;
 	font-weight: 650;
-	letter-spacing: -1.4px;
+	letter-spacing: -1.2px;
 	line-height: 1;
+	color: hsl(var(--foreground));
+	text-decoration: none;
 }
 .workspace-wordmark span {
-	margin-left: 2px;
-	color: hsl(var(--brand));
+	color: hsl(var(--foreground));
 }
 .workspace-navigation {
+	justify-self: center;
 	display: flex;
 	align-self: stretch;
 	align-items: stretch;
@@ -123,30 +131,93 @@
 	background: hsl(var(--foreground));
 }
 .workspace-utilities {
+	justify-self: end;
 	margin-left: auto;
+	margin-right: -34px;
 	display: flex;
 	align-items: center;
-	gap: 22px;
+	gap: 18px;
 	white-space: nowrap;
 }
-.workspace-utilities button {
+.workspace-utilities :is(button, a) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	font-size: 11px;
 	color: hsl(var(--muted-foreground));
+	text-decoration: none;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	transition: color 140ms ease;
 }
-.workspace-utilities button:hover {
+.workspace-utilities :is(button, a):hover {
 	color: hsl(var(--foreground));
 }
-.workspace-context-inner {
-	max-width: 1280px;
-	margin: 0 auto;
-	min-height: 38px;
-	padding: 0 48px;
-	display: flex;
+.workspace-utilities .workspace-plan-tag {
+	display: inline-flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 20px;
-	font-size: 11px;
+	justify-content: center;
+	height: 20px;
+	padding: 0 7px;
+	border-radius: 4px;
+	border: 1px solid hsl(var(--border) / 0.9);
+	background: hsl(var(--card) / 0.5);
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
 	color: hsl(var(--muted-foreground));
+	text-decoration: none;
+	line-height: 1;
+	transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+.workspace-utilities .workspace-plan-tag:hover {
+	color: hsl(var(--foreground));
+	border-color: hsl(var(--foreground) / 0.35);
+	background: hsl(var(--foreground) / 0.04);
+}
+.workspace-action-pill {
+	display: inline-flex;
+	align-items: stretch;
+	height: 28px;
+	border-radius: 9999px;
+	border: 1px solid hsl(var(--border) / 0.85);
+	background: hsl(var(--card) / 0.4);
+	overflow: hidden;
+	box-shadow: 0 1px 2px 0 hsl(0 0% 0% / 0.03);
+	transition: border-color 140ms ease;
+}
+.workspace-action-pill:hover {
+	border-color: hsl(var(--border));
+}
+.workspace-pill-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 100%;
+	background: transparent;
+	border: none;
+	color: hsl(var(--muted-foreground));
+	cursor: pointer;
+	padding: 0;
+	transition: color 140ms ease, background-color 140ms ease;
+}
+.workspace-pill-btn:hover {
+	color: hsl(var(--foreground));
+	background: hsl(var(--foreground) / 0.08);
+}
+.workspace-pill-btn:active {
+	background: hsl(var(--foreground) / 0.14);
+}
+.workspace-pill-divider {
+	display: block;
+	width: 1px;
+	align-self: center;
+	height: 14px;
+	background: hsl(var(--border) / 0.75);
 }
 .dashboard-main {
 	max-width: 1280px;
@@ -815,9 +886,6 @@
 	.workspace-navigation {
 		gap: 22px;
 	}
-	.workspace-context-inner {
-		padding: 0 32px;
-	}
 	.dashboard-main {
 		padding: 40px 32px 70px;
 	}
@@ -834,6 +902,7 @@
 }
 @media (max-width: 959px) {
 	.workspace-masthead-inner {
+		display: flex;
 		min-height: auto;
 		flex-wrap: wrap;
 		column-gap: 20px;
@@ -842,9 +911,11 @@
 	}
 	.workspace-wordmark {
 		order: 0;
+		margin-left: 0;
 	}
 	.workspace-utilities {
 		order: 1;
+		margin-right: 0;
 	}
 	.workspace-navigation {
 		width: 100%;
@@ -893,11 +964,6 @@
 	}
 	.workspace-utilities {
 		gap: 17px;
-	}
-	.workspace-context-inner {
-		padding: 0 20px;
-		font-size: 10px;
-		min-height: 43px;
 	}
 	.workspace-navigation {
 		gap: 0;
