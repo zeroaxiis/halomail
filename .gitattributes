@@ -1,0 +1,2 @@
+# Enforce LF endings on protobuf files so buf format always passes on all platforms
+*.proto text eol=lf

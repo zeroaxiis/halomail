@@ -306,4 +306,3 @@ message AcceptInvitationResponse {
   User user = 1;
   Session session = 2;
 }
-
