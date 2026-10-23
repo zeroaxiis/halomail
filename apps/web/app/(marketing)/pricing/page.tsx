@@ -13,7 +13,7 @@ export const metadata = { title: "Pricing" };
 /* -------------------------------------------------------------------------- */
 
 const COMPARE: [string, string | boolean, string | boolean, string | boolean, string | boolean][] = [
-  ["Users / included seats", "1", "1", "3", "Custom"],
+  ["Team members / seats", "1 (Solo)", "Up to 4", "Up to 12", "Custom"],
   ["Websites / projects", "1", "5", "25", "Custom"],
   ["Forms", "3", "25", "100", "Custom"],
   ["Form submissions / month", "100", "1,000", "2,500", "Custom"],
@@ -35,7 +35,7 @@ const COMPARE: [string, string | boolean, string | boolean, string | boolean, st
   ["Instant booking", false, true, true, true],
   ["Custom availability", "Basic", true, true, true],
   ["Automated reminders", false, true, true, true],
-  ["Team scheduling", false, false, true, true],
+  ["Team management & RBAC", false, true, true, true],
   ["Round-robin / assignment", false, false, true, true],
 ];
 
@@ -49,12 +49,8 @@ const FAQS = [
     a: "Yes. The Free plan is perfect for personal sites, offering 1 website, 3 forms, 100 submissions, and 10 meeting requests every month.",
   },
   {
-    q: "What does 'unlimited' meeting types mean?",
-    a: "You can create as many different meeting types as you need (e.g. 15-min intro, 60-min deep dive). Monthly meeting requests and other metered features retain their stated limits.",
-  },
-  {
-    q: "Do you charge extra for more users?",
-    a: "The Business plan includes 3 users by default. If you need more seats, shared workflows, or custom requirements, reach out for an Enterprise plan.",
+    q: "How many team members can I invite?",
+    a: "Pro includes up to 4 team members, and Business includes up to 12 team members. You can assign roles including Administrator, Manager, and Viewer. Enterprise plans support custom seat limits.",
   },
   {
     q: "What happens if I go over my monthly limits?",

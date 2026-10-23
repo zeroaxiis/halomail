@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateApiKeyRequest, CreateApiKeyResponse, GetCurrentUserRequest, GetCurrentUserResponse, GetUserByHandleRequest, GetUserByHandleResponse, GetUserRequest, GetUserResponse, ListApiKeysRequest, ListApiKeysResponse, ListAuditLogsRequest, ListAuditLogsResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, RecordAuditLogRequest, RecordAuditLogResponse, RefreshSessionRequest, RefreshSessionResponse, RegisterRequest, RegisterResponse, RevokeApiKeyRequest, RevokeApiKeyResponse, UpdateUserRequest, UpdateUserResponse, VerifyApiKeyRequest, VerifyApiKeyResponse, VerifyTokenRequest, VerifyTokenResponse } from "./identity_pb.js";
+import { AcceptInvitationRequest, AcceptInvitationResponse, CreateApiKeyRequest, CreateApiKeyResponse, GetCurrentUserRequest, GetCurrentUserResponse, GetUserByHandleRequest, GetUserByHandleResponse, GetUserRequest, GetUserResponse, InviteTeamMemberRequest, InviteTeamMemberResponse, ListApiKeysRequest, ListApiKeysResponse, ListAuditLogsRequest, ListAuditLogsResponse, ListTeamMembersRequest, ListTeamMembersResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, RecordAuditLogRequest, RecordAuditLogResponse, RefreshSessionRequest, RefreshSessionResponse, RegisterRequest, RegisterResponse, RemoveTeamMemberRequest, RemoveTeamMemberResponse, RevokeApiKeyRequest, RevokeApiKeyResponse, RevokeInvitationRequest, RevokeInvitationResponse, UpdateMemberRoleRequest, UpdateMemberRoleResponse, UpdateUserRequest, UpdateUserResponse, VerifyApiKeyRequest, VerifyApiKeyResponse, VerifyTokenRequest, VerifyTokenResponse } from "./identity_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -180,6 +180,69 @@ export const AuditService = {
       name: "RecordAuditLog",
       I: RecordAuditLogRequest,
       O: RecordAuditLogResponse,
+      kind: MethodKind.Unary,
+    },
+  }
+} as const;
+
+/**
+ * @generated from service halomail.identity.v1.TeamService
+ */
+export const TeamService = {
+  typeName: "halomail.identity.v1.TeamService",
+  methods: {
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.ListTeamMembers
+     */
+    listTeamMembers: {
+      name: "ListTeamMembers",
+      I: ListTeamMembersRequest,
+      O: ListTeamMembersResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.InviteTeamMember
+     */
+    inviteTeamMember: {
+      name: "InviteTeamMember",
+      I: InviteTeamMemberRequest,
+      O: InviteTeamMemberResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.UpdateMemberRole
+     */
+    updateMemberRole: {
+      name: "UpdateMemberRole",
+      I: UpdateMemberRoleRequest,
+      O: UpdateMemberRoleResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.RemoveTeamMember
+     */
+    removeTeamMember: {
+      name: "RemoveTeamMember",
+      I: RemoveTeamMemberRequest,
+      O: RemoveTeamMemberResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.RevokeInvitation
+     */
+    revokeInvitation: {
+      name: "RevokeInvitation",
+      I: RevokeInvitationRequest,
+      O: RevokeInvitationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.AcceptInvitation
+     */
+    acceptInvitation: {
+      name: "AcceptInvitation",
+      I: AcceptInvitationRequest,
+      O: AcceptInvitationResponse,
       kind: MethodKind.Unary,
     },
   }

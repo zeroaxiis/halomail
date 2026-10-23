@@ -29,6 +29,8 @@ const (
 	ApiKeyServiceName = "halomail.identity.v1.ApiKeyService"
 	// AuditServiceName is the fully-qualified name of the AuditService service.
 	AuditServiceName = "halomail.identity.v1.AuditService"
+	// TeamServiceName is the fully-qualified name of the TeamService service.
+	TeamServiceName = "halomail.identity.v1.TeamService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -78,6 +80,54 @@ const (
 	// AuditServiceRecordAuditLogProcedure is the fully-qualified name of the AuditService's
 	// RecordAuditLog RPC.
 	AuditServiceRecordAuditLogProcedure = "/halomail.identity.v1.AuditService/RecordAuditLog"
+	// TeamServiceListTeamMembersProcedure is the fully-qualified name of the TeamService's
+	// ListTeamMembers RPC.
+	TeamServiceListTeamMembersProcedure = "/halomail.identity.v1.TeamService/ListTeamMembers"
+	// TeamServiceInviteTeamMemberProcedure is the fully-qualified name of the TeamService's
+	// InviteTeamMember RPC.
+	TeamServiceInviteTeamMemberProcedure = "/halomail.identity.v1.TeamService/InviteTeamMember"
+	// TeamServiceUpdateMemberRoleProcedure is the fully-qualified name of the TeamService's
+	// UpdateMemberRole RPC.
+	TeamServiceUpdateMemberRoleProcedure = "/halomail.identity.v1.TeamService/UpdateMemberRole"
+	// TeamServiceRemoveTeamMemberProcedure is the fully-qualified name of the TeamService's
+	// RemoveTeamMember RPC.
+	TeamServiceRemoveTeamMemberProcedure = "/halomail.identity.v1.TeamService/RemoveTeamMember"
+	// TeamServiceRevokeInvitationProcedure is the fully-qualified name of the TeamService's
+	// RevokeInvitation RPC.
+	TeamServiceRevokeInvitationProcedure = "/halomail.identity.v1.TeamService/RevokeInvitation"
+	// TeamServiceAcceptInvitationProcedure is the fully-qualified name of the TeamService's
+	// AcceptInvitation RPC.
+	TeamServiceAcceptInvitationProcedure = "/halomail.identity.v1.TeamService/AcceptInvitation"
+)
+
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	authServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuthService")
+	authServiceRegisterMethodDescriptor         = authServiceServiceDescriptor.Methods().ByName("Register")
+	authServiceLoginMethodDescriptor            = authServiceServiceDescriptor.Methods().ByName("Login")
+	authServiceLogoutMethodDescriptor           = authServiceServiceDescriptor.Methods().ByName("Logout")
+	authServiceRefreshSessionMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("RefreshSession")
+	authServiceGetCurrentUserMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("GetCurrentUser")
+	authServiceVerifyTokenMethodDescriptor      = authServiceServiceDescriptor.Methods().ByName("VerifyToken")
+	userServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("UserService")
+	userServiceGetUserMethodDescriptor          = userServiceServiceDescriptor.Methods().ByName("GetUser")
+	userServiceGetUserByHandleMethodDescriptor  = userServiceServiceDescriptor.Methods().ByName("GetUserByHandle")
+	userServiceUpdateUserMethodDescriptor       = userServiceServiceDescriptor.Methods().ByName("UpdateUser")
+	apiKeyServiceServiceDescriptor              = v1.File_halomail_identity_v1_identity_proto.Services().ByName("ApiKeyService")
+	apiKeyServiceCreateApiKeyMethodDescriptor   = apiKeyServiceServiceDescriptor.Methods().ByName("CreateApiKey")
+	apiKeyServiceListApiKeysMethodDescriptor    = apiKeyServiceServiceDescriptor.Methods().ByName("ListApiKeys")
+	apiKeyServiceRevokeApiKeyMethodDescriptor   = apiKeyServiceServiceDescriptor.Methods().ByName("RevokeApiKey")
+	apiKeyServiceVerifyApiKeyMethodDescriptor   = apiKeyServiceServiceDescriptor.Methods().ByName("VerifyApiKey")
+	auditServiceServiceDescriptor               = v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuditService")
+	auditServiceListAuditLogsMethodDescriptor   = auditServiceServiceDescriptor.Methods().ByName("ListAuditLogs")
+	auditServiceRecordAuditLogMethodDescriptor  = auditServiceServiceDescriptor.Methods().ByName("RecordAuditLog")
+	teamServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("TeamService")
+	teamServiceListTeamMembersMethodDescriptor  = teamServiceServiceDescriptor.Methods().ByName("ListTeamMembers")
+	teamServiceInviteTeamMemberMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("InviteTeamMember")
+	teamServiceUpdateMemberRoleMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("UpdateMemberRole")
+	teamServiceRemoveTeamMemberMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("RemoveTeamMember")
+	teamServiceRevokeInvitationMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("RevokeInvitation")
+	teamServiceAcceptInvitationMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("AcceptInvitation")
 )
 
 // AuthServiceClient is a client for the halomail.identity.v1.AuthService service.
@@ -100,42 +150,41 @@ type AuthServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuthServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	authServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuthService").Methods()
 	return &authServiceClient{
 		register: connect.NewClient[v1.RegisterRequest, v1.RegisterResponse](
 			httpClient,
 			baseURL+AuthServiceRegisterProcedure,
-			connect.WithSchema(authServiceMethods.ByName("Register")),
+			connect.WithSchema(authServiceRegisterMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		login: connect.NewClient[v1.LoginRequest, v1.LoginResponse](
 			httpClient,
 			baseURL+AuthServiceLoginProcedure,
-			connect.WithSchema(authServiceMethods.ByName("Login")),
+			connect.WithSchema(authServiceLoginMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		logout: connect.NewClient[v1.LogoutRequest, v1.LogoutResponse](
 			httpClient,
 			baseURL+AuthServiceLogoutProcedure,
-			connect.WithSchema(authServiceMethods.ByName("Logout")),
+			connect.WithSchema(authServiceLogoutMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		refreshSession: connect.NewClient[v1.RefreshSessionRequest, v1.RefreshSessionResponse](
 			httpClient,
 			baseURL+AuthServiceRefreshSessionProcedure,
-			connect.WithSchema(authServiceMethods.ByName("RefreshSession")),
+			connect.WithSchema(authServiceRefreshSessionMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getCurrentUser: connect.NewClient[v1.GetCurrentUserRequest, v1.GetCurrentUserResponse](
 			httpClient,
 			baseURL+AuthServiceGetCurrentUserProcedure,
-			connect.WithSchema(authServiceMethods.ByName("GetCurrentUser")),
+			connect.WithSchema(authServiceGetCurrentUserMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		verifyToken: connect.NewClient[v1.VerifyTokenRequest, v1.VerifyTokenResponse](
 			httpClient,
 			baseURL+AuthServiceVerifyTokenProcedure,
-			connect.WithSchema(authServiceMethods.ByName("VerifyToken")),
+			connect.WithSchema(authServiceVerifyTokenMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -198,41 +247,40 @@ type AuthServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	authServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuthService").Methods()
 	authServiceRegisterHandler := connect.NewUnaryHandler(
 		AuthServiceRegisterProcedure,
 		svc.Register,
-		connect.WithSchema(authServiceMethods.ByName("Register")),
+		connect.WithSchema(authServiceRegisterMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceLoginHandler := connect.NewUnaryHandler(
 		AuthServiceLoginProcedure,
 		svc.Login,
-		connect.WithSchema(authServiceMethods.ByName("Login")),
+		connect.WithSchema(authServiceLoginMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceLogoutHandler := connect.NewUnaryHandler(
 		AuthServiceLogoutProcedure,
 		svc.Logout,
-		connect.WithSchema(authServiceMethods.ByName("Logout")),
+		connect.WithSchema(authServiceLogoutMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceRefreshSessionHandler := connect.NewUnaryHandler(
 		AuthServiceRefreshSessionProcedure,
 		svc.RefreshSession,
-		connect.WithSchema(authServiceMethods.ByName("RefreshSession")),
+		connect.WithSchema(authServiceRefreshSessionMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceGetCurrentUserHandler := connect.NewUnaryHandler(
 		AuthServiceGetCurrentUserProcedure,
 		svc.GetCurrentUser,
-		connect.WithSchema(authServiceMethods.ByName("GetCurrentUser")),
+		connect.WithSchema(authServiceGetCurrentUserMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceVerifyTokenHandler := connect.NewUnaryHandler(
 		AuthServiceVerifyTokenProcedure,
 		svc.VerifyToken,
-		connect.WithSchema(authServiceMethods.ByName("VerifyToken")),
+		connect.WithSchema(authServiceVerifyTokenMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.identity.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -299,24 +347,23 @@ type UserServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) UserServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	userServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("UserService").Methods()
 	return &userServiceClient{
 		getUser: connect.NewClient[v1.GetUserRequest, v1.GetUserResponse](
 			httpClient,
 			baseURL+UserServiceGetUserProcedure,
-			connect.WithSchema(userServiceMethods.ByName("GetUser")),
+			connect.WithSchema(userServiceGetUserMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getUserByHandle: connect.NewClient[v1.GetUserByHandleRequest, v1.GetUserByHandleResponse](
 			httpClient,
 			baseURL+UserServiceGetUserByHandleProcedure,
-			connect.WithSchema(userServiceMethods.ByName("GetUserByHandle")),
+			connect.WithSchema(userServiceGetUserByHandleMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		updateUser: connect.NewClient[v1.UpdateUserRequest, v1.UpdateUserResponse](
 			httpClient,
 			baseURL+UserServiceUpdateUserProcedure,
-			connect.WithSchema(userServiceMethods.ByName("UpdateUser")),
+			connect.WithSchema(userServiceUpdateUserMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -358,23 +405,22 @@ type UserServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	userServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("UserService").Methods()
 	userServiceGetUserHandler := connect.NewUnaryHandler(
 		UserServiceGetUserProcedure,
 		svc.GetUser,
-		connect.WithSchema(userServiceMethods.ByName("GetUser")),
+		connect.WithSchema(userServiceGetUserMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceGetUserByHandleHandler := connect.NewUnaryHandler(
 		UserServiceGetUserByHandleProcedure,
 		svc.GetUserByHandle,
-		connect.WithSchema(userServiceMethods.ByName("GetUserByHandle")),
+		connect.WithSchema(userServiceGetUserByHandleMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceUpdateUserHandler := connect.NewUnaryHandler(
 		UserServiceUpdateUserProcedure,
 		svc.UpdateUser,
-		connect.WithSchema(userServiceMethods.ByName("UpdateUser")),
+		connect.WithSchema(userServiceUpdateUserMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.identity.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -424,30 +470,29 @@ type ApiKeyServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewApiKeyServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ApiKeyServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	apiKeyServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("ApiKeyService").Methods()
 	return &apiKeyServiceClient{
 		createApiKey: connect.NewClient[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceCreateApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceMethods.ByName("CreateApiKey")),
+			connect.WithSchema(apiKeyServiceCreateApiKeyMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listApiKeys: connect.NewClient[v1.ListApiKeysRequest, v1.ListApiKeysResponse](
 			httpClient,
 			baseURL+ApiKeyServiceListApiKeysProcedure,
-			connect.WithSchema(apiKeyServiceMethods.ByName("ListApiKeys")),
+			connect.WithSchema(apiKeyServiceListApiKeysMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		revokeApiKey: connect.NewClient[v1.RevokeApiKeyRequest, v1.RevokeApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceRevokeApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceMethods.ByName("RevokeApiKey")),
+			connect.WithSchema(apiKeyServiceRevokeApiKeyMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		verifyApiKey: connect.NewClient[v1.VerifyApiKeyRequest, v1.VerifyApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceVerifyApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceMethods.ByName("VerifyApiKey")),
+			connect.WithSchema(apiKeyServiceVerifyApiKeyMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -496,29 +541,28 @@ type ApiKeyServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewApiKeyServiceHandler(svc ApiKeyServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	apiKeyServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("ApiKeyService").Methods()
 	apiKeyServiceCreateApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceCreateApiKeyProcedure,
 		svc.CreateApiKey,
-		connect.WithSchema(apiKeyServiceMethods.ByName("CreateApiKey")),
+		connect.WithSchema(apiKeyServiceCreateApiKeyMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceListApiKeysHandler := connect.NewUnaryHandler(
 		ApiKeyServiceListApiKeysProcedure,
 		svc.ListApiKeys,
-		connect.WithSchema(apiKeyServiceMethods.ByName("ListApiKeys")),
+		connect.WithSchema(apiKeyServiceListApiKeysMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceRevokeApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceRevokeApiKeyProcedure,
 		svc.RevokeApiKey,
-		connect.WithSchema(apiKeyServiceMethods.ByName("RevokeApiKey")),
+		connect.WithSchema(apiKeyServiceRevokeApiKeyMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceVerifyApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceVerifyApiKeyProcedure,
 		svc.VerifyApiKey,
-		connect.WithSchema(apiKeyServiceMethods.ByName("VerifyApiKey")),
+		connect.WithSchema(apiKeyServiceVerifyApiKeyMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.identity.v1.ApiKeyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -572,18 +616,17 @@ type AuditServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAuditServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuditServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	auditServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuditService").Methods()
 	return &auditServiceClient{
 		listAuditLogs: connect.NewClient[v1.ListAuditLogsRequest, v1.ListAuditLogsResponse](
 			httpClient,
 			baseURL+AuditServiceListAuditLogsProcedure,
-			connect.WithSchema(auditServiceMethods.ByName("ListAuditLogs")),
+			connect.WithSchema(auditServiceListAuditLogsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		recordAuditLog: connect.NewClient[v1.RecordAuditLogRequest, v1.RecordAuditLogResponse](
 			httpClient,
 			baseURL+AuditServiceRecordAuditLogProcedure,
-			connect.WithSchema(auditServiceMethods.ByName("RecordAuditLog")),
+			connect.WithSchema(auditServiceRecordAuditLogMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -618,17 +661,16 @@ type AuditServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAuditServiceHandler(svc AuditServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	auditServiceMethods := v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuditService").Methods()
 	auditServiceListAuditLogsHandler := connect.NewUnaryHandler(
 		AuditServiceListAuditLogsProcedure,
 		svc.ListAuditLogs,
-		connect.WithSchema(auditServiceMethods.ByName("ListAuditLogs")),
+		connect.WithSchema(auditServiceListAuditLogsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	auditServiceRecordAuditLogHandler := connect.NewUnaryHandler(
 		AuditServiceRecordAuditLogProcedure,
 		svc.RecordAuditLog,
-		connect.WithSchema(auditServiceMethods.ByName("RecordAuditLog")),
+		connect.WithSchema(auditServiceRecordAuditLogMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.identity.v1.AuditService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -652,4 +694,202 @@ func (UnimplementedAuditServiceHandler) ListAuditLogs(context.Context, *connect.
 
 func (UnimplementedAuditServiceHandler) RecordAuditLog(context.Context, *connect.Request[v1.RecordAuditLogRequest]) (*connect.Response[v1.RecordAuditLogResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.AuditService.RecordAuditLog is not implemented"))
+}
+
+// TeamServiceClient is a client for the halomail.identity.v1.TeamService service.
+type TeamServiceClient interface {
+	ListTeamMembers(context.Context, *connect.Request[v1.ListTeamMembersRequest]) (*connect.Response[v1.ListTeamMembersResponse], error)
+	InviteTeamMember(context.Context, *connect.Request[v1.InviteTeamMemberRequest]) (*connect.Response[v1.InviteTeamMemberResponse], error)
+	UpdateMemberRole(context.Context, *connect.Request[v1.UpdateMemberRoleRequest]) (*connect.Response[v1.UpdateMemberRoleResponse], error)
+	RemoveTeamMember(context.Context, *connect.Request[v1.RemoveTeamMemberRequest]) (*connect.Response[v1.RemoveTeamMemberResponse], error)
+	RevokeInvitation(context.Context, *connect.Request[v1.RevokeInvitationRequest]) (*connect.Response[v1.RevokeInvitationResponse], error)
+	AcceptInvitation(context.Context, *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error)
+}
+
+// NewTeamServiceClient constructs a client for the halomail.identity.v1.TeamService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewTeamServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) TeamServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	return &teamServiceClient{
+		listTeamMembers: connect.NewClient[v1.ListTeamMembersRequest, v1.ListTeamMembersResponse](
+			httpClient,
+			baseURL+TeamServiceListTeamMembersProcedure,
+			connect.WithSchema(teamServiceListTeamMembersMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		inviteTeamMember: connect.NewClient[v1.InviteTeamMemberRequest, v1.InviteTeamMemberResponse](
+			httpClient,
+			baseURL+TeamServiceInviteTeamMemberProcedure,
+			connect.WithSchema(teamServiceInviteTeamMemberMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		updateMemberRole: connect.NewClient[v1.UpdateMemberRoleRequest, v1.UpdateMemberRoleResponse](
+			httpClient,
+			baseURL+TeamServiceUpdateMemberRoleProcedure,
+			connect.WithSchema(teamServiceUpdateMemberRoleMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		removeTeamMember: connect.NewClient[v1.RemoveTeamMemberRequest, v1.RemoveTeamMemberResponse](
+			httpClient,
+			baseURL+TeamServiceRemoveTeamMemberProcedure,
+			connect.WithSchema(teamServiceRemoveTeamMemberMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		revokeInvitation: connect.NewClient[v1.RevokeInvitationRequest, v1.RevokeInvitationResponse](
+			httpClient,
+			baseURL+TeamServiceRevokeInvitationProcedure,
+			connect.WithSchema(teamServiceRevokeInvitationMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		acceptInvitation: connect.NewClient[v1.AcceptInvitationRequest, v1.AcceptInvitationResponse](
+			httpClient,
+			baseURL+TeamServiceAcceptInvitationProcedure,
+			connect.WithSchema(teamServiceAcceptInvitationMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+	}
+}
+
+// teamServiceClient implements TeamServiceClient.
+type teamServiceClient struct {
+	listTeamMembers  *connect.Client[v1.ListTeamMembersRequest, v1.ListTeamMembersResponse]
+	inviteTeamMember *connect.Client[v1.InviteTeamMemberRequest, v1.InviteTeamMemberResponse]
+	updateMemberRole *connect.Client[v1.UpdateMemberRoleRequest, v1.UpdateMemberRoleResponse]
+	removeTeamMember *connect.Client[v1.RemoveTeamMemberRequest, v1.RemoveTeamMemberResponse]
+	revokeInvitation *connect.Client[v1.RevokeInvitationRequest, v1.RevokeInvitationResponse]
+	acceptInvitation *connect.Client[v1.AcceptInvitationRequest, v1.AcceptInvitationResponse]
+}
+
+// ListTeamMembers calls halomail.identity.v1.TeamService.ListTeamMembers.
+func (c *teamServiceClient) ListTeamMembers(ctx context.Context, req *connect.Request[v1.ListTeamMembersRequest]) (*connect.Response[v1.ListTeamMembersResponse], error) {
+	return c.listTeamMembers.CallUnary(ctx, req)
+}
+
+// InviteTeamMember calls halomail.identity.v1.TeamService.InviteTeamMember.
+func (c *teamServiceClient) InviteTeamMember(ctx context.Context, req *connect.Request[v1.InviteTeamMemberRequest]) (*connect.Response[v1.InviteTeamMemberResponse], error) {
+	return c.inviteTeamMember.CallUnary(ctx, req)
+}
+
+// UpdateMemberRole calls halomail.identity.v1.TeamService.UpdateMemberRole.
+func (c *teamServiceClient) UpdateMemberRole(ctx context.Context, req *connect.Request[v1.UpdateMemberRoleRequest]) (*connect.Response[v1.UpdateMemberRoleResponse], error) {
+	return c.updateMemberRole.CallUnary(ctx, req)
+}
+
+// RemoveTeamMember calls halomail.identity.v1.TeamService.RemoveTeamMember.
+func (c *teamServiceClient) RemoveTeamMember(ctx context.Context, req *connect.Request[v1.RemoveTeamMemberRequest]) (*connect.Response[v1.RemoveTeamMemberResponse], error) {
+	return c.removeTeamMember.CallUnary(ctx, req)
+}
+
+// RevokeInvitation calls halomail.identity.v1.TeamService.RevokeInvitation.
+func (c *teamServiceClient) RevokeInvitation(ctx context.Context, req *connect.Request[v1.RevokeInvitationRequest]) (*connect.Response[v1.RevokeInvitationResponse], error) {
+	return c.revokeInvitation.CallUnary(ctx, req)
+}
+
+// AcceptInvitation calls halomail.identity.v1.TeamService.AcceptInvitation.
+func (c *teamServiceClient) AcceptInvitation(ctx context.Context, req *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error) {
+	return c.acceptInvitation.CallUnary(ctx, req)
+}
+
+// TeamServiceHandler is an implementation of the halomail.identity.v1.TeamService service.
+type TeamServiceHandler interface {
+	ListTeamMembers(context.Context, *connect.Request[v1.ListTeamMembersRequest]) (*connect.Response[v1.ListTeamMembersResponse], error)
+	InviteTeamMember(context.Context, *connect.Request[v1.InviteTeamMemberRequest]) (*connect.Response[v1.InviteTeamMemberResponse], error)
+	UpdateMemberRole(context.Context, *connect.Request[v1.UpdateMemberRoleRequest]) (*connect.Response[v1.UpdateMemberRoleResponse], error)
+	RemoveTeamMember(context.Context, *connect.Request[v1.RemoveTeamMemberRequest]) (*connect.Response[v1.RemoveTeamMemberResponse], error)
+	RevokeInvitation(context.Context, *connect.Request[v1.RevokeInvitationRequest]) (*connect.Response[v1.RevokeInvitationResponse], error)
+	AcceptInvitation(context.Context, *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error)
+}
+
+// NewTeamServiceHandler builds an HTTP handler from the service implementation. It returns the path
+// on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewTeamServiceHandler(svc TeamServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	teamServiceListTeamMembersHandler := connect.NewUnaryHandler(
+		TeamServiceListTeamMembersProcedure,
+		svc.ListTeamMembers,
+		connect.WithSchema(teamServiceListTeamMembersMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	teamServiceInviteTeamMemberHandler := connect.NewUnaryHandler(
+		TeamServiceInviteTeamMemberProcedure,
+		svc.InviteTeamMember,
+		connect.WithSchema(teamServiceInviteTeamMemberMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	teamServiceUpdateMemberRoleHandler := connect.NewUnaryHandler(
+		TeamServiceUpdateMemberRoleProcedure,
+		svc.UpdateMemberRole,
+		connect.WithSchema(teamServiceUpdateMemberRoleMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	teamServiceRemoveTeamMemberHandler := connect.NewUnaryHandler(
+		TeamServiceRemoveTeamMemberProcedure,
+		svc.RemoveTeamMember,
+		connect.WithSchema(teamServiceRemoveTeamMemberMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	teamServiceRevokeInvitationHandler := connect.NewUnaryHandler(
+		TeamServiceRevokeInvitationProcedure,
+		svc.RevokeInvitation,
+		connect.WithSchema(teamServiceRevokeInvitationMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	teamServiceAcceptInvitationHandler := connect.NewUnaryHandler(
+		TeamServiceAcceptInvitationProcedure,
+		svc.AcceptInvitation,
+		connect.WithSchema(teamServiceAcceptInvitationMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/halomail.identity.v1.TeamService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case TeamServiceListTeamMembersProcedure:
+			teamServiceListTeamMembersHandler.ServeHTTP(w, r)
+		case TeamServiceInviteTeamMemberProcedure:
+			teamServiceInviteTeamMemberHandler.ServeHTTP(w, r)
+		case TeamServiceUpdateMemberRoleProcedure:
+			teamServiceUpdateMemberRoleHandler.ServeHTTP(w, r)
+		case TeamServiceRemoveTeamMemberProcedure:
+			teamServiceRemoveTeamMemberHandler.ServeHTTP(w, r)
+		case TeamServiceRevokeInvitationProcedure:
+			teamServiceRevokeInvitationHandler.ServeHTTP(w, r)
+		case TeamServiceAcceptInvitationProcedure:
+			teamServiceAcceptInvitationHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
+// UnimplementedTeamServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedTeamServiceHandler struct{}
+
+func (UnimplementedTeamServiceHandler) ListTeamMembers(context.Context, *connect.Request[v1.ListTeamMembersRequest]) (*connect.Response[v1.ListTeamMembersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.ListTeamMembers is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) InviteTeamMember(context.Context, *connect.Request[v1.InviteTeamMemberRequest]) (*connect.Response[v1.InviteTeamMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.InviteTeamMember is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) UpdateMemberRole(context.Context, *connect.Request[v1.UpdateMemberRoleRequest]) (*connect.Response[v1.UpdateMemberRoleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.UpdateMemberRole is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) RemoveTeamMember(context.Context, *connect.Request[v1.RemoveTeamMemberRequest]) (*connect.Response[v1.RemoveTeamMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.RemoveTeamMember is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) RevokeInvitation(context.Context, *connect.Request[v1.RevokeInvitationRequest]) (*connect.Response[v1.RevokeInvitationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.RevokeInvitation is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) AcceptInvitation(context.Context, *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.AcceptInvitation is not implemented"))
 }

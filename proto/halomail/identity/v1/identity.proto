@@ -21,6 +21,7 @@ message User {
   string org_id = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
+  string role = 10;
 }
 
 message Org {
@@ -228,3 +229,81 @@ message RecordAuditLogRequest {
 message RecordAuditLogResponse {
   string id = 1;
 }
+
+// ---------------------------------------------------------------------------
+// TeamService — team members, roles, invitations
+// ---------------------------------------------------------------------------
+
+message TeamMember {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string handle = 4;
+  string avatar_url = 5;
+  string role = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message Invitation {
+  string id = 1;
+  string email = 2;
+  string role = 3;
+  string invited_by_name = 4;
+  string status = 5;
+  google.protobuf.Timestamp expires_at = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+service TeamService {
+  rpc ListTeamMembers(ListTeamMembersRequest) returns (ListTeamMembersResponse);
+  rpc InviteTeamMember(InviteTeamMemberRequest) returns (InviteTeamMemberResponse);
+  rpc UpdateMemberRole(UpdateMemberRoleRequest) returns (UpdateMemberRoleResponse);
+  rpc RemoveTeamMember(RemoveTeamMemberRequest) returns (RemoveTeamMemberResponse);
+  rpc RevokeInvitation(RevokeInvitationRequest) returns (RevokeInvitationResponse);
+  rpc AcceptInvitation(AcceptInvitationRequest) returns (AcceptInvitationResponse);
+}
+
+message ListTeamMembersRequest {}
+message ListTeamMembersResponse {
+  repeated TeamMember members = 1;
+  repeated Invitation invitations = 2;
+  int32 max_seats = 3;
+  int32 used_seats = 4;
+  string tier = 5;
+  string current_user_role = 6;
+}
+
+message InviteTeamMemberRequest {
+  string email = 1;
+  string role = 2;
+}
+message InviteTeamMemberResponse {
+  Invitation invitation = 1;
+}
+
+message UpdateMemberRoleRequest {
+  string user_id = 1;
+  string role = 2;
+}
+message UpdateMemberRoleResponse {
+  TeamMember member = 1;
+}
+
+message RemoveTeamMemberRequest {
+  string user_id = 1;
+}
+message RemoveTeamMemberResponse {}
+
+message RevokeInvitationRequest {
+  string invitation_id = 1;
+}
+message RevokeInvitationResponse {}
+
+message AcceptInvitationRequest {
+  string token = 1;
+}
+message AcceptInvitationResponse {
+  User user = 1;
+  Session session = 2;
+}
+

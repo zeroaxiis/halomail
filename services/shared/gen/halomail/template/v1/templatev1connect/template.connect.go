@@ -56,6 +56,18 @@ const (
 	TemplateServiceRenderPreviewProcedure = "/halomail.template.v1.TemplateService/RenderPreview"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	templateServiceServiceDescriptor              = v1.File_halomail_template_v1_template_proto.Services().ByName("TemplateService")
+	templateServiceListThemesMethodDescriptor     = templateServiceServiceDescriptor.Methods().ByName("ListThemes")
+	templateServiceListTemplatesMethodDescriptor  = templateServiceServiceDescriptor.Methods().ByName("ListTemplates")
+	templateServiceGetTemplateMethodDescriptor    = templateServiceServiceDescriptor.Methods().ByName("GetTemplate")
+	templateServiceCreateTemplateMethodDescriptor = templateServiceServiceDescriptor.Methods().ByName("CreateTemplate")
+	templateServiceUpdateTemplateMethodDescriptor = templateServiceServiceDescriptor.Methods().ByName("UpdateTemplate")
+	templateServiceDeleteTemplateMethodDescriptor = templateServiceServiceDescriptor.Methods().ByName("DeleteTemplate")
+	templateServiceRenderPreviewMethodDescriptor  = templateServiceServiceDescriptor.Methods().ByName("RenderPreview")
+)
+
 // TemplateServiceClient is a client for the halomail.template.v1.TemplateService service.
 type TemplateServiceClient interface {
 	ListThemes(context.Context, *connect.Request[v1.ListThemesRequest]) (*connect.Response[v1.ListThemesResponse], error)
@@ -77,48 +89,47 @@ type TemplateServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewTemplateServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) TemplateServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	templateServiceMethods := v1.File_halomail_template_v1_template_proto.Services().ByName("TemplateService").Methods()
 	return &templateServiceClient{
 		listThemes: connect.NewClient[v1.ListThemesRequest, v1.ListThemesResponse](
 			httpClient,
 			baseURL+TemplateServiceListThemesProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("ListThemes")),
+			connect.WithSchema(templateServiceListThemesMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listTemplates: connect.NewClient[v1.ListTemplatesRequest, v1.ListTemplatesResponse](
 			httpClient,
 			baseURL+TemplateServiceListTemplatesProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("ListTemplates")),
+			connect.WithSchema(templateServiceListTemplatesMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getTemplate: connect.NewClient[v1.GetTemplateRequest, v1.GetTemplateResponse](
 			httpClient,
 			baseURL+TemplateServiceGetTemplateProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("GetTemplate")),
+			connect.WithSchema(templateServiceGetTemplateMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		createTemplate: connect.NewClient[v1.CreateTemplateRequest, v1.CreateTemplateResponse](
 			httpClient,
 			baseURL+TemplateServiceCreateTemplateProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("CreateTemplate")),
+			connect.WithSchema(templateServiceCreateTemplateMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		updateTemplate: connect.NewClient[v1.UpdateTemplateRequest, v1.UpdateTemplateResponse](
 			httpClient,
 			baseURL+TemplateServiceUpdateTemplateProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("UpdateTemplate")),
+			connect.WithSchema(templateServiceUpdateTemplateMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		deleteTemplate: connect.NewClient[v1.DeleteTemplateRequest, v1.DeleteTemplateResponse](
 			httpClient,
 			baseURL+TemplateServiceDeleteTemplateProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("DeleteTemplate")),
+			connect.WithSchema(templateServiceDeleteTemplateMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		renderPreview: connect.NewClient[v1.RenderPreviewRequest, v1.RenderPreviewResponse](
 			httpClient,
 			baseURL+TemplateServiceRenderPreviewProcedure,
-			connect.WithSchema(templateServiceMethods.ByName("RenderPreview")),
+			connect.WithSchema(templateServiceRenderPreviewMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -188,47 +199,46 @@ type TemplateServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewTemplateServiceHandler(svc TemplateServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	templateServiceMethods := v1.File_halomail_template_v1_template_proto.Services().ByName("TemplateService").Methods()
 	templateServiceListThemesHandler := connect.NewUnaryHandler(
 		TemplateServiceListThemesProcedure,
 		svc.ListThemes,
-		connect.WithSchema(templateServiceMethods.ByName("ListThemes")),
+		connect.WithSchema(templateServiceListThemesMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	templateServiceListTemplatesHandler := connect.NewUnaryHandler(
 		TemplateServiceListTemplatesProcedure,
 		svc.ListTemplates,
-		connect.WithSchema(templateServiceMethods.ByName("ListTemplates")),
+		connect.WithSchema(templateServiceListTemplatesMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	templateServiceGetTemplateHandler := connect.NewUnaryHandler(
 		TemplateServiceGetTemplateProcedure,
 		svc.GetTemplate,
-		connect.WithSchema(templateServiceMethods.ByName("GetTemplate")),
+		connect.WithSchema(templateServiceGetTemplateMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	templateServiceCreateTemplateHandler := connect.NewUnaryHandler(
 		TemplateServiceCreateTemplateProcedure,
 		svc.CreateTemplate,
-		connect.WithSchema(templateServiceMethods.ByName("CreateTemplate")),
+		connect.WithSchema(templateServiceCreateTemplateMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	templateServiceUpdateTemplateHandler := connect.NewUnaryHandler(
 		TemplateServiceUpdateTemplateProcedure,
 		svc.UpdateTemplate,
-		connect.WithSchema(templateServiceMethods.ByName("UpdateTemplate")),
+		connect.WithSchema(templateServiceUpdateTemplateMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	templateServiceDeleteTemplateHandler := connect.NewUnaryHandler(
 		TemplateServiceDeleteTemplateProcedure,
 		svc.DeleteTemplate,
-		connect.WithSchema(templateServiceMethods.ByName("DeleteTemplate")),
+		connect.WithSchema(templateServiceDeleteTemplateMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	templateServiceRenderPreviewHandler := connect.NewUnaryHandler(
 		TemplateServiceRenderPreviewProcedure,
 		svc.RenderPreview,
-		connect.WithSchema(templateServiceMethods.ByName("RenderPreview")),
+		connect.WithSchema(templateServiceRenderPreviewMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.template.v1.TemplateService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
