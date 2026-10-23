@@ -23,7 +23,7 @@ type Users struct{ pool *pgxpool.Pool }
 
 func NewUsers(pool *pgxpool.Pool) *Users { return &Users{pool: pool} }
 
-const userColumns = `id, org_id, email, name, handle, avatar_url, timezone, password_hash, created_at, updated_at`
+const userColumns = `id, org_id, email, name, handle, avatar_url, timezone, password_hash, created_at, updated_at, COALESCE(role, 'owner')`
 
 func (r *Users) CreateOrgAndUser(ctx context.Context, org *domain.Org, user *domain.User) error {
 	tx, err := r.pool.Begin(ctx)
@@ -39,11 +39,15 @@ func (r *Users) CreateOrgAndUser(ctx context.Context, org *domain.Org, user *dom
 		return mapWrite(err)
 	}
 
+	role := user.Role
+	if role == "" {
+		role = "owner"
+	}
 	if _, err := tx.Exec(ctx,
-		`INSERT INTO users (id, org_id, email, name, handle, avatar_url, timezone, password_hash, created_at, updated_at)
-		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+		`INSERT INTO users (id, org_id, email, name, handle, avatar_url, timezone, password_hash, created_at, updated_at, role)
+		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
 		user.ID, user.OrgID, user.Email, user.Name, user.Handle, user.AvatarURL,
-		user.Timezone, user.PasswordHash, user.CreatedAt, user.UpdatedAt,
+		user.Timezone, user.PasswordHash, user.CreatedAt, user.UpdatedAt, role,
 	); err != nil {
 		return mapWrite(err)
 	}
@@ -85,7 +89,7 @@ func (r *Users) UpdateOrgBilling(ctx context.Context, orgID, customerID, subID, 
 func scanUser(row pgx.Row) (*domain.User, error) {
 	var u domain.User
 	if err := row.Scan(&u.ID, &u.OrgID, &u.Email, &u.Name, &u.Handle, &u.AvatarURL,
-		&u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt); err != nil {
+		&u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errs.NotFound("user not found")
 		}

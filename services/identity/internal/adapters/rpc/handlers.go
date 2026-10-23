@@ -241,6 +241,115 @@ func (h *Handlers) RecordAuditLog(ctx context.Context, req *connect.Request[iden
 	return connect.NewResponse(&identityv1.RecordAuditLogResponse{Id: id}), nil
 }
 
+// ---- TeamService ---------------------------------------------------------
+
+func (h *Handlers) ListTeamMembers(ctx context.Context, req *connect.Request[identityv1.ListTeamMembersRequest]) (*connect.Response[identityv1.ListTeamMembersResponse], error) {
+	userID, orgID, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	data, err := h.app.ListTeamMembers(ctx, userID, orgID)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	members := make([]*identityv1.TeamMember, 0, len(data.Members))
+	for _, m := range data.Members {
+		members = append(members, toProtoTeamMember(m))
+	}
+
+	invitations := make([]*identityv1.Invitation, 0, len(data.Invitations))
+	for _, inv := range data.Invitations {
+		invitations = append(invitations, toProtoInvitation(inv))
+	}
+
+	return connect.NewResponse(&identityv1.ListTeamMembersResponse{
+		Members:         members,
+		Invitations:     invitations,
+		MaxSeats:        int32(data.MaxSeats),
+		UsedSeats:       int32(data.UsedSeats),
+		Tier:            data.Tier,
+		CurrentUserRole: data.CurrentUserRole,
+	}), nil
+}
+
+func (h *Handlers) InviteTeamMember(ctx context.Context, req *connect.Request[identityv1.InviteTeamMemberRequest]) (*connect.Response[identityv1.InviteTeamMemberResponse], error) {
+	userID, orgID, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	inv, err := h.app.InviteTeamMember(ctx, userID, orgID, req.Msg.GetEmail(), req.Msg.GetRole())
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	return connect.NewResponse(&identityv1.InviteTeamMemberResponse{
+		Invitation: toProtoInvitation(*inv),
+	}), nil
+}
+
+func (h *Handlers) UpdateMemberRole(ctx context.Context, req *connect.Request[identityv1.UpdateMemberRoleRequest]) (*connect.Response[identityv1.UpdateMemberRoleResponse], error) {
+	userID, orgID, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	updated, err := h.app.UpdateMemberRole(ctx, userID, orgID, req.Msg.GetUserId(), req.Msg.GetRole())
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	return connect.NewResponse(&identityv1.UpdateMemberRoleResponse{
+		Member: toProtoTeamMember(*updated),
+	}), nil
+}
+
+func (h *Handlers) RemoveTeamMember(ctx context.Context, req *connect.Request[identityv1.RemoveTeamMemberRequest]) (*connect.Response[identityv1.RemoveTeamMemberResponse], error) {
+	userID, orgID, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	if err := h.app.RemoveTeamMember(ctx, userID, orgID, req.Msg.GetUserId()); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	return connect.NewResponse(&identityv1.RemoveTeamMemberResponse{}), nil
+}
+
+func (h *Handlers) RevokeInvitation(ctx context.Context, req *connect.Request[identityv1.RevokeInvitationRequest]) (*connect.Response[identityv1.RevokeInvitationResponse], error) {
+	userID, orgID, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	if err := h.app.RevokeInvitation(ctx, userID, orgID, req.Msg.GetInvitationId()); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	return connect.NewResponse(&identityv1.RevokeInvitationResponse{}), nil
+}
+
+func (h *Handlers) AcceptInvitation(ctx context.Context, req *connect.Request[identityv1.AcceptInvitationRequest]) (*connect.Response[identityv1.AcceptInvitationResponse], error) {
+	var currentUserID string
+	authz := req.Header().Get("Authorization")
+	if strings.HasPrefix(authz, "Bearer ") {
+		currentUserID, _, _ = h.app.VerifyToken(ctx, strings.TrimSpace(authz[len("Bearer "):]))
+	}
+
+	user, session, err := h.app.AcceptInvitation(ctx, req.Msg.GetToken(), currentUserID)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+
+	return connect.NewResponse(&identityv1.AcceptInvitationResponse{
+		User:    toProtoUser(user),
+		Session: toProtoSession(session),
+	}), nil
+}
+
 func atoiSafe(s string) int {
 	n, err := strconv.Atoi(s)
 	if err != nil || n < 0 {
@@ -248,3 +357,4 @@ func atoiSafe(s string) int {
 	}
 	return n
 }
+

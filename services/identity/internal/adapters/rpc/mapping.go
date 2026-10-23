@@ -30,8 +30,33 @@ func toProtoUser(u *domain.User) *identityv1.User {
 		AvatarUrl: u.AvatarURL,
 		Timezone:  u.Timezone,
 		OrgId:     u.OrgID,
+		Role:      u.Role,
 		CreatedAt: ts(u.CreatedAt),
 		UpdatedAt: ts(u.UpdatedAt),
+	}
+}
+
+func toProtoTeamMember(u domain.User) *identityv1.TeamMember {
+	return &identityv1.TeamMember{
+		Id:        u.ID,
+		Email:     u.Email,
+		Name:      u.Name,
+		Handle:    u.Handle,
+		AvatarUrl: u.AvatarURL,
+		Role:      u.Role,
+		CreatedAt: ts(u.CreatedAt),
+	}
+}
+
+func toProtoInvitation(i domain.Invitation) *identityv1.Invitation {
+	return &identityv1.Invitation{
+		Id:            i.ID,
+		Email:         i.Email,
+		Role:          i.Role,
+		InvitedByName: i.InvitedByName,
+		Status:        i.Status,
+		ExpiresAt:     ts(i.ExpiresAt),
+		CreatedAt:     ts(i.CreatedAt),
 	}
 }
 

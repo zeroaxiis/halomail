@@ -31,6 +31,7 @@ type Service struct {
 	sessions SessionRepo
 	apiKeys  APIKeyRepo
 	audit    AuditRepo
+	team     TeamRepo
 	tokens   crypto.TokenIssuer
 	cfg      Config
 	redis    *redis.Client
@@ -49,6 +50,7 @@ func New(r Repos, cfg Config, redisClient *redis.Client) *Service {
 		sessions: r.Sessions,
 		apiKeys:  r.APIKeys,
 		audit:    r.Audit,
+		team:     r.Team,
 		tokens:   crypto.NewTokenIssuer(cfg.JWTSecret),
 		cfg:      cfg,
 		redis:    redisClient,
@@ -101,6 +103,7 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (*
 		Handle:       deriveHandle(email),
 		Timezone:     "UTC",
 		PasswordHash: hash,
+		Role:         domain.RoleOwner,
 		CreatedAt:    now,
 		UpdatedAt:    now,
 	}
@@ -473,3 +476,280 @@ func (s *Service) ProcessPayment(ctx context.Context, userID, orgID, orderID, pa
 	}
 	return user, nil
 }
+
+// ---- Team Management -----------------------------------------------------
+
+type TeamData struct {
+	Members         []domain.User
+	Invitations     []domain.Invitation
+	MaxSeats        int
+	UsedSeats       int
+	Tier            string
+	CurrentUserRole string
+}
+
+func MaxSeatsForTier(tier string) int {
+	switch strings.ToLower(tier) {
+	case "pro":
+		return 4
+	case "business":
+		return 12
+	case "enterprise":
+		return 9999
+	default:
+		return 0 // free plan has no team seats
+	}
+}
+
+func (s *Service) ListTeamMembers(ctx context.Context, userID, orgID string) (*TeamData, error) {
+	caller, err := s.users.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if caller.OrgID != orgID {
+		return nil, errs.Forbidden("not a member of this organization")
+	}
+
+	tier, err := s.team.GetOrgTier(ctx, orgID)
+	if err != nil {
+		tier = "free"
+	}
+	maxSeats := MaxSeatsForTier(tier)
+
+	members, err := s.team.ListMembersByOrg(ctx, orgID)
+	if err != nil {
+		return nil, err
+	}
+
+	invitations, err := s.team.ListInvitationsByOrg(ctx, orgID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TeamData{
+		Members:         members,
+		Invitations:     invitations,
+		MaxSeats:        maxSeats,
+		UsedSeats:       len(members) + len(invitations),
+		Tier:            tier,
+		CurrentUserRole: caller.Role,
+	}, nil
+}
+
+func (s *Service) InviteTeamMember(ctx context.Context, callerID, orgID, email, role string) (*domain.Invitation, error) {
+	caller, err := s.users.GetUserByID(ctx, callerID)
+	if err != nil {
+		return nil, err
+	}
+	if caller.OrgID != orgID {
+		return nil, errs.Forbidden("not a member of this organization")
+	}
+	if caller.Role != domain.RoleOwner && caller.Role != domain.RoleAdmin {
+		return nil, errs.Forbidden("only organization owners and admins can invite team members")
+	}
+
+	role = strings.ToLower(strings.TrimSpace(role))
+	if role != domain.RoleAdmin && role != domain.RoleManager && role != domain.RoleViewer {
+		return nil, errs.Invalid("invalid role: must be admin, manager, or viewer")
+	}
+	if caller.Role == domain.RoleAdmin && role == domain.RoleAdmin {
+		return nil, errs.Forbidden("only the workspace owner can invite an administrator")
+	}
+
+	email = normalizeEmail(email)
+	if !validEmail(email) {
+		return nil, errs.Invalid("a valid email address is required")
+	}
+
+	tier, err := s.team.GetOrgTier(ctx, orgID)
+	if err != nil {
+		tier = "free"
+	}
+	maxSeats := MaxSeatsForTier(tier)
+	if maxSeats <= 0 {
+		return nil, errs.Forbidden("team management is not available on the Free plan. Upgrade to Pro (up to 4 seats) or Business (up to 12 seats) to invite teammates.")
+	}
+
+	usedSeats, err := s.team.GetMemberCount(ctx, orgID)
+	if err != nil {
+		return nil, err
+	}
+	if usedSeats >= maxSeats {
+		return nil, errs.Forbidden("seat limit reached for the %s plan (%d seats). Upgrade your plan to invite more team members.", tier, maxSeats)
+	}
+
+	existingMembers, err := s.team.ListMembersByOrg(ctx, orgID)
+	if err == nil {
+		for _, m := range existingMembers {
+			if strings.EqualFold(m.Email, email) {
+				return nil, errs.Conflict("this user is already a member of your workspace")
+			}
+		}
+	}
+
+	token, err := crypto.RandomToken(24)
+	if err != nil {
+		return nil, err
+	}
+
+	inv := &domain.Invitation{
+		ID:            idgen.Prefixed("inv_"),
+		OrgID:         orgID,
+		Email:         email,
+		Role:          role,
+		Token:         token,
+		InvitedBy:     caller.ID,
+		InvitedByName: caller.Name,
+		Status:        domain.InvitePending,
+		ExpiresAt:     s.now().Add(7 * 24 * time.Hour),
+		CreatedAt:     s.now(),
+	}
+
+	if err := s.team.CreateInvitation(ctx, inv); err != nil {
+		return nil, err
+	}
+
+	s.record(ctx, orgID, caller.ID, "team.member.invited", "invitation", inv.ID)
+	return inv, nil
+}
+
+func (s *Service) UpdateMemberRole(ctx context.Context, callerID, orgID, targetUserID, newRole string) (*domain.User, error) {
+	caller, err := s.users.GetUserByID(ctx, callerID)
+	if err != nil {
+		return nil, err
+	}
+	if caller.OrgID != orgID {
+		return nil, errs.Forbidden("not a member of this organization")
+	}
+	if caller.Role != domain.RoleOwner && caller.Role != domain.RoleAdmin {
+		return nil, errs.Forbidden("only organization owners and admins can update member roles")
+	}
+
+	newRole = strings.ToLower(strings.TrimSpace(newRole))
+	if newRole != domain.RoleAdmin && newRole != domain.RoleManager && newRole != domain.RoleViewer {
+		return nil, errs.Invalid("invalid role: must be admin, manager, or viewer")
+	}
+
+	target, err := s.users.GetUserByID(ctx, targetUserID)
+	if err != nil {
+		return nil, err
+	}
+	if target.OrgID != orgID {
+		return nil, errs.NotFound("member not found in this organization")
+	}
+	if target.Role == domain.RoleOwner {
+		return nil, errs.Forbidden("cannot modify the workspace owner's role")
+	}
+	if caller.Role == domain.RoleAdmin {
+		if target.Role == domain.RoleAdmin || newRole == domain.RoleAdmin {
+			return nil, errs.Forbidden("only the workspace owner can promote or demote administrators")
+		}
+	}
+
+	if err := s.team.UpdateUserRole(ctx, orgID, targetUserID, newRole); err != nil {
+		return nil, err
+	}
+
+	target.Role = newRole
+	s.record(ctx, orgID, caller.ID, "team.member.role_updated", "user", targetUserID)
+	return target, nil
+}
+
+func (s *Service) RemoveTeamMember(ctx context.Context, callerID, orgID, targetUserID string) error {
+	caller, err := s.users.GetUserByID(ctx, callerID)
+	if err != nil {
+		return err
+	}
+	if caller.OrgID != orgID {
+		return errs.Forbidden("not a member of this organization")
+	}
+	if caller.Role != domain.RoleOwner && caller.Role != domain.RoleAdmin {
+		return errs.Forbidden("only organization owners and admins can remove team members")
+	}
+
+	target, err := s.users.GetUserByID(ctx, targetUserID)
+	if err != nil {
+		return err
+	}
+	if target.OrgID != orgID {
+		return errs.NotFound("member not found in this organization")
+	}
+	if target.Role == domain.RoleOwner {
+		return errs.Forbidden("the workspace owner cannot be removed")
+	}
+	if caller.Role == domain.RoleAdmin && target.Role == domain.RoleAdmin {
+		return errs.Forbidden("only the workspace owner can remove an administrator")
+	}
+
+	if err := s.team.RemoveUserFromOrg(ctx, orgID, targetUserID); err != nil {
+		return err
+	}
+
+	s.record(ctx, orgID, caller.ID, "team.member.removed", "user", targetUserID)
+	return nil
+}
+
+func (s *Service) RevokeInvitation(ctx context.Context, callerID, orgID, invitationID string) error {
+	caller, err := s.users.GetUserByID(ctx, callerID)
+	if err != nil {
+		return err
+	}
+	if caller.OrgID != orgID {
+		return errs.Forbidden("not a member of this organization")
+	}
+	if caller.Role != domain.RoleOwner && caller.Role != domain.RoleAdmin {
+		return errs.Forbidden("only organization owners and admins can revoke invitations")
+	}
+
+	if err := s.team.RevokeInvitation(ctx, orgID, invitationID); err != nil {
+		return err
+	}
+
+	s.record(ctx, orgID, caller.ID, "team.invitation.revoked", "invitation", invitationID)
+	return nil
+}
+
+func (s *Service) AcceptInvitation(ctx context.Context, token string, currentUserID string) (*domain.User, IssuedSession, error) {
+	inv, err := s.team.GetInvitationByToken(ctx, token)
+	if err != nil {
+		return nil, IssuedSession{}, err
+	}
+	if inv.Status != domain.InvitePending {
+		return nil, IssuedSession{}, errs.Invalid("this invitation has already been processed or revoked")
+	}
+	if s.now().After(inv.ExpiresAt) {
+		return nil, IssuedSession{}, errs.Invalid("this invitation has expired")
+	}
+
+	var user *domain.User
+	if currentUserID != "" {
+		user, err = s.users.GetUserByID(ctx, currentUserID)
+		if err != nil {
+			return nil, IssuedSession{}, err
+		}
+		if !strings.EqualFold(user.Email, inv.Email) {
+			return nil, IssuedSession{}, errs.Forbidden("you are signed in as %s, but this invitation was sent to %s. Please switch accounts.", user.Email, inv.Email)
+		}
+	} else {
+		user, err = s.users.GetUserByEmail(ctx, inv.Email)
+		if err != nil {
+			return nil, IssuedSession{}, errs.NotFound("no account found for %s. Please register or sign in first, then accept the invite.", inv.Email)
+		}
+	}
+
+	if err := s.team.AcceptInvitation(ctx, inv, user); err != nil {
+		return nil, IssuedSession{}, err
+	}
+
+	user.OrgID = inv.OrgID
+	user.Role = inv.Role
+
+	session, err := s.issueSession(ctx, user)
+	if err != nil {
+		return nil, IssuedSession{}, err
+	}
+
+	s.record(ctx, inv.OrgID, user.ID, "team.invitation.accepted", "invitation", inv.ID)
+	return user, session, nil
+}
+

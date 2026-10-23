@@ -9,6 +9,7 @@ export interface SessionUser {
   name: string;
   handle: string;
   org_id: string;
+  role?: string;
   timezone?: string;
 }
 

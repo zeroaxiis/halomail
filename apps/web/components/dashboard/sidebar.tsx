@@ -8,6 +8,7 @@ export const dashboardNav = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/forms", label: "Forms" },
   { href: "/dashboard/meetings", label: "Meetings" },
+  { href: "/dashboard/team", label: "Team" },
   { href: "/dashboard/billing", label: "Billing" },
   { href: "/dashboard/settings", label: "Settings" },
 ];

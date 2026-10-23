@@ -39,6 +39,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 		Sessions: postgres.NewSessions(d.Pool),
 		APIKeys:  postgres.NewAPIKeys(d.Pool),
 		Audit:    postgres.NewAudit(d.Pool),
+		Team:     postgres.NewTeam(d.Pool),
 	}, app.Config{
 		JWTSecret:    d.JWTSecret,
 		RefreshTTL:   d.SessionTTL,
@@ -52,6 +53,7 @@ func Mount(mux *http.ServeMux, d Deps) {
 	mux.Handle(identityv1connect.NewUserServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewApiKeyServiceHandler(h, opts))
 	mux.Handle(identityv1connect.NewAuditServiceHandler(h, opts))
+	mux.Handle(identityv1connect.NewTeamServiceHandler(h, opts))
 	mux.HandleFunc("POST /v1/usage", func(writer http.ResponseWriter, request *http.Request) {
 		owner, err := httpx.Owner(request, authn.NewVerifier(d.JWTSecret))
 		if err != nil {

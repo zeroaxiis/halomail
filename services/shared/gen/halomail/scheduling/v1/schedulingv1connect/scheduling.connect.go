@@ -92,6 +92,31 @@ const (
 	CalendarServiceDisconnectCalendarProcedure = "/halomail.scheduling.v1.CalendarService/DisconnectCalendar"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	eventTypeServiceServiceDescriptor                  = v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("EventTypeService")
+	eventTypeServiceCreateEventTypeMethodDescriptor    = eventTypeServiceServiceDescriptor.Methods().ByName("CreateEventType")
+	eventTypeServiceGetEventTypeMethodDescriptor       = eventTypeServiceServiceDescriptor.Methods().ByName("GetEventType")
+	eventTypeServiceListEventTypesMethodDescriptor     = eventTypeServiceServiceDescriptor.Methods().ByName("ListEventTypes")
+	eventTypeServiceUpdateEventTypeMethodDescriptor    = eventTypeServiceServiceDescriptor.Methods().ByName("UpdateEventType")
+	eventTypeServiceDeleteEventTypeMethodDescriptor    = eventTypeServiceServiceDescriptor.Methods().ByName("DeleteEventType")
+	availabilityServiceServiceDescriptor               = v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("AvailabilityService")
+	availabilityServiceGetAvailabilityMethodDescriptor = availabilityServiceServiceDescriptor.Methods().ByName("GetAvailability")
+	availabilityServiceSetAvailabilityMethodDescriptor = availabilityServiceServiceDescriptor.Methods().ByName("SetAvailability")
+	bookingServiceServiceDescriptor                    = v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("BookingService")
+	bookingServiceListSlotsMethodDescriptor            = bookingServiceServiceDescriptor.Methods().ByName("ListSlots")
+	bookingServiceCreateBookingMethodDescriptor        = bookingServiceServiceDescriptor.Methods().ByName("CreateBooking")
+	bookingServiceGetBookingMethodDescriptor           = bookingServiceServiceDescriptor.Methods().ByName("GetBooking")
+	bookingServiceListBookingsMethodDescriptor         = bookingServiceServiceDescriptor.Methods().ByName("ListBookings")
+	bookingServiceRescheduleBookingMethodDescriptor    = bookingServiceServiceDescriptor.Methods().ByName("RescheduleBooking")
+	bookingServiceCancelBookingMethodDescriptor        = bookingServiceServiceDescriptor.Methods().ByName("CancelBooking")
+	bookingServiceGetUsageStatsMethodDescriptor        = bookingServiceServiceDescriptor.Methods().ByName("GetUsageStats")
+	calendarServiceServiceDescriptor                   = v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("CalendarService")
+	calendarServiceStartConnectMethodDescriptor        = calendarServiceServiceDescriptor.Methods().ByName("StartConnect")
+	calendarServiceListConnectionsMethodDescriptor     = calendarServiceServiceDescriptor.Methods().ByName("ListConnections")
+	calendarServiceDisconnectCalendarMethodDescriptor  = calendarServiceServiceDescriptor.Methods().ByName("DisconnectCalendar")
+)
+
 // EventTypeServiceClient is a client for the halomail.scheduling.v1.EventTypeService service.
 type EventTypeServiceClient interface {
 	CreateEventType(context.Context, *connect.Request[v1.CreateEventTypeRequest]) (*connect.Response[v1.CreateEventTypeResponse], error)
@@ -110,36 +135,35 @@ type EventTypeServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewEventTypeServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) EventTypeServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	eventTypeServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("EventTypeService").Methods()
 	return &eventTypeServiceClient{
 		createEventType: connect.NewClient[v1.CreateEventTypeRequest, v1.CreateEventTypeResponse](
 			httpClient,
 			baseURL+EventTypeServiceCreateEventTypeProcedure,
-			connect.WithSchema(eventTypeServiceMethods.ByName("CreateEventType")),
+			connect.WithSchema(eventTypeServiceCreateEventTypeMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getEventType: connect.NewClient[v1.GetEventTypeRequest, v1.GetEventTypeResponse](
 			httpClient,
 			baseURL+EventTypeServiceGetEventTypeProcedure,
-			connect.WithSchema(eventTypeServiceMethods.ByName("GetEventType")),
+			connect.WithSchema(eventTypeServiceGetEventTypeMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listEventTypes: connect.NewClient[v1.ListEventTypesRequest, v1.ListEventTypesResponse](
 			httpClient,
 			baseURL+EventTypeServiceListEventTypesProcedure,
-			connect.WithSchema(eventTypeServiceMethods.ByName("ListEventTypes")),
+			connect.WithSchema(eventTypeServiceListEventTypesMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		updateEventType: connect.NewClient[v1.UpdateEventTypeRequest, v1.UpdateEventTypeResponse](
 			httpClient,
 			baseURL+EventTypeServiceUpdateEventTypeProcedure,
-			connect.WithSchema(eventTypeServiceMethods.ByName("UpdateEventType")),
+			connect.WithSchema(eventTypeServiceUpdateEventTypeMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		deleteEventType: connect.NewClient[v1.DeleteEventTypeRequest, v1.DeleteEventTypeResponse](
 			httpClient,
 			baseURL+EventTypeServiceDeleteEventTypeProcedure,
-			connect.WithSchema(eventTypeServiceMethods.ByName("DeleteEventType")),
+			connect.WithSchema(eventTypeServiceDeleteEventTypeMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -195,35 +219,34 @@ type EventTypeServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewEventTypeServiceHandler(svc EventTypeServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	eventTypeServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("EventTypeService").Methods()
 	eventTypeServiceCreateEventTypeHandler := connect.NewUnaryHandler(
 		EventTypeServiceCreateEventTypeProcedure,
 		svc.CreateEventType,
-		connect.WithSchema(eventTypeServiceMethods.ByName("CreateEventType")),
+		connect.WithSchema(eventTypeServiceCreateEventTypeMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	eventTypeServiceGetEventTypeHandler := connect.NewUnaryHandler(
 		EventTypeServiceGetEventTypeProcedure,
 		svc.GetEventType,
-		connect.WithSchema(eventTypeServiceMethods.ByName("GetEventType")),
+		connect.WithSchema(eventTypeServiceGetEventTypeMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	eventTypeServiceListEventTypesHandler := connect.NewUnaryHandler(
 		EventTypeServiceListEventTypesProcedure,
 		svc.ListEventTypes,
-		connect.WithSchema(eventTypeServiceMethods.ByName("ListEventTypes")),
+		connect.WithSchema(eventTypeServiceListEventTypesMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	eventTypeServiceUpdateEventTypeHandler := connect.NewUnaryHandler(
 		EventTypeServiceUpdateEventTypeProcedure,
 		svc.UpdateEventType,
-		connect.WithSchema(eventTypeServiceMethods.ByName("UpdateEventType")),
+		connect.WithSchema(eventTypeServiceUpdateEventTypeMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	eventTypeServiceDeleteEventTypeHandler := connect.NewUnaryHandler(
 		EventTypeServiceDeleteEventTypeProcedure,
 		svc.DeleteEventType,
-		connect.WithSchema(eventTypeServiceMethods.ByName("DeleteEventType")),
+		connect.WithSchema(eventTypeServiceDeleteEventTypeMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.scheduling.v1.EventTypeService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -282,18 +305,17 @@ type AvailabilityServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAvailabilityServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AvailabilityServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	availabilityServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("AvailabilityService").Methods()
 	return &availabilityServiceClient{
 		getAvailability: connect.NewClient[v1.GetAvailabilityRequest, v1.GetAvailabilityResponse](
 			httpClient,
 			baseURL+AvailabilityServiceGetAvailabilityProcedure,
-			connect.WithSchema(availabilityServiceMethods.ByName("GetAvailability")),
+			connect.WithSchema(availabilityServiceGetAvailabilityMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		setAvailability: connect.NewClient[v1.SetAvailabilityRequest, v1.SetAvailabilityResponse](
 			httpClient,
 			baseURL+AvailabilityServiceSetAvailabilityProcedure,
-			connect.WithSchema(availabilityServiceMethods.ByName("SetAvailability")),
+			connect.WithSchema(availabilityServiceSetAvailabilityMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -328,17 +350,16 @@ type AvailabilityServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAvailabilityServiceHandler(svc AvailabilityServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	availabilityServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("AvailabilityService").Methods()
 	availabilityServiceGetAvailabilityHandler := connect.NewUnaryHandler(
 		AvailabilityServiceGetAvailabilityProcedure,
 		svc.GetAvailability,
-		connect.WithSchema(availabilityServiceMethods.ByName("GetAvailability")),
+		connect.WithSchema(availabilityServiceGetAvailabilityMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	availabilityServiceSetAvailabilityHandler := connect.NewUnaryHandler(
 		AvailabilityServiceSetAvailabilityProcedure,
 		svc.SetAvailability,
-		connect.WithSchema(availabilityServiceMethods.ByName("SetAvailability")),
+		connect.WithSchema(availabilityServiceSetAvailabilityMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.scheduling.v1.AvailabilityService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -388,48 +409,47 @@ type BookingServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewBookingServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) BookingServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	bookingServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("BookingService").Methods()
 	return &bookingServiceClient{
 		listSlots: connect.NewClient[v1.ListSlotsRequest, v1.ListSlotsResponse](
 			httpClient,
 			baseURL+BookingServiceListSlotsProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("ListSlots")),
+			connect.WithSchema(bookingServiceListSlotsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		createBooking: connect.NewClient[v1.CreateBookingRequest, v1.CreateBookingResponse](
 			httpClient,
 			baseURL+BookingServiceCreateBookingProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("CreateBooking")),
+			connect.WithSchema(bookingServiceCreateBookingMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getBooking: connect.NewClient[v1.GetBookingRequest, v1.GetBookingResponse](
 			httpClient,
 			baseURL+BookingServiceGetBookingProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("GetBooking")),
+			connect.WithSchema(bookingServiceGetBookingMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listBookings: connect.NewClient[v1.ListBookingsRequest, v1.ListBookingsResponse](
 			httpClient,
 			baseURL+BookingServiceListBookingsProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("ListBookings")),
+			connect.WithSchema(bookingServiceListBookingsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		rescheduleBooking: connect.NewClient[v1.RescheduleBookingRequest, v1.RescheduleBookingResponse](
 			httpClient,
 			baseURL+BookingServiceRescheduleBookingProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("RescheduleBooking")),
+			connect.WithSchema(bookingServiceRescheduleBookingMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		cancelBooking: connect.NewClient[v1.CancelBookingRequest, v1.CancelBookingResponse](
 			httpClient,
 			baseURL+BookingServiceCancelBookingProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("CancelBooking")),
+			connect.WithSchema(bookingServiceCancelBookingMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getUsageStats: connect.NewClient[v1.GetUsageStatsRequest, v1.GetUsageStatsResponse](
 			httpClient,
 			baseURL+BookingServiceGetUsageStatsProcedure,
-			connect.WithSchema(bookingServiceMethods.ByName("GetUsageStats")),
+			connect.WithSchema(bookingServiceGetUsageStatsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -502,47 +522,46 @@ type BookingServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewBookingServiceHandler(svc BookingServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	bookingServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("BookingService").Methods()
 	bookingServiceListSlotsHandler := connect.NewUnaryHandler(
 		BookingServiceListSlotsProcedure,
 		svc.ListSlots,
-		connect.WithSchema(bookingServiceMethods.ByName("ListSlots")),
+		connect.WithSchema(bookingServiceListSlotsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookingServiceCreateBookingHandler := connect.NewUnaryHandler(
 		BookingServiceCreateBookingProcedure,
 		svc.CreateBooking,
-		connect.WithSchema(bookingServiceMethods.ByName("CreateBooking")),
+		connect.WithSchema(bookingServiceCreateBookingMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookingServiceGetBookingHandler := connect.NewUnaryHandler(
 		BookingServiceGetBookingProcedure,
 		svc.GetBooking,
-		connect.WithSchema(bookingServiceMethods.ByName("GetBooking")),
+		connect.WithSchema(bookingServiceGetBookingMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookingServiceListBookingsHandler := connect.NewUnaryHandler(
 		BookingServiceListBookingsProcedure,
 		svc.ListBookings,
-		connect.WithSchema(bookingServiceMethods.ByName("ListBookings")),
+		connect.WithSchema(bookingServiceListBookingsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookingServiceRescheduleBookingHandler := connect.NewUnaryHandler(
 		BookingServiceRescheduleBookingProcedure,
 		svc.RescheduleBooking,
-		connect.WithSchema(bookingServiceMethods.ByName("RescheduleBooking")),
+		connect.WithSchema(bookingServiceRescheduleBookingMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookingServiceCancelBookingHandler := connect.NewUnaryHandler(
 		BookingServiceCancelBookingProcedure,
 		svc.CancelBooking,
-		connect.WithSchema(bookingServiceMethods.ByName("CancelBooking")),
+		connect.WithSchema(bookingServiceCancelBookingMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookingServiceGetUsageStatsHandler := connect.NewUnaryHandler(
 		BookingServiceGetUsageStatsProcedure,
 		svc.GetUsageStats,
-		connect.WithSchema(bookingServiceMethods.ByName("GetUsageStats")),
+		connect.WithSchema(bookingServiceGetUsageStatsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.scheduling.v1.BookingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -615,24 +634,23 @@ type CalendarServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewCalendarServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) CalendarServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	calendarServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("CalendarService").Methods()
 	return &calendarServiceClient{
 		startConnect: connect.NewClient[v1.StartConnectRequest, v1.StartConnectResponse](
 			httpClient,
 			baseURL+CalendarServiceStartConnectProcedure,
-			connect.WithSchema(calendarServiceMethods.ByName("StartConnect")),
+			connect.WithSchema(calendarServiceStartConnectMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listConnections: connect.NewClient[v1.ListConnectionsRequest, v1.ListConnectionsResponse](
 			httpClient,
 			baseURL+CalendarServiceListConnectionsProcedure,
-			connect.WithSchema(calendarServiceMethods.ByName("ListConnections")),
+			connect.WithSchema(calendarServiceListConnectionsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		disconnectCalendar: connect.NewClient[v1.DisconnectCalendarRequest, v1.DisconnectCalendarResponse](
 			httpClient,
 			baseURL+CalendarServiceDisconnectCalendarProcedure,
-			connect.WithSchema(calendarServiceMethods.ByName("DisconnectCalendar")),
+			connect.WithSchema(calendarServiceDisconnectCalendarMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -675,23 +693,22 @@ type CalendarServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewCalendarServiceHandler(svc CalendarServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	calendarServiceMethods := v1.File_halomail_scheduling_v1_scheduling_proto.Services().ByName("CalendarService").Methods()
 	calendarServiceStartConnectHandler := connect.NewUnaryHandler(
 		CalendarServiceStartConnectProcedure,
 		svc.StartConnect,
-		connect.WithSchema(calendarServiceMethods.ByName("StartConnect")),
+		connect.WithSchema(calendarServiceStartConnectMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	calendarServiceListConnectionsHandler := connect.NewUnaryHandler(
 		CalendarServiceListConnectionsProcedure,
 		svc.ListConnections,
-		connect.WithSchema(calendarServiceMethods.ByName("ListConnections")),
+		connect.WithSchema(calendarServiceListConnectionsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	calendarServiceDisconnectCalendarHandler := connect.NewUnaryHandler(
 		CalendarServiceDisconnectCalendarProcedure,
 		svc.DisconnectCalendar,
-		connect.WithSchema(calendarServiceMethods.ByName("DisconnectCalendar")),
+		connect.WithSchema(calendarServiceDisconnectCalendarMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.scheduling.v1.CalendarService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

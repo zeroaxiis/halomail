@@ -14,9 +14,38 @@ type User struct {
 	AvatarURL    string
 	Timezone     string
 	PasswordHash string
+	Role         string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
+
+const (
+	RoleOwner   = "owner"
+	RoleAdmin   = "admin"
+	RoleManager = "manager"
+	RoleViewer  = "viewer"
+)
+
+// Invitation represents a pending or historical invite to join an Org.
+type Invitation struct {
+	ID            string
+	OrgID         string
+	Email         string
+	Role          string
+	Token         string
+	InvitedBy     string
+	InvitedByName string
+	Status        string // pending, accepted, revoked, expired
+	ExpiresAt     time.Time
+	CreatedAt     time.Time
+}
+
+const (
+	InvitePending  = "pending"
+	InviteAccepted = "accepted"
+	InviteRevoked  = "revoked"
+	InviteExpired  = "expired"
+)
 
 // Org is the tenant boundary. A user belongs to exactly one org.
 type Org struct {

@@ -47,10 +47,26 @@ type AuditRepo interface {
 	ListByOrg(ctx context.Context, orgID string, limit, offset int) ([]domain.AuditLog, error)
 }
 
+// TeamRepo persists team members and invitations.
+type TeamRepo interface {
+	ListMembersByOrg(ctx context.Context, orgID string) ([]domain.User, error)
+	GetOrgTier(ctx context.Context, orgID string) (string, error)
+	GetMemberCount(ctx context.Context, orgID string) (int, error)
+	CreateInvitation(ctx context.Context, inv *domain.Invitation) error
+	ListInvitationsByOrg(ctx context.Context, orgID string) ([]domain.Invitation, error)
+	GetInvitationByToken(ctx context.Context, token string) (*domain.Invitation, error)
+	RevokeInvitation(ctx context.Context, orgID, invitationID string) error
+	UpdateUserRole(ctx context.Context, orgID, userID, newRole string) error
+	RemoveUserFromOrg(ctx context.Context, orgID, userID string) error
+	AcceptInvitation(ctx context.Context, inv *domain.Invitation, user *domain.User) error
+}
+
 // Repos toplevel groups the ports for wiring convenience.
 type Repos struct {
 	Users    UserRepo
 	Sessions SessionRepo
 	APIKeys  APIKeyRepo
 	Audit    AuditRepo
+	Team     TeamRepo
 }
+

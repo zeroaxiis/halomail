@@ -64,6 +64,23 @@ const (
 	MessageServiceGetUsageStatsProcedure = "/halomail.contact.v1.MessageService/GetUsageStats"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	formServiceServiceDescriptor                = v1.File_halomail_contact_v1_contact_proto.Services().ByName("FormService")
+	formServiceCreateFormMethodDescriptor       = formServiceServiceDescriptor.Methods().ByName("CreateForm")
+	formServiceGetFormMethodDescriptor          = formServiceServiceDescriptor.Methods().ByName("GetForm")
+	formServiceListFormsMethodDescriptor        = formServiceServiceDescriptor.Methods().ByName("ListForms")
+	formServiceUpdateFormMethodDescriptor       = formServiceServiceDescriptor.Methods().ByName("UpdateForm")
+	formServiceDeleteFormMethodDescriptor       = formServiceServiceDescriptor.Methods().ByName("DeleteForm")
+	messageServiceServiceDescriptor             = v1.File_halomail_contact_v1_contact_proto.Services().ByName("MessageService")
+	messageServiceSubmitMessageMethodDescriptor = messageServiceServiceDescriptor.Methods().ByName("SubmitMessage")
+	messageServiceListMessagesMethodDescriptor  = messageServiceServiceDescriptor.Methods().ByName("ListMessages")
+	messageServiceGetMessageMethodDescriptor    = messageServiceServiceDescriptor.Methods().ByName("GetMessage")
+	messageServiceMarkReadMethodDescriptor      = messageServiceServiceDescriptor.Methods().ByName("MarkRead")
+	messageServiceDeleteMessageMethodDescriptor = messageServiceServiceDescriptor.Methods().ByName("DeleteMessage")
+	messageServiceGetUsageStatsMethodDescriptor = messageServiceServiceDescriptor.Methods().ByName("GetUsageStats")
+)
+
 // FormServiceClient is a client for the halomail.contact.v1.FormService service.
 type FormServiceClient interface {
 	CreateForm(context.Context, *connect.Request[v1.CreateFormRequest]) (*connect.Response[v1.CreateFormResponse], error)
@@ -82,36 +99,35 @@ type FormServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewFormServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) FormServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	formServiceMethods := v1.File_halomail_contact_v1_contact_proto.Services().ByName("FormService").Methods()
 	return &formServiceClient{
 		createForm: connect.NewClient[v1.CreateFormRequest, v1.CreateFormResponse](
 			httpClient,
 			baseURL+FormServiceCreateFormProcedure,
-			connect.WithSchema(formServiceMethods.ByName("CreateForm")),
+			connect.WithSchema(formServiceCreateFormMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getForm: connect.NewClient[v1.GetFormRequest, v1.GetFormResponse](
 			httpClient,
 			baseURL+FormServiceGetFormProcedure,
-			connect.WithSchema(formServiceMethods.ByName("GetForm")),
+			connect.WithSchema(formServiceGetFormMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listForms: connect.NewClient[v1.ListFormsRequest, v1.ListFormsResponse](
 			httpClient,
 			baseURL+FormServiceListFormsProcedure,
-			connect.WithSchema(formServiceMethods.ByName("ListForms")),
+			connect.WithSchema(formServiceListFormsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		updateForm: connect.NewClient[v1.UpdateFormRequest, v1.UpdateFormResponse](
 			httpClient,
 			baseURL+FormServiceUpdateFormProcedure,
-			connect.WithSchema(formServiceMethods.ByName("UpdateForm")),
+			connect.WithSchema(formServiceUpdateFormMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		deleteForm: connect.NewClient[v1.DeleteFormRequest, v1.DeleteFormResponse](
 			httpClient,
 			baseURL+FormServiceDeleteFormProcedure,
-			connect.WithSchema(formServiceMethods.ByName("DeleteForm")),
+			connect.WithSchema(formServiceDeleteFormMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -166,35 +182,34 @@ type FormServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewFormServiceHandler(svc FormServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	formServiceMethods := v1.File_halomail_contact_v1_contact_proto.Services().ByName("FormService").Methods()
 	formServiceCreateFormHandler := connect.NewUnaryHandler(
 		FormServiceCreateFormProcedure,
 		svc.CreateForm,
-		connect.WithSchema(formServiceMethods.ByName("CreateForm")),
+		connect.WithSchema(formServiceCreateFormMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	formServiceGetFormHandler := connect.NewUnaryHandler(
 		FormServiceGetFormProcedure,
 		svc.GetForm,
-		connect.WithSchema(formServiceMethods.ByName("GetForm")),
+		connect.WithSchema(formServiceGetFormMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	formServiceListFormsHandler := connect.NewUnaryHandler(
 		FormServiceListFormsProcedure,
 		svc.ListForms,
-		connect.WithSchema(formServiceMethods.ByName("ListForms")),
+		connect.WithSchema(formServiceListFormsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	formServiceUpdateFormHandler := connect.NewUnaryHandler(
 		FormServiceUpdateFormProcedure,
 		svc.UpdateForm,
-		connect.WithSchema(formServiceMethods.ByName("UpdateForm")),
+		connect.WithSchema(formServiceUpdateFormMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	formServiceDeleteFormHandler := connect.NewUnaryHandler(
 		FormServiceDeleteFormProcedure,
 		svc.DeleteForm,
-		connect.WithSchema(formServiceMethods.ByName("DeleteForm")),
+		connect.WithSchema(formServiceDeleteFormMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.contact.v1.FormService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -258,42 +273,41 @@ type MessageServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewMessageServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) MessageServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	messageServiceMethods := v1.File_halomail_contact_v1_contact_proto.Services().ByName("MessageService").Methods()
 	return &messageServiceClient{
 		submitMessage: connect.NewClient[v1.SubmitMessageRequest, v1.SubmitMessageResponse](
 			httpClient,
 			baseURL+MessageServiceSubmitMessageProcedure,
-			connect.WithSchema(messageServiceMethods.ByName("SubmitMessage")),
+			connect.WithSchema(messageServiceSubmitMessageMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listMessages: connect.NewClient[v1.ListMessagesRequest, v1.ListMessagesResponse](
 			httpClient,
 			baseURL+MessageServiceListMessagesProcedure,
-			connect.WithSchema(messageServiceMethods.ByName("ListMessages")),
+			connect.WithSchema(messageServiceListMessagesMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getMessage: connect.NewClient[v1.GetMessageRequest, v1.GetMessageResponse](
 			httpClient,
 			baseURL+MessageServiceGetMessageProcedure,
-			connect.WithSchema(messageServiceMethods.ByName("GetMessage")),
+			connect.WithSchema(messageServiceGetMessageMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		markRead: connect.NewClient[v1.MarkReadRequest, v1.MarkReadResponse](
 			httpClient,
 			baseURL+MessageServiceMarkReadProcedure,
-			connect.WithSchema(messageServiceMethods.ByName("MarkRead")),
+			connect.WithSchema(messageServiceMarkReadMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		deleteMessage: connect.NewClient[v1.DeleteMessageRequest, v1.DeleteMessageResponse](
 			httpClient,
 			baseURL+MessageServiceDeleteMessageProcedure,
-			connect.WithSchema(messageServiceMethods.ByName("DeleteMessage")),
+			connect.WithSchema(messageServiceDeleteMessageMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		getUsageStats: connect.NewClient[v1.GetUsageStatsRequest, v1.GetUsageStatsResponse](
 			httpClient,
 			baseURL+MessageServiceGetUsageStatsProcedure,
-			connect.WithSchema(messageServiceMethods.ByName("GetUsageStats")),
+			connect.WithSchema(messageServiceGetUsageStatsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -356,41 +370,40 @@ type MessageServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewMessageServiceHandler(svc MessageServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	messageServiceMethods := v1.File_halomail_contact_v1_contact_proto.Services().ByName("MessageService").Methods()
 	messageServiceSubmitMessageHandler := connect.NewUnaryHandler(
 		MessageServiceSubmitMessageProcedure,
 		svc.SubmitMessage,
-		connect.WithSchema(messageServiceMethods.ByName("SubmitMessage")),
+		connect.WithSchema(messageServiceSubmitMessageMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	messageServiceListMessagesHandler := connect.NewUnaryHandler(
 		MessageServiceListMessagesProcedure,
 		svc.ListMessages,
-		connect.WithSchema(messageServiceMethods.ByName("ListMessages")),
+		connect.WithSchema(messageServiceListMessagesMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	messageServiceGetMessageHandler := connect.NewUnaryHandler(
 		MessageServiceGetMessageProcedure,
 		svc.GetMessage,
-		connect.WithSchema(messageServiceMethods.ByName("GetMessage")),
+		connect.WithSchema(messageServiceGetMessageMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	messageServiceMarkReadHandler := connect.NewUnaryHandler(
 		MessageServiceMarkReadProcedure,
 		svc.MarkRead,
-		connect.WithSchema(messageServiceMethods.ByName("MarkRead")),
+		connect.WithSchema(messageServiceMarkReadMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	messageServiceDeleteMessageHandler := connect.NewUnaryHandler(
 		MessageServiceDeleteMessageProcedure,
 		svc.DeleteMessage,
-		connect.WithSchema(messageServiceMethods.ByName("DeleteMessage")),
+		connect.WithSchema(messageServiceDeleteMessageMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	messageServiceGetUsageStatsHandler := connect.NewUnaryHandler(
 		MessageServiceGetUsageStatsProcedure,
 		svc.GetUsageStats,
-		connect.WithSchema(messageServiceMethods.ByName("GetUsageStats")),
+		connect.WithSchema(messageServiceGetUsageStatsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.contact.v1.MessageService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

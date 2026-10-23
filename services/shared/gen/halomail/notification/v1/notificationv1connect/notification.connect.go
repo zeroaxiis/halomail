@@ -53,6 +53,18 @@ const (
 	WebhookServiceDispatchProcedure = "/halomail.notification.v1.WebhookService/Dispatch"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	emailServiceServiceDescriptor               = v1.File_halomail_notification_v1_notification_proto.Services().ByName("EmailService")
+	emailServiceSendEmailMethodDescriptor       = emailServiceServiceDescriptor.Methods().ByName("SendEmail")
+	webhookServiceServiceDescriptor             = v1.File_halomail_notification_v1_notification_proto.Services().ByName("WebhookService")
+	webhookServiceCreateWebhookMethodDescriptor = webhookServiceServiceDescriptor.Methods().ByName("CreateWebhook")
+	webhookServiceListWebhooksMethodDescriptor  = webhookServiceServiceDescriptor.Methods().ByName("ListWebhooks")
+	webhookServiceDeleteWebhookMethodDescriptor = webhookServiceServiceDescriptor.Methods().ByName("DeleteWebhook")
+	webhookServiceRotateSecretMethodDescriptor  = webhookServiceServiceDescriptor.Methods().ByName("RotateSecret")
+	webhookServiceDispatchMethodDescriptor      = webhookServiceServiceDescriptor.Methods().ByName("Dispatch")
+)
+
 // EmailServiceClient is a client for the halomail.notification.v1.EmailService service.
 type EmailServiceClient interface {
 	SendEmail(context.Context, *connect.Request[v1.SendEmailRequest]) (*connect.Response[v1.SendEmailResponse], error)
@@ -67,12 +79,11 @@ type EmailServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewEmailServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) EmailServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	emailServiceMethods := v1.File_halomail_notification_v1_notification_proto.Services().ByName("EmailService").Methods()
 	return &emailServiceClient{
 		sendEmail: connect.NewClient[v1.SendEmailRequest, v1.SendEmailResponse](
 			httpClient,
 			baseURL+EmailServiceSendEmailProcedure,
-			connect.WithSchema(emailServiceMethods.ByName("SendEmail")),
+			connect.WithSchema(emailServiceSendEmailMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -99,11 +110,10 @@ type EmailServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewEmailServiceHandler(svc EmailServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	emailServiceMethods := v1.File_halomail_notification_v1_notification_proto.Services().ByName("EmailService").Methods()
 	emailServiceSendEmailHandler := connect.NewUnaryHandler(
 		EmailServiceSendEmailProcedure,
 		svc.SendEmail,
-		connect.WithSchema(emailServiceMethods.ByName("SendEmail")),
+		connect.WithSchema(emailServiceSendEmailMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.notification.v1.EmailService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -142,36 +152,35 @@ type WebhookServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewWebhookServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) WebhookServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	webhookServiceMethods := v1.File_halomail_notification_v1_notification_proto.Services().ByName("WebhookService").Methods()
 	return &webhookServiceClient{
 		createWebhook: connect.NewClient[v1.CreateWebhookRequest, v1.CreateWebhookResponse](
 			httpClient,
 			baseURL+WebhookServiceCreateWebhookProcedure,
-			connect.WithSchema(webhookServiceMethods.ByName("CreateWebhook")),
+			connect.WithSchema(webhookServiceCreateWebhookMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		listWebhooks: connect.NewClient[v1.ListWebhooksRequest, v1.ListWebhooksResponse](
 			httpClient,
 			baseURL+WebhookServiceListWebhooksProcedure,
-			connect.WithSchema(webhookServiceMethods.ByName("ListWebhooks")),
+			connect.WithSchema(webhookServiceListWebhooksMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		deleteWebhook: connect.NewClient[v1.DeleteWebhookRequest, v1.DeleteWebhookResponse](
 			httpClient,
 			baseURL+WebhookServiceDeleteWebhookProcedure,
-			connect.WithSchema(webhookServiceMethods.ByName("DeleteWebhook")),
+			connect.WithSchema(webhookServiceDeleteWebhookMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		rotateSecret: connect.NewClient[v1.RotateSecretRequest, v1.RotateSecretResponse](
 			httpClient,
 			baseURL+WebhookServiceRotateSecretProcedure,
-			connect.WithSchema(webhookServiceMethods.ByName("RotateSecret")),
+			connect.WithSchema(webhookServiceRotateSecretMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		dispatch: connect.NewClient[v1.DispatchRequest, v1.DispatchResponse](
 			httpClient,
 			baseURL+WebhookServiceDispatchProcedure,
-			connect.WithSchema(webhookServiceMethods.ByName("Dispatch")),
+			connect.WithSchema(webhookServiceDispatchMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -228,35 +237,34 @@ type WebhookServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewWebhookServiceHandler(svc WebhookServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	webhookServiceMethods := v1.File_halomail_notification_v1_notification_proto.Services().ByName("WebhookService").Methods()
 	webhookServiceCreateWebhookHandler := connect.NewUnaryHandler(
 		WebhookServiceCreateWebhookProcedure,
 		svc.CreateWebhook,
-		connect.WithSchema(webhookServiceMethods.ByName("CreateWebhook")),
+		connect.WithSchema(webhookServiceCreateWebhookMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	webhookServiceListWebhooksHandler := connect.NewUnaryHandler(
 		WebhookServiceListWebhooksProcedure,
 		svc.ListWebhooks,
-		connect.WithSchema(webhookServiceMethods.ByName("ListWebhooks")),
+		connect.WithSchema(webhookServiceListWebhooksMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	webhookServiceDeleteWebhookHandler := connect.NewUnaryHandler(
 		WebhookServiceDeleteWebhookProcedure,
 		svc.DeleteWebhook,
-		connect.WithSchema(webhookServiceMethods.ByName("DeleteWebhook")),
+		connect.WithSchema(webhookServiceDeleteWebhookMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	webhookServiceRotateSecretHandler := connect.NewUnaryHandler(
 		WebhookServiceRotateSecretProcedure,
 		svc.RotateSecret,
-		connect.WithSchema(webhookServiceMethods.ByName("RotateSecret")),
+		connect.WithSchema(webhookServiceRotateSecretMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	webhookServiceDispatchHandler := connect.NewUnaryHandler(
 		WebhookServiceDispatchProcedure,
 		svc.Dispatch,
-		connect.WithSchema(webhookServiceMethods.ByName("Dispatch")),
+		connect.WithSchema(webhookServiceDispatchMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/halomail.notification.v1.WebhookService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
