@@ -1,14 +1,14 @@
-module github.com/aashishrajdev/halomail/services/gateway
+module github.com/zeroaxiis/halomail/services/gateway
 
 go 1.25.1
 
 require (
-	github.com/aashishrajdev/halomail/services/contact v0.0.0
-	github.com/aashishrajdev/halomail/services/identity v0.0.0
-	github.com/aashishrajdev/halomail/services/notification v0.0.0
-	github.com/aashishrajdev/halomail/services/scheduling v0.0.0
-	github.com/aashishrajdev/halomail/services/shared v0.0.0
-	github.com/aashishrajdev/halomail/services/template v0.0.0
+	github.com/zeroaxiis/halomail/services/contact v0.0.0
+	github.com/zeroaxiis/halomail/services/identity v0.0.0
+	github.com/zeroaxiis/halomail/services/notification v0.0.0
+	github.com/zeroaxiis/halomail/services/scheduling v0.0.0
+	github.com/zeroaxiis/halomail/services/shared v0.0.0
+	github.com/zeroaxiis/halomail/services/template v0.0.0
 )
 
 require (
@@ -64,14 +64,14 @@ require (
 	google.golang.org/protobuf v1.36.3 // indirect
 )
 
-replace github.com/aashishrajdev/halomail/services/shared => ../shared
+replace github.com/zeroaxiis/halomail/services/shared => ../shared
 
-replace github.com/aashishrajdev/halomail/services/identity => ../identity
+replace github.com/zeroaxiis/halomail/services/identity => ../identity
 
-replace github.com/aashishrajdev/halomail/services/scheduling => ../scheduling
+replace github.com/zeroaxiis/halomail/services/scheduling => ../scheduling
 
-replace github.com/aashishrajdev/halomail/services/contact => ../contact
+replace github.com/zeroaxiis/halomail/services/contact => ../contact
 
-replace github.com/aashishrajdev/halomail/services/template => ../template
+replace github.com/zeroaxiis/halomail/services/template => ../template
 
-replace github.com/aashishrajdev/halomail/services/notification => ../notification
+replace github.com/zeroaxiis/halomail/services/notification => ../notification

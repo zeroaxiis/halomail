@@ -5,8 +5,8 @@ package server
 import (
 	"context"
 	"errors"
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
-	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/shared/ratelimit"
 	"log/slog"
 	"net/http"
 	"os"

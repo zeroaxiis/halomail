@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	identityv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1"
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	identityv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/identity/v1"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 

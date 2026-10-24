@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aashishrajdev/halomail/services/template/internal/domain"
+	"github.com/zeroaxiis/halomail/services/template/internal/domain"
 )
 
 // Data is the content rendered into a theme.

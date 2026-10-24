@@ -9,16 +9,16 @@ import (
 
 	"connectrpc.com/connect"
 
-	commonv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/common/v1"
-	contactv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1"
-	identityv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1"
-	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
+	commonv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/common/v1"
+	contactv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/contact/v1"
+	identityv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/identity/v1"
+	identityv1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
 
-	"github.com/aashishrajdev/halomail/services/contact/internal/app"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/contact/internal/app"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
 )
 
 type Handlers struct {

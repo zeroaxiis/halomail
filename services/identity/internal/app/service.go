@@ -3,14 +3,16 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/mail"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/crypto"
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/identity/internal/crypto"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -608,12 +610,69 @@ func (s *Service) InviteTeamMember(ctx context.Context, callerID, orgID, email, 
 		CreatedAt:     s.now(),
 	}
 
-	if err := s.team.CreateInvitation(ctx, inv); err != nil {
+	orgName, _ := s.team.GetOrgName(ctx, orgID)
+	if strings.TrimSpace(orgName) == "" {
+		orgName = "Workspace"
+	}
+
+	inviterName := strings.TrimSpace(caller.Name)
+	if inviterName == "" {
+		inviterName = caller.Email
+	}
+
+	webURL := strings.TrimRight(s.cfg.WebURL, "/")
+	if webURL == "" {
+		webURL = strings.TrimRight(os.Getenv("PUBLIC_WEB_URL"), "/")
+	}
+	if webURL == "" || (strings.Contains(webURL, "localhost") && (os.Getenv("APP_ENV") == "production" || os.Getenv("NODE_ENV") == "production")) {
+		if os.Getenv("APP_ENV") == "production" || os.Getenv("NODE_ENV") == "production" {
+			webURL = "https://halomail.zeroaxiis.tech"
+		} else if webURL == "" {
+			webURL = "http://localhost:3000"
+		}
+	}
+	inviteLink := fmt.Sprintf("%s/invite?token=%s", webURL, token)
+
+	roleLabel := "Team Member"
+	switch role {
+	case domain.RoleAdmin:
+		roleLabel = "Administrator"
+	case domain.RoleManager:
+		roleLabel = "Manager"
+	case domain.RoleViewer:
+		roleLabel = "Viewer"
+	}
+
+	subject := fmt.Sprintf("%s invited you to join %s on HaloMail", inviterName, orgName)
+	emailHTML := renderTeamInviteEmail(inviterName, orgName, roleLabel, inviteLink)
+	outboxID := idgen.Prefixed("mail_")
+
+	if err := s.team.CreateInvitation(ctx, inv, outboxID, emailHTML, subject); err != nil {
 		return nil, err
 	}
 
 	s.record(ctx, orgID, caller.ID, "team.member.invited", "invitation", inv.ID)
 	return inv, nil
+}
+
+func renderTeamInviteEmail(inviterName, orgName, roleLabel, inviteLink string) string {
+	return fmt.Sprintf(`<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Invitation to join %[2]s</title></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; padding: 40px 20px; color: #111827;">
+  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 32px;">
+    <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; color: #111827;">Join %[2]s on HaloMail</h2>
+    <p style="font-size: 15px; line-height: 1.5; color: #374151;">Hello,</p>
+    <p style="font-size: 15px; line-height: 1.5; color: #374151;"><strong>%[1]s</strong> has invited you to join <strong>%[2]s</strong> as a <strong>%[3]s</strong> on HaloMail.</p>
+    <div style="margin: 28px 0;">
+      <a href="%[4]s" style="background-color: #111827; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 14px; display: inline-block;">Accept Invitation</a>
+    </div>
+    <p style="font-size: 13px; line-height: 1.5; color: #6b7280;">This invitation is valid for 7 days. If you weren't expecting this invitation, you can safely ignore this email.</p>
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+    <p style="font-size: 12px; color: #9ca3af; word-break: break-all;">Button not working? Copy and paste this URL into your browser:<br /><a href="%[4]s" style="color: #4b5563;">%[4]s</a></p>
+  </div>
+</body>
+</html>`, inviterName, orgName, roleLabel, inviteLink)
 }
 
 func (s *Service) UpdateMemberRole(ctx context.Context, callerID, orgID, targetUserID, newRole string) (*domain.User, error) {

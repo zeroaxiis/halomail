@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

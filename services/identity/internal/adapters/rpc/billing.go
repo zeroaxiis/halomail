@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
 )
 
 type billingNotes struct {

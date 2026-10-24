@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/scheduling/v1"
+	v1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/scheduling/v1"
 	http "net/http"
 	strings "strings"
 )

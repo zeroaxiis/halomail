@@ -5,7 +5,7 @@ The email designer: built-in themes plus custom HTML, with live preview. Used by
 
 - **Dev port:** `8084`
 - **Proto:** [`proto/halomail/template/v1`](../../proto/halomail/template/v1/template.proto)
-- **Module:** `github.com/aashishrajdev/halomail/services/template`
+- **Module:** `github.com/zeroaxiis/halomail/services/template`
 
 ## Services / RPCs
 

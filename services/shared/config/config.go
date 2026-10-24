@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/shared/usage"
+	"github.com/zeroaxiis/halomail/services/shared/usage"
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
 )
@@ -109,6 +109,14 @@ func Load() (*Config, error) {
 	}
 	if cfg.Limits.Forms < 0 || cfg.Limits.Meetings < 0 {
 		return nil, fmt.Errorf("free limits cannot be negative")
+	}
+	if cfg.App.IsProd() {
+		if cfg.App.PublicWebURL == "http://localhost:3000" || cfg.App.PublicWebURL == "" {
+			cfg.App.PublicWebURL = "https://halomail.zeroaxiis.tech"
+		}
+		if cfg.App.PublicAPIURL == "http://localhost:8080" || cfg.App.PublicAPIURL == "" {
+			cfg.App.PublicAPIURL = "https://halomailapi.zeroaxiis.tech"
+		}
 	}
 	return cfg, nil
 }

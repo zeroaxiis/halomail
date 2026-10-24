@@ -4,7 +4,7 @@ Owns who the user is and how callers prove it.
 
 - **Dev port:** `8081`
 - **Proto:** [`proto/halomail/identity/v1`](../../proto/halomail/identity/v1/identity.proto)
-- **Module:** `github.com/aashishrajdev/halomail/services/identity`
+- **Module:** `github.com/zeroaxiis/halomail/services/identity`
 
 ## Services / RPCs
 

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
 )
 
 // The web adapter fetches and signs the order, payment, and completed refund list.

@@ -10,14 +10,14 @@ import (
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	notificationv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/notification/v1/notificationv1connect"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	notificationv1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/notification/v1/notificationv1connect"
 
-	"github.com/aashishrajdev/halomail/services/notification/internal/adapters/postgres"
-	"github.com/aashishrajdev/halomail/services/notification/internal/adapters/rpc"
-	"github.com/aashishrajdev/halomail/services/notification/internal/app"
-	"github.com/aashishrajdev/halomail/services/notification/internal/email"
+	"github.com/zeroaxiis/halomail/services/notification/internal/adapters/postgres"
+	"github.com/zeroaxiis/halomail/services/notification/internal/adapters/rpc"
+	"github.com/zeroaxiis/halomail/services/notification/internal/app"
+	"github.com/zeroaxiis/halomail/services/notification/internal/email"
 )
 
 type Deps struct {

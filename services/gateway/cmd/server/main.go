@@ -9,22 +9,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/shared/backup"
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/health"
-	"github.com/aashishrajdev/halomail/services/shared/log"
-	"github.com/aashishrajdev/halomail/services/shared/observability"
-	pg "github.com/aashishrajdev/halomail/services/shared/postgres"
-	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
-	rds "github.com/aashishrajdev/halomail/services/shared/redis"
-	"github.com/aashishrajdev/halomail/services/shared/server"
+	"github.com/zeroaxiis/halomail/services/shared/backup"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/health"
+	"github.com/zeroaxiis/halomail/services/shared/log"
+	"github.com/zeroaxiis/halomail/services/shared/observability"
+	pg "github.com/zeroaxiis/halomail/services/shared/postgres"
+	"github.com/zeroaxiis/halomail/services/shared/ratelimit"
+	rds "github.com/zeroaxiis/halomail/services/shared/redis"
+	"github.com/zeroaxiis/halomail/services/shared/server"
 
-	"github.com/aashishrajdev/halomail/services/contact"
-	"github.com/aashishrajdev/halomail/services/identity"
-	"github.com/aashishrajdev/halomail/services/notification"
-	"github.com/aashishrajdev/halomail/services/scheduling"
-	"github.com/aashishrajdev/halomail/services/template"
+	"github.com/zeroaxiis/halomail/services/contact"
+	"github.com/zeroaxiis/halomail/services/identity"
+	"github.com/zeroaxiis/halomail/services/notification"
+	"github.com/zeroaxiis/halomail/services/scheduling"
+	"github.com/zeroaxiis/halomail/services/template"
 )
 
 const serviceName = "gateway"
@@ -164,17 +164,41 @@ func withCORS(next http.Handler, allowedOrigin string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
 
-		// User requested using the API environment variable
+		reqOrigin := r.Header.Get("Origin")
 		strictDomain := os.Getenv("API")
+		if strictDomain != "" && !strings.HasPrefix(strictDomain, "http") {
+			strictDomain = "https://" + strictDomain
+		}
+
+		allowedOrigins := map[string]bool{
+			"https://halomail.zeroaxiis.tech": true,
+			"http://localhost:3000":           true,
+			"http://127.0.0.1:3000":          true,
+		}
+		if allowedOrigin != "" {
+			allowedOrigins[strings.TrimRight(allowedOrigin, "/")] = true
+		}
 		if strictDomain != "" {
-			if !strings.HasPrefix(strictDomain, "http") {
-				strictDomain = "https://" + strictDomain
+			allowedOrigins[strings.TrimRight(strictDomain, "/")] = true
+		}
+
+		if reqOrigin != "" {
+			if allowedOrigins[reqOrigin] || strings.HasSuffix(reqOrigin, ".zeroaxiis.tech") || strings.HasSuffix(reqOrigin, "zeroaxiis.tech") {
+				h.Set("Access-Control-Allow-Origin", reqOrigin)
+				h.Set("Vary", "Origin")
+			} else if strictDomain != "" {
+				h.Set("Access-Control-Allow-Origin", strictDomain)
+			} else if allowedOrigin != "" {
+				h.Set("Access-Control-Allow-Origin", allowedOrigin)
+			} else {
+				h.Set("Access-Control-Allow-Origin", "http://localhost:3000")
 			}
+		} else if strictDomain != "" {
 			h.Set("Access-Control-Allow-Origin", strictDomain)
 		} else if allowedOrigin != "" {
 			h.Set("Access-Control-Allow-Origin", allowedOrigin)
 		} else {
-			h.Set("Access-Control-Allow-Origin", "http://localhost:3000") // Fallback
+			h.Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		}
 		h.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		h.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Connect-Protocol-Version, Connect-Timeout-Ms, X-Requested-With, X-HaloMail-Key")

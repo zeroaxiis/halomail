@@ -5,10 +5,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	identityv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1"
+	identityv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/identity/v1"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/app"
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/identity/internal/app"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
 )
 
 func ts(t time.Time) *timestamppb.Timestamp {
@@ -57,6 +57,7 @@ func toProtoInvitation(i domain.Invitation) *identityv1.Invitation {
 		Status:        i.Status,
 		ExpiresAt:     ts(i.ExpiresAt),
 		CreatedAt:     ts(i.CreatedAt),
+		Token:         i.Token,
 	}
 }
 

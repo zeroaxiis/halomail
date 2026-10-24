@@ -4,7 +4,7 @@ managed:
   enabled: true
   override:
     - file_option: go_package_prefix
-      value: github.com/aashishrajdev/halomail/services/shared/gen
+      value: github.com/zeroaxiis/halomail/services/shared/gen
 plugins:
   # ---- Go (server) ----
   - remote: buf.build/protocolbuffers/go:v1.34.2

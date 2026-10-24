@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/notification/internal/domain"
+	"github.com/zeroaxiis/halomail/services/notification/internal/domain"
 )
 
 // Worker delivers pending webhook deliveries with HMAC-signed payloads and

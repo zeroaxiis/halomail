@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/crypto"
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/identity/internal/crypto"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/v9"
 )

@@ -10,18 +10,18 @@ import (
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/calendar"
-	"github.com/aashishrajdev/halomail/services/shared/accesskey"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	schedulingv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/scheduling/v1/schedulingv1connect"
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
-	"github.com/aashishrajdev/halomail/services/shared/usage"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/calendar"
+	"github.com/zeroaxiis/halomail/services/shared/accesskey"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	schedulingv1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/scheduling/v1/schedulingv1connect"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/shared/usage"
 
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/adapters/postgres"
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/adapters/rpc"
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/app"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/adapters/postgres"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/adapters/rpc"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/app"
 )
 
 type Deps struct {

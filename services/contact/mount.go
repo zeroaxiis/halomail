@@ -9,18 +9,18 @@ import (
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	contactv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1/contactv1connect"
-	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
-	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
-	rds "github.com/aashishrajdev/halomail/services/shared/redis"
-	"github.com/aashishrajdev/halomail/services/shared/usage"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	contactv1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/contact/v1/contactv1connect"
+	identityv1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
+	"github.com/zeroaxiis/halomail/services/shared/ratelimit"
+	rds "github.com/zeroaxiis/halomail/services/shared/redis"
+	"github.com/zeroaxiis/halomail/services/shared/usage"
 
-	"github.com/aashishrajdev/halomail/services/contact/internal/adapters/postgres"
-	"github.com/aashishrajdev/halomail/services/contact/internal/adapters/rpc"
-	"github.com/aashishrajdev/halomail/services/contact/internal/app"
-	"github.com/aashishrajdev/halomail/services/contact/internal/web"
+	"github.com/zeroaxiis/halomail/services/contact/internal/adapters/postgres"
+	"github.com/zeroaxiis/halomail/services/contact/internal/adapters/rpc"
+	"github.com/zeroaxiis/halomail/services/contact/internal/app"
+	"github.com/zeroaxiis/halomail/services/contact/internal/web"
 )
 
 type Deps struct {

@@ -27,7 +27,7 @@ go version && node --version && pnpm --version && docker --version && buf --vers
 ## 2. Clone & configure
 
 ```bash
-git clone https://github.com/aashishrajdev/halomail
+git clone https://github.com/zeroaxiis/halomail
 cd halomail
 cp .env.example .env
 ```

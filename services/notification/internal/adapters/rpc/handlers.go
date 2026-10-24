@@ -11,12 +11,12 @@ import (
 
 	"connectrpc.com/connect"
 
-	notificationv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/notification/v1"
+	notificationv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/notification/v1"
 
-	"github.com/aashishrajdev/halomail/services/notification/internal/app"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/notification/internal/app"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 type Handlers struct {

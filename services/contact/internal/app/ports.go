@@ -4,7 +4,7 @@ package app
 import (
 	"context"
 
-	"github.com/aashishrajdev/halomail/services/contact/internal/domain"
+	"github.com/zeroaxiis/halomail/services/contact/internal/domain"
 )
 
 type FormRepo interface {

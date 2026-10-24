@@ -7,12 +7,12 @@ import (
 
 	"connectrpc.com/connect"
 
-	templatev1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/template/v1"
+	templatev1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/template/v1"
 
-	"github.com/aashishrajdev/halomail/services/template/internal/app"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/template/internal/app"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 type Handlers struct {

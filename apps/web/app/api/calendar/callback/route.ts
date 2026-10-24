@@ -8,7 +8,12 @@ export async function GET(request: NextRequest) {
   let connected = false;
   if (state && code && access && state === request.cookies.get("halomail_calendar_state")?.value) {
     try {
-      const backend = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const isProd = process.env.NODE_ENV === "production";
+      let backend = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL;
+      if (!backend || (isProd && backend.includes("localhost"))) {
+        backend = isProd ? "https://halomailapi.zeroaxiis.tech" : "http://localhost:8080";
+      }
+      backend = backend.replace(/\/$/, "");
       const response = await fetch(`${backend}/v1/calendar/callback`, {
         method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${access}` },
         body: JSON.stringify({ state, code }), signal: AbortSignal.timeout(30000), cache: "no-store",

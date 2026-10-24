@@ -1,10 +1,10 @@
-module github.com/aashishrajdev/halomail/services/scheduling
+module github.com/zeroaxiis/halomail/services/scheduling
 
 go 1.24
 
 require (
 	connectrpc.com/connect v1.18.1
-	github.com/aashishrajdev/halomail/services/shared v0.0.0
+	github.com/zeroaxiis/halomail/services/shared v0.0.0
 	github.com/jackc/pgx/v5 v5.7.2
 	golang.org/x/oauth2 v0.24.0
 	google.golang.org/protobuf v1.36.3
@@ -46,4 +46,4 @@ require (
 	google.golang.org/grpc v1.69.4 // indirect
 )
 
-replace github.com/aashishrajdev/halomail/services/shared => ../shared
+replace github.com/zeroaxiis/halomail/services/shared => ../shared

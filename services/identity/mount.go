@@ -9,14 +9,14 @@ import (
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	identityv1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
+	identityv1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/identity/v1/identityv1connect"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/adapters/postgres"
-	"github.com/aashishrajdev/halomail/services/identity/internal/adapters/rpc"
-	"github.com/aashishrajdev/halomail/services/identity/internal/app"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/httpx"
-	"github.com/aashishrajdev/halomail/services/shared/usage"
+	"github.com/zeroaxiis/halomail/services/identity/internal/adapters/postgres"
+	"github.com/zeroaxiis/halomail/services/identity/internal/adapters/rpc"
+	"github.com/zeroaxiis/halomail/services/identity/internal/app"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/httpx"
+	"github.com/zeroaxiis/halomail/services/shared/usage"
 	"github.com/redis/go-redis/v9"
 )
 

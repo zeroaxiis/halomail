@@ -82,7 +82,7 @@ deploy/       Dockerfiles, infra configs
 ## Quickstart (local)
 
 ```bash
-git clone https://github.com/aashishrajdev/halomail
+git clone https://github.com/zeroaxiis/halomail
 cd halomail
 cp .env.example .env            # fill in secrets (works with defaults locally)
 

@@ -45,6 +45,7 @@ interface Invitation {
 	status: string;
 	expiresAt: string;
 	createdAt: string;
+	token?: string;
 }
 
 interface TeamResponse {
@@ -95,6 +96,8 @@ export default function TeamPage() {
 	const [actionBusyId, setActionBusyId] = useState<string | null>(null);
 	const [actionError, setActionError] = useState("");
 	const [copiedToken, setCopiedToken] = useState<string | null>(null);
+	const [createdInviteLink, setCreatedInviteLink] = useState("");
+	const [copiedModalLink, setCopiedModalLink] = useState(false);
 
 	const tier = data?.tier || "free";
 	const maxSeats = data?.maxSeats || 0;
@@ -103,24 +106,41 @@ export default function TeamPage() {
 	const canManage = data?.currentUserRole === "owner" || data?.currentUserRole === "admin";
 	const isOwner = data?.currentUserRole === "owner";
 
+	function copyInviteLink(token: string) {
+		const link = `${window.location.origin}/invite?token=${token}`;
+		navigator.clipboard.writeText(link);
+		setCopiedToken(token);
+		setTimeout(() => setCopiedToken(null), 2000);
+	}
+
+	function copyModalLink(link: string) {
+		navigator.clipboard.writeText(link);
+		setCopiedModalLink(true);
+		setTimeout(() => setCopiedModalLink(false), 2000);
+	}
+
 	async function handleSendInvite(e: React.FormEvent) {
 		e.preventDefault();
 		if (!inviteEmail || inviteBusy) return;
 		setInviteBusy(true);
 		setInviteError("");
 		setInviteSuccess("");
+		setCreatedInviteLink("");
 		try {
-			await rpc("halomail.identity.v1.TeamService/InviteTeamMember", {
-				email: inviteEmail.trim(),
-				role: inviteRole,
-			});
-			setInviteSuccess(`Invitation sent to ${inviteEmail}!`);
+			const res = await rpc<{ invitation?: { id: string; token?: string } }>(
+				"halomail.identity.v1.TeamService/InviteTeamMember",
+				{
+					email: inviteEmail.trim(),
+					role: inviteRole,
+				},
+			);
+			const token = res.invitation?.token;
+			if (token) {
+				setCreatedInviteLink(`${window.location.origin}/invite?token=${token}`);
+			}
+			setInviteSuccess(`Invitation email sent to ${inviteEmail}!`);
 			setInviteEmail("");
 			await reload();
-			setTimeout(() => {
-				setShowInviteModal(false);
-				setInviteSuccess("");
-			}, 1800);
 		} catch (err: unknown) {
 			setInviteError(err instanceof Error ? err.message : "Failed to send invitation");
 		} finally {
@@ -350,31 +370,79 @@ export default function TeamPage() {
 								</div>
 							</div>
 
-							{inviteError && (
-								<p role="alert" className="text-xs text-destructive">
-									{inviteError}
-								</p>
-							)}
-							{inviteSuccess && (
-								<p role="status" className="text-xs text-emerald-500 font-medium">
-									{inviteSuccess}
-								</p>
-							)}
+							{createdInviteLink ? (
+								<div className="space-y-3 p-3.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-xs">
+									<div className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+										<Check className="size-4 shrink-0" />
+										<span>{inviteSuccess || "Invitation email dispatched!"}</span>
+									</div>
+									<p className="text-muted-foreground">
+										An email has been sent to the invitee. You can also copy and share the invite link directly:
+									</p>
+									<div className="flex items-center gap-2">
+										<Input
+											readOnly
+											value={createdInviteLink}
+											className="text-xs h-8 bg-background selection:bg-brand/20"
+										/>
+										<Button
+											type="button"
+											size="sm"
+											variant="outline"
+											className="h-8 px-2.5 gap-1.5 shrink-0"
+											onClick={() => copyModalLink(createdInviteLink)}
+										>
+											{copiedModalLink ? (
+												<>
+													<Check className="size-3 text-emerald-500" />
+													<span>Copied!</span>
+												</>
+											) : (
+												<>
+													<Copy className="size-3" />
+													<span>Copy</span>
+												</>
+											)}
+										</Button>
+									</div>
+									<div className="pt-2 flex justify-end">
+										<Button
+											type="button"
+											size="sm"
+											onClick={() => {
+												setShowInviteModal(false);
+												setCreatedInviteLink("");
+												setInviteSuccess("");
+											}}
+										>
+											Done
+										</Button>
+									</div>
+								</div>
+							) : (
+								<>
+									{inviteError && (
+										<p role="alert" className="text-xs text-destructive">
+											{inviteError}
+										</p>
+									)}
 
-							<div className="flex justify-end gap-2 pt-2">
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									disabled={inviteBusy}
-									onClick={() => setShowInviteModal(false)}
-								>
-									Cancel
-								</Button>
-								<Button type="submit" size="sm" disabled={inviteBusy || !inviteEmail}>
-									{inviteBusy ? "Sending…" : "Send Invitation"}
-								</Button>
-							</div>
+									<div className="flex justify-end gap-2 pt-2">
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											disabled={inviteBusy}
+											onClick={() => setShowInviteModal(false)}
+										>
+											Cancel
+										</Button>
+										<Button type="submit" size="sm" disabled={inviteBusy || !inviteEmail}>
+											{inviteBusy ? "Sending…" : "Send Invitation"}
+										</Button>
+									</div>
+								</>
+							)}
 						</form>
 					</Card>
 				</div>
@@ -509,15 +577,38 @@ export default function TeamPage() {
 									</Badge>
 
 									{canManage && (
-										<Button
-											variant="outline"
-											size="sm"
-											className="text-xs h-7 px-2.5 text-muted-foreground hover:text-destructive"
-											disabled={actionBusyId === inv.id}
-											onClick={() => handleRevokeInvite(inv.id)}
-										>
-											Revoke
-										</Button>
+										<div className="flex items-center gap-1.5">
+											{inv.token && (
+												<Button
+													variant="outline"
+													size="sm"
+													className="text-xs h-7 px-2.5 gap-1.5"
+													onClick={() => copyInviteLink(inv.token!)}
+													title="Copy invitation link"
+												>
+													{copiedToken === inv.token ? (
+														<>
+															<Check className="size-3 text-emerald-500" />
+															<span>Copied!</span>
+														</>
+													) : (
+														<>
+															<Copy className="size-3" />
+															<span>Copy Link</span>
+														</>
+													)}
+												</Button>
+											)}
+											<Button
+												variant="outline"
+												size="sm"
+												className="text-xs h-7 px-2.5 text-muted-foreground hover:text-destructive"
+												disabled={actionBusyId === inv.id}
+												onClick={() => handleRevokeInvite(inv.id)}
+											>
+												Revoke
+											</Button>
+										</div>
 									)}
 								</div>
 							</div>

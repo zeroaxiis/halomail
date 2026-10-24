@@ -2,7 +2,7 @@
 
 Common building blocks every HaloMail service uses to boot consistently. Not a
 running service; imported as a Go module:
-`github.com/aashishrajdev/halomail/services/shared`.
+`github.com/zeroaxiis/halomail/services/shared`.
 
 ## Packages
 

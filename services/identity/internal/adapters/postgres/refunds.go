@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 // The same account lock as ApplyPayment makes capture/refund races deterministic.

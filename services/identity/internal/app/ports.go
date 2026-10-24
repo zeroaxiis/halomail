@@ -7,7 +7,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
 )
 
 // UserRepo persists users and their org.
@@ -51,8 +51,9 @@ type AuditRepo interface {
 type TeamRepo interface {
 	ListMembersByOrg(ctx context.Context, orgID string) ([]domain.User, error)
 	GetOrgTier(ctx context.Context, orgID string) (string, error)
+	GetOrgName(ctx context.Context, orgID string) (string, error)
 	GetMemberCount(ctx context.Context, orgID string) (int, error)
-	CreateInvitation(ctx context.Context, inv *domain.Invitation) error
+	CreateInvitation(ctx context.Context, inv *domain.Invitation, outboxID, emailHTML, subject string) error
 	ListInvitationsByOrg(ctx context.Context, orgID string) ([]domain.Invitation, error)
 	GetInvitationByToken(ctx context.Context, token string) (*domain.Invitation, error)
 	RevokeInvitation(ctx context.Context, orgID, invitationID string) error
