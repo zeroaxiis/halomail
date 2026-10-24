@@ -55,6 +55,12 @@ const (
 	AuthServiceGetCurrentUserProcedure = "/halomail.identity.v1.AuthService/GetCurrentUser"
 	// AuthServiceVerifyTokenProcedure is the fully-qualified name of the AuthService's VerifyToken RPC.
 	AuthServiceVerifyTokenProcedure = "/halomail.identity.v1.AuthService/VerifyToken"
+	// AuthServiceForgotPasswordProcedure is the fully-qualified name of the AuthService's
+	// ForgotPassword RPC.
+	AuthServiceForgotPasswordProcedure = "/halomail.identity.v1.AuthService/ForgotPassword"
+	// AuthServiceResetPasswordProcedure is the fully-qualified name of the AuthService's ResetPassword
+	// RPC.
+	AuthServiceResetPasswordProcedure = "/halomail.identity.v1.AuthService/ResetPassword"
 	// UserServiceGetUserProcedure is the fully-qualified name of the UserService's GetUser RPC.
 	UserServiceGetUserProcedure = "/halomail.identity.v1.UserService/GetUser"
 	// UserServiceGetUserByHandleProcedure is the fully-qualified name of the UserService's
@@ -109,6 +115,8 @@ var (
 	authServiceRefreshSessionMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("RefreshSession")
 	authServiceGetCurrentUserMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("GetCurrentUser")
 	authServiceVerifyTokenMethodDescriptor      = authServiceServiceDescriptor.Methods().ByName("VerifyToken")
+	authServiceForgotPasswordMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("ForgotPassword")
+	authServiceResetPasswordMethodDescriptor    = authServiceServiceDescriptor.Methods().ByName("ResetPassword")
 	userServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("UserService")
 	userServiceGetUserMethodDescriptor          = userServiceServiceDescriptor.Methods().ByName("GetUser")
 	userServiceGetUserByHandleMethodDescriptor  = userServiceServiceDescriptor.Methods().ByName("GetUserByHandle")
@@ -139,6 +147,8 @@ type AuthServiceClient interface {
 	GetCurrentUser(context.Context, *connect.Request[v1.GetCurrentUserRequest]) (*connect.Response[v1.GetCurrentUserResponse], error)
 	// VerifyToken is internal: the gateway calls it to authenticate requests.
 	VerifyToken(context.Context, *connect.Request[v1.VerifyTokenRequest]) (*connect.Response[v1.VerifyTokenResponse], error)
+	ForgotPassword(context.Context, *connect.Request[v1.ForgotPasswordRequest]) (*connect.Response[v1.ForgotPasswordResponse], error)
+	ResetPassword(context.Context, *connect.Request[v1.ResetPasswordRequest]) (*connect.Response[v1.ResetPasswordResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the halomail.identity.v1.AuthService service. By
@@ -187,6 +197,18 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceVerifyTokenMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		forgotPassword: connect.NewClient[v1.ForgotPasswordRequest, v1.ForgotPasswordResponse](
+			httpClient,
+			baseURL+AuthServiceForgotPasswordProcedure,
+			connect.WithSchema(authServiceForgotPasswordMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		resetPassword: connect.NewClient[v1.ResetPasswordRequest, v1.ResetPasswordResponse](
+			httpClient,
+			baseURL+AuthServiceResetPasswordProcedure,
+			connect.WithSchema(authServiceResetPasswordMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -198,6 +220,8 @@ type authServiceClient struct {
 	refreshSession *connect.Client[v1.RefreshSessionRequest, v1.RefreshSessionResponse]
 	getCurrentUser *connect.Client[v1.GetCurrentUserRequest, v1.GetCurrentUserResponse]
 	verifyToken    *connect.Client[v1.VerifyTokenRequest, v1.VerifyTokenResponse]
+	forgotPassword *connect.Client[v1.ForgotPasswordRequest, v1.ForgotPasswordResponse]
+	resetPassword  *connect.Client[v1.ResetPasswordRequest, v1.ResetPasswordResponse]
 }
 
 // Register calls halomail.identity.v1.AuthService.Register.
@@ -230,6 +254,16 @@ func (c *authServiceClient) VerifyToken(ctx context.Context, req *connect.Reques
 	return c.verifyToken.CallUnary(ctx, req)
 }
 
+// ForgotPassword calls halomail.identity.v1.AuthService.ForgotPassword.
+func (c *authServiceClient) ForgotPassword(ctx context.Context, req *connect.Request[v1.ForgotPasswordRequest]) (*connect.Response[v1.ForgotPasswordResponse], error) {
+	return c.forgotPassword.CallUnary(ctx, req)
+}
+
+// ResetPassword calls halomail.identity.v1.AuthService.ResetPassword.
+func (c *authServiceClient) ResetPassword(ctx context.Context, req *connect.Request[v1.ResetPasswordRequest]) (*connect.Response[v1.ResetPasswordResponse], error) {
+	return c.resetPassword.CallUnary(ctx, req)
+}
+
 // AuthServiceHandler is an implementation of the halomail.identity.v1.AuthService service.
 type AuthServiceHandler interface {
 	Register(context.Context, *connect.Request[v1.RegisterRequest]) (*connect.Response[v1.RegisterResponse], error)
@@ -239,6 +273,8 @@ type AuthServiceHandler interface {
 	GetCurrentUser(context.Context, *connect.Request[v1.GetCurrentUserRequest]) (*connect.Response[v1.GetCurrentUserResponse], error)
 	// VerifyToken is internal: the gateway calls it to authenticate requests.
 	VerifyToken(context.Context, *connect.Request[v1.VerifyTokenRequest]) (*connect.Response[v1.VerifyTokenResponse], error)
+	ForgotPassword(context.Context, *connect.Request[v1.ForgotPasswordRequest]) (*connect.Response[v1.ForgotPasswordResponse], error)
+	ResetPassword(context.Context, *connect.Request[v1.ResetPasswordRequest]) (*connect.Response[v1.ResetPasswordResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -283,6 +319,18 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceVerifyTokenMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceForgotPasswordHandler := connect.NewUnaryHandler(
+		AuthServiceForgotPasswordProcedure,
+		svc.ForgotPassword,
+		connect.WithSchema(authServiceForgotPasswordMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceResetPasswordHandler := connect.NewUnaryHandler(
+		AuthServiceResetPasswordProcedure,
+		svc.ResetPassword,
+		connect.WithSchema(authServiceResetPasswordMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/halomail.identity.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceRegisterProcedure:
@@ -297,6 +345,10 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceGetCurrentUserHandler.ServeHTTP(w, r)
 		case AuthServiceVerifyTokenProcedure:
 			authServiceVerifyTokenHandler.ServeHTTP(w, r)
+		case AuthServiceForgotPasswordProcedure:
+			authServiceForgotPasswordHandler.ServeHTTP(w, r)
+		case AuthServiceResetPasswordProcedure:
+			authServiceResetPasswordHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -328,6 +380,14 @@ func (UnimplementedAuthServiceHandler) GetCurrentUser(context.Context, *connect.
 
 func (UnimplementedAuthServiceHandler) VerifyToken(context.Context, *connect.Request[v1.VerifyTokenRequest]) (*connect.Response[v1.VerifyTokenResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.AuthService.VerifyToken is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) ForgotPassword(context.Context, *connect.Request[v1.ForgotPasswordRequest]) (*connect.Response[v1.ForgotPasswordResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.AuthService.ForgotPassword is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) ResetPassword(context.Context, *connect.Request[v1.ResetPasswordRequest]) (*connect.Response[v1.ResetPasswordResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.AuthService.ResetPassword is not implemented"))
 }
 
 // UserServiceClient is a client for the halomail.identity.v1.UserService service.

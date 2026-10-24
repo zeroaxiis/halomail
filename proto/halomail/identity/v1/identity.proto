@@ -76,6 +76,8 @@ service AuthService {
   rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse);
   // VerifyToken is internal: the gateway calls it to authenticate requests.
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
 }
 
 message RegisterRequest {
@@ -121,6 +123,21 @@ message VerifyTokenResponse {
   bool valid = 1;
   string user_id = 2;
   string org_id = 3;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+}
+message ForgotPasswordResponse {
+  bool success = 1;
+}
+
+message ResetPasswordRequest {
+  string token = 1;
+  string new_password = 2;
+}
+message ResetPasswordResponse {
+  bool success = 1;
 }
 
 // ---------------------------------------------------------------------------

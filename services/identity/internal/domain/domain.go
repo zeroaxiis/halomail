@@ -100,3 +100,19 @@ type AuditLog struct {
 	IP         string
 	CreatedAt  time.Time
 }
+
+// PasswordReset represents a single-use token issued to recover account access.
+type PasswordReset struct {
+	ID        string
+	UserID    string
+	Email     string
+	TokenHash string
+	ExpiresAt time.Time
+	UsedAt    *time.Time
+	CreatedAt time.Time
+}
+
+func (p PasswordReset) Valid(now time.Time) bool {
+	return p.UsedAt == nil && now.Before(p.ExpiresAt)
+}
+

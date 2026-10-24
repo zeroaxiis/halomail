@@ -92,7 +92,12 @@ export default function LoginPage() {
                 <Input id="email" type="email" autoComplete="email" required disabled={loading} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
               </div>
               <div className={styles.field}>
-                <Label htmlFor="password">Password</Label>
+                <div className={styles.fieldHeader}>
+                  <Label htmlFor="password">Password</Label>
+                  <Link href="/forgot-password" className={styles.forgotLink}>
+                    Forgot password?
+                  </Link>
+                </div>
                 <div className={styles.passwordWrap}>
                   <Input id="password" type={showPassword ? "text" : "password"} autoComplete="current-password" required disabled={loading} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" />
                   <button type="button" className={styles.passwordToggle} disabled={loading}
