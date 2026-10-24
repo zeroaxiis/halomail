@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 	"time"
 )
 

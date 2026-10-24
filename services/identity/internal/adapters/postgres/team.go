@@ -7,9 +7,10 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/shared/outbox"
 )
 
 type Team struct {
@@ -57,6 +58,18 @@ func (r *Team) GetOrgTier(ctx context.Context, orgID string) (string, error) {
 	return tier, nil
 }
 
+func (r *Team) GetOrgName(ctx context.Context, orgID string) (string, error) {
+	var name string
+	err := r.pool.QueryRow(ctx, `SELECT name FROM orgs WHERE id = $1`, orgID).Scan(&name)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return "", nil
+		}
+		return "", err
+	}
+	return name, nil
+}
+
 func (r *Team) GetMemberCount(ctx context.Context, orgID string) (int, error) {
 	var userCount, inviteCount int
 	err := r.pool.QueryRow(ctx,
@@ -70,12 +83,39 @@ func (r *Team) GetMemberCount(ctx context.Context, orgID string) (int, error) {
 	return userCount + inviteCount, nil
 }
 
-func (r *Team) CreateInvitation(ctx context.Context, inv *domain.Invitation) error {
-	_, err := r.pool.Exec(ctx,
+func (r *Team) CreateInvitation(ctx context.Context, inv *domain.Invitation, outboxID, emailHTML, subject string) error {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	// Invalidate any existing pending invitations for this email in this org
+	if _, err := tx.Exec(ctx,
+		`UPDATE org_invitations SET status = 'revoked' WHERE org_id = $1 AND lower(email) = lower($2) AND status = 'pending'`,
+		inv.OrgID, inv.Email,
+	); err != nil {
+		return mapWrite(err)
+	}
+
+	if _, err := tx.Exec(ctx,
 		`INSERT INTO org_invitations (id, org_id, email, role, token, invited_by, status, expires_at, created_at)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		inv.ID, inv.OrgID, inv.Email, inv.Role, inv.Token, inv.InvitedBy, inv.Status, inv.ExpiresAt, inv.CreatedAt)
-	return mapWrite(err)
+		inv.ID, inv.OrgID, inv.Email, inv.Role, inv.Token, inv.InvitedBy, inv.Status, inv.ExpiresAt, inv.CreatedAt,
+	); err != nil {
+		return mapWrite(err)
+	}
+
+	if outboxID != "" && emailHTML != "" {
+		if subject == "" {
+			subject = "You've been invited to join a team on HaloMail"
+		}
+		if err := outbox.Queue(ctx, tx, outboxID, inv.Email, "", subject, emailHTML); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (r *Team) ListInvitationsByOrg(ctx context.Context, orgID string) ([]domain.Invitation, error) {

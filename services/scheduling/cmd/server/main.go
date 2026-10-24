@@ -4,17 +4,17 @@ package main
 
 import (
 	"context"
-	"github.com/aashishrajdev/halomail/services/scheduling"
+	"github.com/zeroaxiis/halomail/services/scheduling"
 	"net/http"
 	"os"
 
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/health"
-	"github.com/aashishrajdev/halomail/services/shared/log"
-	"github.com/aashishrajdev/halomail/services/shared/observability"
-	pg "github.com/aashishrajdev/halomail/services/shared/postgres"
-	"github.com/aashishrajdev/halomail/services/shared/server"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/health"
+	"github.com/zeroaxiis/halomail/services/shared/log"
+	"github.com/zeroaxiis/halomail/services/shared/observability"
+	pg "github.com/zeroaxiis/halomail/services/shared/postgres"
+	"github.com/zeroaxiis/halomail/services/shared/server"
 )
 
 const serviceName = "scheduling"

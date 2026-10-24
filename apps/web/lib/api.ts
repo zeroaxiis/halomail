@@ -1,6 +1,12 @@
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const defaultApiUrl =
+  typeof window !== "undefined" && window.location.hostname.endsWith("zeroaxiis.tech")
+    ? "https://halomailapi.zeroaxiis.tech"
+    : process.env.NODE_ENV === "production"
+    ? "https://halomailapi.zeroaxiis.tech"
+    : "http://localhost:8080";
+
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
 export class ApiError extends Error {
   code: string;
@@ -34,7 +40,16 @@ export async function rpc<T = unknown>(
   });
   void token;
   let res = await request();
-  if (res.status === 401 && !procedure.startsWith("v1/auth/otp/") && !procedure.includes("AuthService/Login") && !procedure.includes("AuthService/Register") && !procedure.includes("AuthService/RefreshSession") && !accessKey) {
+  if (
+    res.status === 401 &&
+    !procedure.startsWith("v1/auth/otp/") &&
+    !procedure.includes("AuthService/Login") &&
+    !procedure.includes("AuthService/Register") &&
+    !procedure.includes("AuthService/ForgotPassword") &&
+    !procedure.includes("AuthService/ResetPassword") &&
+    !procedure.includes("AuthService/RefreshSession") &&
+    !accessKey
+  ) {
     refreshing ??= fetch("/api/rpc/halomail.identity.v1.AuthService/RefreshSession", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
     }).then(response => response.ok).finally(() => { refreshing = null; });

@@ -9,16 +9,16 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
-	"github.com/aashishrajdev/halomail/services/shared/accesskey"
+	"github.com/zeroaxiis/halomail/services/shared/accesskey"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	commonv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/common/v1"
-	schedulingv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/scheduling/v1"
+	commonv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/common/v1"
+	schedulingv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/scheduling/v1"
 
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/app"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/app"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 type Handlers struct {

@@ -13,8 +13,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 // ---- Users ---------------------------------------------------------------

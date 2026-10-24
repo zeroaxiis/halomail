@@ -4,7 +4,7 @@ Transactional email (Resend / SMTP) and developer webhook fan-out.
 
 - **Dev port:** `8085`
 - **Proto:** [`proto/halomail/notification/v1`](../../proto/halomail/notification/v1/notification.proto)
-- **Module:** `github.com/aashishrajdev/halomail/services/notification`
+- **Module:** `github.com/zeroaxiis/halomail/services/notification`
 
 ## Services / RPCs
 

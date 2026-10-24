@@ -10,10 +10,10 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
-	"github.com/aashishrajdev/halomail/services/shared/usage"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/shared/usage"
 )
 
 // ---- Event types ---------------------------------------------------------

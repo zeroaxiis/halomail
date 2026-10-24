@@ -5,7 +5,7 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 // ToConnect maps a domain error to a ConnectRPC error with the appropriate

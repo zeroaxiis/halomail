@@ -7,12 +7,12 @@ import (
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	templatev1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/template/v1/templatev1connect"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
+	templatev1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/template/v1/templatev1connect"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
 
-	"github.com/aashishrajdev/halomail/services/template/internal/adapters/postgres"
-	"github.com/aashishrajdev/halomail/services/template/internal/adapters/rpc"
-	"github.com/aashishrajdev/halomail/services/template/internal/app"
+	"github.com/zeroaxiis/halomail/services/template/internal/adapters/postgres"
+	"github.com/zeroaxiis/halomail/services/template/internal/adapters/rpc"
+	"github.com/zeroaxiis/halomail/services/template/internal/app"
 )
 
 type Deps struct {

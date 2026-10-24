@@ -70,7 +70,7 @@ The API contract lives in `proto/`. **Never hand-edit generated code** under
 ## Adding a new service
 
 1. `mkdir -p services/<name>/{cmd/server,internal/{domain,app,adapters},migrations}`.
-2. `cd services/<name> && go mod init github.com/aashishrajdev/halomail/services/<name>`.
+2. `cd services/<name> && go mod init github.com/zeroaxiis/halomail/services/<name>`.
 3. Add it to `go.work`.
 4. Define its contract in `proto/halomail/<name>/v1/<name>.proto`; run `task proto`.
 5. Copy the bootstrap pattern from an existing `cmd/server/main.go` (config, log,

@@ -4,18 +4,18 @@ package main
 
 import (
 	"context"
-	"github.com/aashishrajdev/halomail/services/identity"
+	"github.com/zeroaxiis/halomail/services/identity"
 	"net/http"
 	"os"
 
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	"github.com/aashishrajdev/halomail/services/shared/health"
-	"github.com/aashishrajdev/halomail/services/shared/log"
-	"github.com/aashishrajdev/halomail/services/shared/observability"
-	pg "github.com/aashishrajdev/halomail/services/shared/postgres"
-	rds "github.com/aashishrajdev/halomail/services/shared/redis"
-	"github.com/aashishrajdev/halomail/services/shared/server"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	"github.com/zeroaxiis/halomail/services/shared/health"
+	"github.com/zeroaxiis/halomail/services/shared/log"
+	"github.com/zeroaxiis/halomail/services/shared/observability"
+	pg "github.com/zeroaxiis/halomail/services/shared/postgres"
+	rds "github.com/zeroaxiis/halomail/services/shared/redis"
+	"github.com/zeroaxiis/halomail/services/shared/server"
 )
 
 const serviceName = "identity"
@@ -80,7 +80,18 @@ func main() {
 	mux.Handle("/healthz", hc.Liveness())
 	mux.Handle("/readyz", hc.Readiness())
 
-	identity.Mount(mux, identity.Deps{Pool: pool, JWTSecret: cfg.Auth.JWTSecret, OTPDeliverySecret: cfg.Auth.OTPDeliverySecret, RazorpayWebhookSecret: cfg.Auth.RazorpayWebhookSecret, SessionTTL: cfg.Auth.SessionTTL, APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors, Limits: cfg.Limits})
+	identity.Mount(mux, identity.Deps{
+		Pool:                  pool,
+		JWTSecret:             cfg.Auth.JWTSecret,
+		OTPDeliverySecret:     cfg.Auth.OTPDeliverySecret,
+		RazorpayWebhookSecret: cfg.Auth.RazorpayWebhookSecret,
+		SessionTTL:            cfg.Auth.SessionTTL,
+		APIKeyPrefix:          cfg.Auth.APIKeyPrefix,
+		Redis:                 redisClient,
+		Interceptors:          interceptors,
+		Limits:                cfg.Limits,
+		WebURL:                cfg.App.PublicWebURL,
+	})
 
 	if err := server.Run(ctx, cfg.HTTP.Addr(), mux, logger); err != nil {
 		logger.Error("server stopped with error", "error", err.Error())

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/domain"
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/slots"
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/domain"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/slots"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
 )
 
 // Config carries calendar OAuth settings.

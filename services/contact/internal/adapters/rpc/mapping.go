@@ -5,9 +5,9 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	contactv1 "github.com/aashishrajdev/halomail/services/shared/gen/halomail/contact/v1"
+	contactv1 "github.com/zeroaxiis/halomail/services/shared/gen/halomail/contact/v1"
 
-	"github.com/aashishrajdev/halomail/services/contact/internal/domain"
+	"github.com/zeroaxiis/halomail/services/contact/internal/domain"
 )
 
 func ts(t time.Time) *timestamppb.Timestamp {

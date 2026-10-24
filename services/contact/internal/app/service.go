@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/contact/internal/domain"
-	"github.com/aashishrajdev/halomail/services/contact/internal/spam"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
-	"github.com/aashishrajdev/halomail/services/shared/ratelimit"
+	"github.com/zeroaxiis/halomail/services/contact/internal/domain"
+	"github.com/zeroaxiis/halomail/services/contact/internal/spam"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/shared/ratelimit"
 	"github.com/redis/go-redis/v9"
 	"encoding/json"
 )

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aashishrajdev/halomail/services/template/internal/domain"
+	"github.com/zeroaxiis/halomail/services/template/internal/domain"
 )
 
 func TestRenderBuiltins(t *testing.T) {

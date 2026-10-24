@@ -14,11 +14,28 @@ export function billingError(error: unknown) {
   return NextResponse.json({ error: "Billing could not be completed. Please retry; do not pay again." }, { status: 503 });
 }
 export function backendURL() {
-  return (process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || process.env.PUBLIC_API_URL || "http://localhost:8080").replace(/\/$/, "");
+  const isProd = process.env.NODE_ENV === "production";
+  let backend = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || process.env.PUBLIC_API_URL;
+  if (!backend || (isProd && backend.includes("localhost"))) {
+    backend = isProd ? "https://halomailapi.zeroaxiis.tech" : "http://localhost:8080";
+  }
+  return backend.replace(/\/$/, "");
 }
 export type BillingUser = { id: string; orgId: string; name: string; email: string };
 export async function billingUser(req: NextRequest): Promise<BillingUser> {
-  if (req.method === "POST" && req.headers.get("origin") !== (process.env.PUBLIC_WEB_URL || req.nextUrl.origin)) throw new BillingError("Invalid request origin", 403);
+  if (req.method === "POST") {
+    const origin = req.headers.get("origin");
+    const allowed = [
+      req.nextUrl.origin,
+      process.env.PUBLIC_WEB_URL,
+      "https://halomail.zeroaxiis.tech",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+    ].filter(Boolean);
+    if (origin && !allowed.includes(origin) && !origin.endsWith(".zeroaxiis.tech")) {
+      throw new BillingError("Invalid request origin", 403);
+    }
+  }
   const token = req.cookies.get("halomail_access")?.value;
   if (!token) throw new BillingError("Please sign in again.", 401);
   const response = await fetch(`${backendURL()}/halomail.identity.v1.AuthService/GetCurrentUser`, {

@@ -1,10 +1,10 @@
-module github.com/aashishrajdev/halomail/services/identity
+module github.com/zeroaxiis/halomail/services/identity
 
 go 1.25.1
 
 require (
 	connectrpc.com/connect v1.18.1
-	github.com/aashishrajdev/halomail/services/shared v0.0.0
+	github.com/zeroaxiis/halomail/services/shared v0.0.0
 	github.com/alicebob/miniredis/v2 v2.39.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/jackc/pgx/v5 v5.7.2
@@ -46,4 +46,4 @@ require (
 	google.golang.org/grpc v1.69.4 // indirect
 )
 
-replace github.com/aashishrajdev/halomail/services/shared => ../shared
+replace github.com/zeroaxiis/halomail/services/shared => ../shared

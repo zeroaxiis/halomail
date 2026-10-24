@@ -6,16 +6,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 type mockTeamRepo struct {
 	TeamRepo
 	tier         string
+	orgName      string
 	members      []domain.User
 	invitations  []domain.Invitation
 	createdInv   *domain.Invitation
+	outboxID     string
+	emailHTML    string
+	subject      string
 	memberCounts int
 	revokedID    string
 	removedID    string
@@ -27,6 +31,13 @@ func (m *mockTeamRepo) GetOrgTier(ctx context.Context, orgID string) (string, er
 		return "free", nil
 	}
 	return m.tier, nil
+}
+
+func (m *mockTeamRepo) GetOrgName(ctx context.Context, orgID string) (string, error) {
+	if m.orgName == "" {
+		return "Acme Corp", nil
+	}
+	return m.orgName, nil
 }
 
 func (m *mockTeamRepo) GetMemberCount(ctx context.Context, orgID string) (int, error) {
@@ -41,8 +52,11 @@ func (m *mockTeamRepo) ListInvitationsByOrg(ctx context.Context, orgID string) (
 	return m.invitations, nil
 }
 
-func (m *mockTeamRepo) CreateInvitation(ctx context.Context, inv *domain.Invitation) error {
+func (m *mockTeamRepo) CreateInvitation(ctx context.Context, inv *domain.Invitation, outboxID, emailHTML, subject string) error {
 	m.createdInv = inv
+	m.outboxID = outboxID
+	m.emailHTML = emailHTML
+	m.subject = subject
 	return nil
 }
 
@@ -291,3 +305,47 @@ type mockSessionRepo struct {
 }
 
 func (mockSessionRepo) Create(context.Context, *domain.Session) error { return nil }
+
+func TestInviteTeamMemberSendsEmail(t *testing.T) {
+	ctx := context.Background()
+	owner := &domain.User{ID: "usr_owner", OrgID: "org_1", Email: "owner@company.com", Name: "Alice Owner", Role: domain.RoleOwner}
+	userMap := map[string]*domain.User{
+		owner.ID: owner,
+	}
+
+	teamRepo := &mockTeamRepo{
+		tier:    "pro",
+		orgName: "Acme Corp",
+	}
+
+	svc := New(Repos{
+		Users:    &mockUserRepoForTeam{users: userMap},
+		Team:     teamRepo,
+		Sessions: &mockSessionRepo{},
+		Audit:    auditRepository{},
+	}, Config{
+		JWTSecret: strings.Repeat("s", 32),
+		WebURL:    "https://app.halomail.com",
+	}, nil)
+
+	inv, err := svc.InviteTeamMember(ctx, owner.ID, owner.OrgID, "newmember@company.com", domain.RoleManager)
+	if err != nil {
+		t.Fatalf("expected invite to succeed, got %v", err)
+	}
+
+	if inv.Token == "" {
+		t.Fatal("expected invite token to be generated")
+	}
+	if teamRepo.outboxID == "" {
+		t.Fatal("expected outbox ID to be generated")
+	}
+	if !strings.Contains(teamRepo.subject, "Alice Owner invited you to join Acme Corp") {
+		t.Fatalf("unexpected email subject: %s", teamRepo.subject)
+	}
+	if !strings.Contains(teamRepo.emailHTML, "https://app.halomail.com/invite?token="+inv.Token) {
+		t.Fatalf("expected emailHTML to contain invite link with token, got: %s", teamRepo.emailHTML)
+	}
+	if !strings.Contains(teamRepo.emailHTML, "Manager") {
+		t.Fatalf("expected emailHTML to mention Manager role, got: %s", teamRepo.emailHTML)
+	}
+}

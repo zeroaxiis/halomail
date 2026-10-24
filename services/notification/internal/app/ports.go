@@ -4,7 +4,7 @@ package app
 import (
 	"context"
 
-	"github.com/aashishrajdev/halomail/services/notification/internal/domain"
+	"github.com/zeroaxiis/halomail/services/notification/internal/domain"
 )
 
 type WebhookRepo interface {

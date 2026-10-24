@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/notification/internal/domain"
-	"github.com/aashishrajdev/halomail/services/notification/internal/email"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/notification/internal/domain"
+	"github.com/zeroaxiis/halomail/services/notification/internal/email"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
 )
 
 type Service struct {

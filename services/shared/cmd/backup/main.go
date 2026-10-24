@@ -10,7 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/aashishrajdev/halomail/services/shared/backup"
+	"github.com/zeroaxiis/halomail/services/shared/backup"
 	"github.com/joho/godotenv"
 )
 

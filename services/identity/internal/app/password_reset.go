@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/mail"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/identity/internal/crypto"
-	"github.com/aashishrajdev/halomail/services/identity/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/identity/internal/crypto"
+	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
 )
 
 const resetTokenTTL = 1 * time.Hour
@@ -52,7 +53,14 @@ func (s *Service) ForgotPassword(ctx context.Context, email string) error {
 
 	webURL := strings.TrimRight(s.cfg.WebURL, "/")
 	if webURL == "" {
-		webURL = "http://localhost:3000"
+		webURL = strings.TrimRight(os.Getenv("PUBLIC_WEB_URL"), "/")
+	}
+	if webURL == "" || (strings.Contains(webURL, "localhost") && (os.Getenv("APP_ENV") == "production" || os.Getenv("NODE_ENV") == "production")) {
+		if os.Getenv("APP_ENV") == "production" || os.Getenv("NODE_ENV") == "production" {
+			webURL = "https://halomail.zeroaxiis.tech"
+		} else if webURL == "" {
+			webURL = "http://localhost:3000"
+		}
 	}
 	resetLink := fmt.Sprintf("%s/reset-password?token=%s", webURL, rawToken)
 

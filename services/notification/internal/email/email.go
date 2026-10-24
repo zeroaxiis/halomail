@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
 )
 
 // Message is a transactional email.

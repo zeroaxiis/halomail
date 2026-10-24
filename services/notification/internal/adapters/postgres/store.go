@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/aashishrajdev/halomail/services/notification/internal/domain"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/notification/internal/domain"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 )
 
 // ---- Webhooks ------------------------------------------------------------

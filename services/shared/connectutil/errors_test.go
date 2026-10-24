@@ -3,7 +3,7 @@ package connectutil
 import (
 	"connectrpc.com/connect"
 	"errors"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 	"strings"
 	"testing"
 )

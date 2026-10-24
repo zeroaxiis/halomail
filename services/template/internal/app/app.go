@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aashishrajdev/halomail/services/template/internal/domain"
-	"github.com/aashishrajdev/halomail/services/template/internal/themes"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
-	"github.com/aashishrajdev/halomail/services/shared/idgen"
+	"github.com/zeroaxiis/halomail/services/template/internal/domain"
+	"github.com/zeroaxiis/halomail/services/template/internal/themes"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/idgen"
 )
 
 type TemplateRepo interface {

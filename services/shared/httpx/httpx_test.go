@@ -3,8 +3,8 @@ package httpx
 import (
 	"encoding/json"
 	"errors"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"net/http/httptest"

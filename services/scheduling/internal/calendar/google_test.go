@@ -2,7 +2,7 @@ package calendar
 
 import (
 	"encoding/base64"
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/domain"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/domain"
 	"golang.org/x/oauth2"
 	"strings"
 	"testing"

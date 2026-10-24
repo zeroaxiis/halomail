@@ -3,12 +3,26 @@ import { sendLoginCode } from "@/lib/otp-mail";
 
 export const runtime = "nodejs";
 
-const backend = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const isProd = process.env.NODE_ENV === "production";
+let backend = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL;
+if (!backend || (isProd && backend.includes("localhost"))) {
+  backend = isProd ? "https://halomailapi.zeroaxiis.tech" : "http://localhost:8080";
+}
+backend = backend.replace(/\/$/, "");
 const auth = "halomail.identity.v1.AuthService/";
 const cookieOptions = { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const, path: "/" };
 
 export async function POST(request: NextRequest, context: { params: Promise<{ procedure: string[] }> }) {
-  if (request.headers.get("origin") !== (process.env.PUBLIC_WEB_URL || request.nextUrl.origin)) {
+  const origin = request.headers.get("origin");
+  const allowedOrigins = [
+    request.nextUrl.origin,
+    process.env.PUBLIC_WEB_URL,
+    "https://halomail.zeroaxiis.tech",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+  ].filter(Boolean);
+
+  if (origin && !allowedOrigins.includes(origin) && !origin.endsWith(".zeroaxiis.tech")) {
     return NextResponse.json({ message: "Invalid request origin" }, { status: 403 });
   }
   const { procedure: parts } = await context.params;

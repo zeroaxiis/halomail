@@ -1,4 +1,4 @@
-module github.com/aashishrajdev/halomail/services/shared
+module github.com/zeroaxiis/halomail/services/shared
 
 go 1.24
 

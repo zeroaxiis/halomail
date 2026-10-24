@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/aashishrajdev/halomail/services/scheduling/internal/domain"
+	"github.com/zeroaxiis/halomail/services/scheduling/internal/domain"
 	"testing"
 	"time"
 )

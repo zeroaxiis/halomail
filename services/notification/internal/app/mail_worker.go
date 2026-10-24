@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"errors"
-	"github.com/aashishrajdev/halomail/services/notification/internal/email"
+	"github.com/zeroaxiis/halomail/services/notification/internal/email"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log/slog"

@@ -9,19 +9,19 @@ import (
 
 	"connectrpc.com/connect"
 
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/config"
-	"github.com/aashishrajdev/halomail/services/shared/connectutil"
-	templatev1connect "github.com/aashishrajdev/halomail/services/shared/gen/halomail/template/v1/templatev1connect"
-	"github.com/aashishrajdev/halomail/services/shared/health"
-	"github.com/aashishrajdev/halomail/services/shared/log"
-	"github.com/aashishrajdev/halomail/services/shared/observability"
-	pg "github.com/aashishrajdev/halomail/services/shared/postgres"
-	"github.com/aashishrajdev/halomail/services/shared/server"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/config"
+	"github.com/zeroaxiis/halomail/services/shared/connectutil"
+	templatev1connect "github.com/zeroaxiis/halomail/services/shared/gen/halomail/template/v1/templatev1connect"
+	"github.com/zeroaxiis/halomail/services/shared/health"
+	"github.com/zeroaxiis/halomail/services/shared/log"
+	"github.com/zeroaxiis/halomail/services/shared/observability"
+	pg "github.com/zeroaxiis/halomail/services/shared/postgres"
+	"github.com/zeroaxiis/halomail/services/shared/server"
 
-	tpg "github.com/aashishrajdev/halomail/services/template/internal/adapters/postgres"
-	"github.com/aashishrajdev/halomail/services/template/internal/adapters/rpc"
-	"github.com/aashishrajdev/halomail/services/template/internal/app"
+	tpg "github.com/zeroaxiis/halomail/services/template/internal/adapters/postgres"
+	"github.com/zeroaxiis/halomail/services/template/internal/adapters/rpc"
+	"github.com/zeroaxiis/halomail/services/template/internal/app"
 )
 
 const serviceName = "template"

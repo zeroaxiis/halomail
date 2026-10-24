@@ -4,8 +4,8 @@ package httpx
 
 import (
 	"encoding/json"
-	"github.com/aashishrajdev/halomail/services/shared/authn"
-	"github.com/aashishrajdev/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/authn"
+	"github.com/zeroaxiis/halomail/services/shared/errs"
 	"net"
 	"net/http"
 	"strings"
