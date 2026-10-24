@@ -61,12 +61,21 @@ type TeamRepo interface {
 	AcceptInvitation(ctx context.Context, inv *domain.Invitation, user *domain.User) error
 }
 
+// PasswordResetRepo persists password recovery tokens and handles password updates.
+type PasswordResetRepo interface {
+	CreateReset(ctx context.Context, reset *domain.PasswordReset, outboxID, emailHTML string) error
+	GetResetByTokenHash(ctx context.Context, hash string) (*domain.PasswordReset, error)
+	CompleteReset(ctx context.Context, resetID, userID, newPasswordHash string) error
+}
+
 // Repos toplevel groups the ports for wiring convenience.
 type Repos struct {
-	Users    UserRepo
-	Sessions SessionRepo
-	APIKeys  APIKeyRepo
-	Audit    AuditRepo
-	Team     TeamRepo
+	Users          UserRepo
+	Sessions       SessionRepo
+	APIKeys        APIKeyRepo
+	Audit          AuditRepo
+	Team           TeamRepo
+	PasswordResets PasswordResetRepo
 }
+
 

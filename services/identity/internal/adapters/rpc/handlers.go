@@ -98,6 +98,20 @@ func (h *Handlers) VerifyToken(ctx context.Context, req *connect.Request[identit
 	}), nil
 }
 
+func (h *Handlers) ForgotPassword(ctx context.Context, req *connect.Request[identityv1.ForgotPasswordRequest]) (*connect.Response[identityv1.ForgotPasswordResponse], error) {
+	if err := h.app.ForgotPassword(ctx, req.Msg.GetEmail()); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&identityv1.ForgotPasswordResponse{Success: true}), nil
+}
+
+func (h *Handlers) ResetPassword(ctx context.Context, req *connect.Request[identityv1.ResetPasswordRequest]) (*connect.Response[identityv1.ResetPasswordResponse], error) {
+	if err := h.app.ResetPassword(ctx, req.Msg.GetToken(), req.Msg.GetNewPassword()); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&identityv1.ResetPasswordResponse{Success: true}), nil
+}
+
 // ---- UserService ---------------------------------------------------------
 
 func (h *Handlers) GetUser(ctx context.Context, req *connect.Request[identityv1.GetUserRequest]) (*connect.Response[identityv1.GetUserResponse], error) {

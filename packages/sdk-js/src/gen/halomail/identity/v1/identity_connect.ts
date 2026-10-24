@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { AcceptInvitationRequest, AcceptInvitationResponse, CreateApiKeyRequest, CreateApiKeyResponse, GetCurrentUserRequest, GetCurrentUserResponse, GetUserByHandleRequest, GetUserByHandleResponse, GetUserRequest, GetUserResponse, InviteTeamMemberRequest, InviteTeamMemberResponse, ListApiKeysRequest, ListApiKeysResponse, ListAuditLogsRequest, ListAuditLogsResponse, ListTeamMembersRequest, ListTeamMembersResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, RecordAuditLogRequest, RecordAuditLogResponse, RefreshSessionRequest, RefreshSessionResponse, RegisterRequest, RegisterResponse, RemoveTeamMemberRequest, RemoveTeamMemberResponse, RevokeApiKeyRequest, RevokeApiKeyResponse, RevokeInvitationRequest, RevokeInvitationResponse, UpdateMemberRoleRequest, UpdateMemberRoleResponse, UpdateUserRequest, UpdateUserResponse, VerifyApiKeyRequest, VerifyApiKeyResponse, VerifyTokenRequest, VerifyTokenResponse } from "./identity_pb.js";
+import { AcceptInvitationRequest, AcceptInvitationResponse, CreateApiKeyRequest, CreateApiKeyResponse, ForgotPasswordRequest, ForgotPasswordResponse, GetCurrentUserRequest, GetCurrentUserResponse, GetUserByHandleRequest, GetUserByHandleResponse, GetUserRequest, GetUserResponse, InviteTeamMemberRequest, InviteTeamMemberResponse, ListApiKeysRequest, ListApiKeysResponse, ListAuditLogsRequest, ListAuditLogsResponse, ListTeamMembersRequest, ListTeamMembersResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, RecordAuditLogRequest, RecordAuditLogResponse, RefreshSessionRequest, RefreshSessionResponse, RegisterRequest, RegisterResponse, RemoveTeamMemberRequest, RemoveTeamMemberResponse, ResetPasswordRequest, ResetPasswordResponse, RevokeApiKeyRequest, RevokeApiKeyResponse, RevokeInvitationRequest, RevokeInvitationResponse, UpdateMemberRoleRequest, UpdateMemberRoleResponse, UpdateUserRequest, UpdateUserResponse, VerifyApiKeyRequest, VerifyApiKeyResponse, VerifyTokenRequest, VerifyTokenResponse } from "./identity_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -66,6 +66,24 @@ export const AuthService = {
       name: "VerifyToken",
       I: VerifyTokenRequest,
       O: VerifyTokenResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.AuthService.ForgotPassword
+     */
+    forgotPassword: {
+      name: "ForgotPassword",
+      I: ForgotPasswordRequest,
+      O: ForgotPasswordResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.AuthService.ResetPassword
+     */
+    resetPassword: {
+      name: "ResetPassword",
+      I: ResetPasswordRequest,
+      O: ResetPasswordResponse,
       kind: MethodKind.Unary,
     },
   }

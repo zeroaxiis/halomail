@@ -30,20 +30,23 @@ type Deps struct {
 	Redis                 *redis.Client
 	Interceptors          []connect.Interceptor
 	Limits                usage.Policy
+	WebURL                string
 }
 
 // Mount registers the identity ConnectRPC handlers on mux.
 func Mount(mux *http.ServeMux, d Deps) {
 	svc := app.New(app.Repos{
-		Users:    postgres.NewUsers(d.Pool),
-		Sessions: postgres.NewSessions(d.Pool),
-		APIKeys:  postgres.NewAPIKeys(d.Pool),
-		Audit:    postgres.NewAudit(d.Pool),
-		Team:     postgres.NewTeam(d.Pool),
+		Users:          postgres.NewUsers(d.Pool),
+		Sessions:       postgres.NewSessions(d.Pool),
+		APIKeys:        postgres.NewAPIKeys(d.Pool),
+		Audit:          postgres.NewAudit(d.Pool),
+		Team:           postgres.NewTeam(d.Pool),
+		PasswordResets: postgres.NewPasswordResets(d.Pool),
 	}, app.Config{
 		JWTSecret:    d.JWTSecret,
 		RefreshTTL:   d.SessionTTL,
 		APIKeyPrefix: d.APIKeyPrefix,
+		WebURL:       d.WebURL,
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	h.MountOTP(mux, d.OTPDeliverySecret)

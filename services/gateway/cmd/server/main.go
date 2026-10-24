@@ -117,7 +117,7 @@ func main() {
 		RazorpayWebhookSecret: cfg.Auth.RazorpayWebhookSecret,
 		Pool:                  pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
 		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors,
-		Limits: cfg.Limits,
+		Limits: cfg.Limits, WebURL: cfg.App.PublicWebURL,
 	})
 	scheduling.Mount(mux, scheduling.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret,

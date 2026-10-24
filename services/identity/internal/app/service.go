@@ -23,19 +23,21 @@ type Config struct {
 	JWTSecret    string
 	RefreshTTL   time.Duration
 	APIKeyPrefix string
+	WebURL       string
 }
 
 // Service implements the identity use cases over a set of repositories.
 type Service struct {
-	users    UserRepo
-	sessions SessionRepo
-	apiKeys  APIKeyRepo
-	audit    AuditRepo
-	team     TeamRepo
-	tokens   crypto.TokenIssuer
-	cfg      Config
-	redis    *redis.Client
-	now      func() time.Time
+	users          UserRepo
+	sessions       SessionRepo
+	apiKeys        APIKeyRepo
+	audit          AuditRepo
+	team           TeamRepo
+	passwordResets PasswordResetRepo
+	tokens         crypto.TokenIssuer
+	cfg            Config
+	redis          *redis.Client
+	now            func() time.Time
 }
 
 func New(r Repos, cfg Config, redisClient *redis.Client) *Service {
@@ -46,15 +48,16 @@ func New(r Repos, cfg Config, redisClient *redis.Client) *Service {
 		cfg.APIKeyPrefix = "hl_"
 	}
 	return &Service{
-		users:    r.Users,
-		sessions: r.Sessions,
-		apiKeys:  r.APIKeys,
-		audit:    r.Audit,
-		team:     r.Team,
-		tokens:   crypto.NewTokenIssuer(cfg.JWTSecret),
-		cfg:      cfg,
-		redis:    redisClient,
-		now:      time.Now,
+		users:          r.Users,
+		sessions:       r.Sessions,
+		apiKeys:        r.APIKeys,
+		audit:          r.Audit,
+		team:           r.Team,
+		passwordResets: r.PasswordResets,
+		tokens:         crypto.NewTokenIssuer(cfg.JWTSecret),
+		cfg:            cfg,
+		redis:          redisClient,
+		now:            time.Now,
 	}
 }
 
