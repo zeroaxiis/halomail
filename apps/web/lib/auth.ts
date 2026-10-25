@@ -15,8 +15,10 @@ export interface SessionUser {
 
 export function saveSession(token: string, user: SessionUser) {
   void token;
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
 }
 
 export function getToken(): string | null {
@@ -30,7 +32,14 @@ export function getUser(): SessionUser | null {
   catch { return null; }
 }
 
-export function clearSession() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+export function hasStoredSession(): boolean {
+  return getUser() !== null;
 }
+
+export function clearSession() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  }
+}
+

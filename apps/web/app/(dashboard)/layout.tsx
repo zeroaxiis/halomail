@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Topbar } from "@/components/dashboard/topbar";
-import { saveSession, type SessionUser } from "@/lib/auth";
+import { saveSession, clearSession, type SessionUser } from "@/lib/auth";
 import { rpc } from "@/lib/api";
 import { WorkspaceProvider } from "@/components/dashboard/workspace-context";
 import "./dashboard.css";
@@ -22,7 +22,10 @@ export default function DashboardLayout({
         saveSession("", result.user);
         setUser(result.user);
       })
-      .catch(() => router.replace("/login"));
+      .catch(() => {
+        clearSession();
+        router.replace("/login");
+      });
   }, [router]);
 
   if (!user)
