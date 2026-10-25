@@ -5,6 +5,8 @@ package config
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/zeroaxiis/halomail/services/shared/usage"
@@ -63,14 +65,16 @@ type Auth struct {
 
 type Email struct {
 	ResendAPIKey string `env:"RESEND_API_KEY"`
-	From         string `env:"EMAIL_FROM" envDefault:"HaloMail <noreply@halomail.dev>"`
+	From         string `env:"EMAIL_FROM" envDefault:"HaloMail <no-reply@email.zeroaxiis.tech>"`
 	SMTPHost     string `env:"SMTP_HOST" envDefault:"localhost"`
 	SMTPPort     int    `env:"SMTP_PORT" envDefault:"1025"`
 }
 
 // UseResend reports whether a real Resend key is configured; otherwise the
 // notification service falls back to local SMTP (Mailpit).
-func (e Email) UseResend() bool { return e.ResendAPIKey != "" }
+func (e Email) UseResend() bool {
+	return strings.TrimSpace(e.ResendAPIKey) != "" || strings.TrimSpace(os.Getenv("NTS_RESEND_API_KEY")) != ""
+}
 
 type OAuth struct {
 	ClientID     string `env:"CLIENT_ID"`
@@ -100,6 +104,8 @@ type Rate struct {
 // Load reads an optional .env file then parses the environment.
 func Load() (*Config, error) {
 	_ = godotenv.Load() // best-effort; real env wins
+	_ = godotenv.Load("../../.env")
+	_ = godotenv.Load("../.env")
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, fmt.Errorf("config: %w", err)
@@ -109,6 +115,15 @@ func Load() (*Config, error) {
 	}
 	if cfg.Limits.Forms < 0 || cfg.Limits.Meetings < 0 {
 		return nil, fmt.Errorf("free limits cannot be negative")
+	}
+
+	cfg.Email.ResendAPIKey = strings.TrimSpace(strings.Trim(cfg.Email.ResendAPIKey, `"'`))
+	if cfg.Email.ResendAPIKey == "" {
+		cfg.Email.ResendAPIKey = strings.TrimSpace(strings.Trim(os.Getenv("NTS_RESEND_API_KEY"), `"'`))
+	}
+	cfg.Email.From = strings.TrimSpace(strings.Trim(cfg.Email.From, `"'`))
+	if cfg.Email.From == "" || strings.Contains(cfg.Email.From, "halomail.dev") {
+		cfg.Email.From = "HaloMail <no-reply@email.zeroaxiis.tech>"
 	}
 	if cfg.App.IsProd() {
 		if cfg.App.PublicWebURL == "http://localhost:3000" || cfg.App.PublicWebURL == "" {
