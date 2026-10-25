@@ -3,21 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-	Users,
 	UserPlus,
-	Shield,
-	Crown,
 	Mail,
 	Trash2,
 	Copy,
 	Check,
 	AlertCircle,
 	ArrowUpRight,
-	Sparkles,
 	Clock,
+	X,
+	ChevronDown,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { PanelHeading, EmptyState } from "@/components/dashboard/ui";
+import { PanelHeading } from "@/components/dashboard/ui";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -60,23 +58,23 @@ interface TeamResponse {
 const ROLE_DETAILS = {
 	owner: {
 		label: "Owner",
-		badge: "brand",
-		desc: "Full workspace ownership, billing, and transfer permissions.",
+		badge: "brand" as const,
+		desc: "Full workspace ownership, subscription billing, seat upgrades, and workspace transfer permissions.",
 	},
 	admin: {
 		label: "Administrator",
-		badge: "default",
-		desc: "Manage team members, configure settings, forms, and calendar rules.",
+		badge: "default" as const,
+		desc: "Manage team members, configure workspace settings, forms, integrations, and scheduling rules.",
 	},
 	manager: {
 		label: "Manager",
-		badge: "success",
-		desc: "Manage bookings, dates, cancel/reschedule meetings, and view forms.",
+		badge: "success" as const,
+		desc: "Manage bookings, schedule dates, cancel or reschedule meetings, and view form submissions.",
 	},
 	viewer: {
 		label: "Viewer",
-		badge: "outline",
-		desc: "Read-only access to bookings, calendars, and form submissions.",
+		badge: "outline" as const,
+		desc: "Read-only access to view bookings, calendar availability, and form submission data.",
 	},
 };
 
@@ -105,6 +103,9 @@ export default function TeamPage() {
 	const isFreePlan = tier.toLowerCase() === "free";
 	const canManage = data?.currentUserRole === "owner" || data?.currentUserRole === "admin";
 	const isOwner = data?.currentUserRole === "owner";
+	const seatsAvailable = Math.max(0, maxSeats - usedSeats);
+	const seatsPercentage =
+		maxSeats > 0 ? Math.min(100, Math.round((usedSeats / maxSeats) * 100)) : 100;
 
 	function copyInviteLink(token: string) {
 		const link = `${window.location.origin}/invite?token=${token}`;
@@ -204,101 +205,96 @@ export default function TeamPage() {
 	return (
 		<div className="space-y-8">
 			<PageHeader
-				title="Team Management"
-				description="Collaborate with teammates, assign role-based permissions, and manage your company workspace seats."
+				title="Team"
+				description="Manage your team members, workspace permissions, and seat availability."
+				action={
+					!isFreePlan && canManage ? (
+						<Button
+							onClick={() => setShowInviteModal(true)}
+							size="sm"
+							className="gap-2"
+							disabled={usedSeats >= maxSeats}
+						>
+							<UserPlus className="size-4" />
+							Invite Member
+						</Button>
+					) : isFreePlan ? (
+						<Button asChild size="sm" variant="outline" className="gap-1.5">
+							<Link href="/dashboard/billing">
+								Upgrade Plan <ArrowUpRight className="size-3.5" />
+							</Link>
+						</Button>
+					) : null
+				}
 			/>
 
-			{/* Plan & Seat Allowance Status */}
-			<Card className="p-6">
+			{/* Seat Allowance Status */}
+			<Card className="p-5">
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 					<div className="space-y-1">
-						<div className="flex items-center gap-2">
-							<h2 className="text-lg font-medium">Workspace Seats</h2>
-							<Badge variant={isFreePlan ? "outline" : "brand"} className="capitalize">
+						<div className="flex items-center gap-2.5">
+							<h2 className="text-sm font-semibold tracking-tight">Seat Allowance</h2>
+							<Badge variant={isFreePlan ? "outline" : "default"} className="capitalize font-mono text-[11px]">
 								{tier} Plan
 							</Badge>
 						</div>
-						<p className="text-sm text-muted-foreground">
+						<p className="text-xs text-muted-foreground">
 							{isFreePlan ? (
-								"Solo plan: 1 user included. Team management is available on Pro (4 seats) and Business (12 seats)."
+								"Solo workspaces are limited to 1 member. Upgrade to Pro or Business to collaborate."
 							) : (
 								<>
 									<span className="font-semibold text-foreground">{usedSeats}</span> of{" "}
 									<span className="font-semibold text-foreground">{maxSeats}</span> seats used (
-									{Math.max(0, maxSeats - usedSeats)} remaining)
+									{seatsAvailable} {seatsAvailable === 1 ? "seat" : "seats"} available)
 								</>
 							)}
 						</p>
 					</div>
 
-					<div>
-						{isFreePlan ? (
-							<Button asChild size="sm" className="gap-1.5">
-								<Link href="/dashboard/billing">
-									<Sparkles className="size-4 text-brand" />
-									Upgrade to Invite Team
-								</Link>
-							</Button>
-						) : canManage ? (
-							<Button
-								onClick={() => setShowInviteModal(true)}
-								size="sm"
-								className="gap-2"
-								disabled={usedSeats >= maxSeats}
-							>
-								<UserPlus className="size-4" />
-								Invite Teammate
-							</Button>
-						) : null}
-					</div>
-				</div>
-
-				{/* Seat Progress Bar */}
-				{!isFreePlan && maxSeats > 0 && (
-					<div className="mt-4 pt-4 border-t border-border">
-						<div
-							className="h-2 w-full rounded-full bg-secondary overflow-hidden"
-							role="progressbar"
-							aria-valuenow={usedSeats}
-							aria-valuemin={0}
-							aria-valuemax={maxSeats}
-						>
+					{!isFreePlan && maxSeats > 0 && (
+						<div className="flex items-center gap-3 w-full sm:w-64">
 							<div
-								className="h-full bg-brand transition-all duration-300 rounded-full"
-								style={{ width: `${Math.min(100, (usedSeats / maxSeats) * 100)}%` }}
-							/>
+								className="h-2 w-full rounded-full bg-secondary overflow-hidden"
+								role="progressbar"
+								aria-label="Workspace seats used"
+								aria-valuenow={usedSeats}
+								aria-valuemin={0}
+								aria-valuemax={maxSeats}
+							>
+								<div
+									className="h-full bg-foreground/80 transition-all duration-300 rounded-full"
+									style={{ width: `${seatsPercentage}%` }}
+								/>
+							</div>
+							<span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
+								{seatsPercentage}%
+							</span>
 						</div>
-					</div>
-				)}
+					)}
+				</div>
 			</Card>
 
 			{/* Upgrade Callout for Free Tier */}
 			{isFreePlan && (
-				<Card className="p-6 border-dashed border-brand/30 bg-card/60">
-					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-						<div className="space-y-1">
-							<h3 className="text-base font-semibold flex items-center gap-2">
-								<Users className="size-4 text-brand" />
-								Need to collaborate with your team?
-							</h3>
-							<p className="text-sm text-muted-foreground max-w-xl">
-								Upgrade to <strong>Pro</strong> to add up to 4 members or <strong>Business</strong> for
-								up to 12 members. Assign roles like <em>Administrator</em>, <em>Manager</em>, or{" "}
-								<em>Viewer</em> to control access to forms and calendar bookings.
-							</p>
-						</div>
-						<Button asChild variant="outline" size="sm" className="gap-1 shrink-0">
-							<Link href="/dashboard/billing">
-								View Plans <ArrowUpRight className="size-3.5" />
-							</Link>
-						</Button>
+				<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-lg border border-border bg-card">
+					<div className="space-y-1">
+						<h3 className="text-sm font-semibold">Need to collaborate with your team?</h3>
+						<p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
+							Upgrade to <strong>Pro</strong> (up to 4 seats) or <strong>Business</strong> (up to 12 seats)
+							to invite team members, assign role-based permissions, and share booking availability.
+						</p>
 					</div>
-				</Card>
+					<Button asChild size="sm" variant="outline" className="gap-1.5 shrink-0">
+						<Link href="/dashboard/billing">
+							View Plans <ArrowUpRight className="size-3.5" />
+						</Link>
+					</Button>
+				</div>
 			)}
 
 			{/* Action Error Banner */}
 			{(actionError || error) && (
-				<div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+				<div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
 					<AlertCircle className="size-4 shrink-0" />
 					<span>{actionError || error}</span>
 				</div>
@@ -306,27 +302,42 @@ export default function TeamPage() {
 
 			{/* Invite Modal / Dialog */}
 			{showInviteModal && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="invite-modal-title"
+				>
 					<Card className="w-full max-w-md p-6 space-y-5 animate-in fade-in-50 zoom-in-95">
-						<div className="flex items-center justify-between">
+						<div className="flex items-start justify-between">
 							<div className="space-y-1">
-								<h2 className="text-xl font-semibold">Invite Team Member</h2>
+								<h2 id="invite-modal-title" className="text-lg font-semibold text-foreground">
+									Invite Team Member
+								</h2>
 								<p className="text-xs text-muted-foreground">
-									Send an email invitation to join your company workspace.
+									Send an email invitation to collaborate in your workspace.
 								</p>
 							</div>
 							<button
 								type="button"
-								onClick={() => setShowInviteModal(false)}
-								className="text-muted-foreground hover:text-foreground text-sm p-1"
+								onClick={() => {
+									setShowInviteModal(false);
+									setCreatedInviteLink("");
+									setInviteError("");
+									setInviteSuccess("");
+								}}
+								className="rounded-sm p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+								aria-label="Close modal"
 							>
-								✕
+								<X className="size-4" />
 							</button>
 						</div>
 
 						<form onSubmit={handleSendInvite} className="space-y-4">
-							<div>
-								<Label htmlFor="invite-email">Teammate Email Address</Label>
+							<div className="space-y-1.5">
+								<Label htmlFor="invite-email" className="text-xs font-medium">
+									Teammate Email Address
+								</Label>
 								<Input
 									id="invite-email"
 									type="email"
@@ -336,12 +347,11 @@ export default function TeamPage() {
 									required
 									autoFocus
 									disabled={inviteBusy}
-									className="mt-1"
 								/>
 							</div>
 
 							<div className="space-y-2">
-								<Label>Assign Access Role</Label>
+								<Label className="text-xs font-medium">Assign Access Role</Label>
 								<div className="space-y-2">
 									{(["manager", "admin", "viewer"] as const).map((r) => {
 										const detail = ROLE_DETAILS[r];
@@ -351,17 +361,17 @@ export default function TeamPage() {
 												key={r}
 												type="button"
 												onClick={() => setInviteRole(r)}
-												className={`w-full text-left p-3 rounded-md border text-sm transition-colors ${
+												className={`w-full text-left p-3 rounded-md border text-sm transition-all ${
 													isSelected
-														? "border-brand bg-brand/5 ring-1 ring-brand"
-														: "border-border hover:bg-muted/50"
+														? "border-foreground/30 bg-muted/60 ring-1 ring-foreground/20"
+														: "border-border hover:bg-muted/40"
 												}`}
 											>
-												<div className="flex items-center justify-between font-medium">
-													<span>{detail.label}</span>
-													{isSelected && <Check className="size-4 text-brand" />}
+												<div className="flex items-center justify-between font-medium text-xs">
+													<span className="text-foreground">{detail.label}</span>
+													{isSelected && <Check className="size-3.5 text-foreground" />}
 												</div>
-												<p className="text-xs text-muted-foreground mt-0.5">
+												<p className="text-[11px] text-muted-foreground mt-1 leading-normal">
 													{detail.desc}
 												</p>
 											</button>
@@ -377,13 +387,13 @@ export default function TeamPage() {
 										<span>{inviteSuccess || "Invitation email dispatched!"}</span>
 									</div>
 									<p className="text-muted-foreground">
-										An email has been sent to the invitee. You can also copy and share the invite link directly:
+										An email has been sent. You can also copy and share the invite link directly:
 									</p>
 									<div className="flex items-center gap-2">
 										<Input
 											readOnly
 											value={createdInviteLink}
-											className="text-xs h-8 bg-background selection:bg-brand/20"
+											className="text-xs h-8 bg-background selection:bg-brand/20 font-mono"
 										/>
 										<Button
 											type="button"
@@ -395,7 +405,7 @@ export default function TeamPage() {
 											{copiedModalLink ? (
 												<>
 													<Check className="size-3 text-emerald-500" />
-													<span>Copied!</span>
+													<span>Copied</span>
 												</>
 											) : (
 												<>
@@ -452,36 +462,44 @@ export default function TeamPage() {
 			<section className="space-y-3">
 				<PanelHeading
 					title={`Active Members (${data?.members?.length || 0})`}
-					description="Users who currently have access to this workspace."
+					description="Teammates who currently have access to this workspace."
 				/>
 
-				<div className="divide-y divide-border rounded-lg border bg-card overflow-hidden">
+				<div className="divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
 					{data?.members?.map((member) => {
 						const isSelf = member.id === user.id;
 						const isTargetOwner = member.role === "owner";
 						const isTargetAdmin = member.role === "admin";
-						const canEditTarget =
-							canManage && !isTargetOwner && (isOwner || !isTargetAdmin);
+						const canEditTarget = canManage && !isTargetOwner && (isOwner || !isTargetAdmin);
+						const initials = (member.name || member.email)
+							.slice(0, 2)
+							.toUpperCase();
 
 						return (
 							<div
 								key={member.id}
-								className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3"
+								className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3.5 hover:bg-muted/20 transition-colors"
 							>
 								<div className="flex items-center gap-3 min-w-0">
-									<div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary font-medium text-sm text-foreground">
-										{member.name
-											? member.name.slice(0, 2).toUpperCase()
-											: member.email.slice(0, 2).toUpperCase()}
-									</div>
-									<div className="min-w-0">
+									{member.avatarUrl ? (
+										<img
+											src={member.avatarUrl}
+											alt={member.name || member.email}
+											className="size-9 shrink-0 rounded-full object-cover border border-border"
+										/>
+									) : (
+										<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground/80 border border-border/50">
+											{initials}
+										</div>
+									)}
+									<div className="min-w-0 space-y-0.5">
 										<div className="flex items-center gap-2">
-											<p className="font-medium text-sm truncate">
+											<p className="font-medium text-sm text-foreground truncate">
 												{member.name || member.email}
 											</p>
 											{isSelf && (
-												<span className="text-[11px] font-mono text-muted-foreground">
-													(You)
+												<span className="text-[10px] font-medium tracking-wide uppercase px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border/50">
+													You
 												</span>
 											)}
 										</div>
@@ -490,19 +508,21 @@ export default function TeamPage() {
 								</div>
 
 								<div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
-									{/* Role Badge or Selector */}
 									{canEditTarget ? (
-										<select
-											value={member.role}
-											onChange={(e) => handleRoleChange(member.id, e.target.value)}
-											disabled={actionBusyId === member.id}
-											aria-label={`Change role for ${member.name || member.email}`}
-											className="rounded border border-input bg-background px-2.5 py-1 text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-										>
-											{isOwner && <option value="admin">Administrator</option>}
-											<option value="manager">Manager</option>
-											<option value="viewer">Viewer</option>
-										</select>
+										<div className="relative">
+											<select
+												value={member.role}
+												onChange={(e) => handleRoleChange(member.id, e.target.value)}
+												disabled={actionBusyId === member.id}
+												aria-label={`Change role for ${member.name || member.email}`}
+												className="h-8 appearance-none rounded-md border border-input bg-background pl-2.5 pr-7 text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer hover:bg-muted/40 transition-colors"
+											>
+												{isOwner && <option value="admin">Administrator</option>}
+												<option value="manager">Manager</option>
+												<option value="viewer">Viewer</option>
+											</select>
+											<ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+										</div>
 									) : (
 										<Badge
 											variant={
@@ -514,20 +534,17 @@ export default function TeamPage() {
 													? "success"
 													: "outline"
 											}
-											className="capitalize gap-1"
+											className="text-xs font-medium capitalize"
 										>
-											{member.role === "owner" && <Crown className="size-3" />}
-											{member.role === "admin" && <Shield className="size-3" />}
 											{ROLE_DETAILS[member.role]?.label || member.role}
 										</Badge>
 									)}
 
-									{/* Remove Action */}
 									{canEditTarget && (
 										<Button
 											variant="ghost"
 											size="sm"
-											className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+											className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
 											disabled={actionBusyId === member.id}
 											onClick={() => handleRemoveMember(member)}
 											title="Remove member"
@@ -551,28 +568,30 @@ export default function TeamPage() {
 						description="Invited colleagues who have not yet accepted their invitation."
 					/>
 
-					<div className="divide-y divide-border rounded-lg border bg-card overflow-hidden">
+					<div className="divide-y divide-border rounded-lg border border-border bg-card overflow-hidden">
 						{data.invitations.map((inv) => (
 							<div
 								key={inv.id}
-								className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3"
+								className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 hover:bg-muted/20 transition-colors"
 							>
 								<div className="flex items-center gap-3 min-w-0">
-									<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary/60 text-muted-foreground">
+									<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary/70 text-muted-foreground border border-border/40">
 										<Mail className="size-4" />
 									</div>
-									<div className="min-w-0">
-										<p className="font-medium text-sm truncate">{inv.email}</p>
-										<p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-											<Clock className="size-3" />
-											Invited by {inv.invitedByName} · Expires{" "}
-											{new Date(inv.expiresAt).toLocaleDateString()}
+									<div className="min-w-0 space-y-0.5">
+										<p className="font-medium text-sm text-foreground truncate">{inv.email}</p>
+										<p className="text-xs text-muted-foreground flex items-center gap-1.5">
+											<Clock className="size-3 shrink-0" />
+											<span>
+												Invited by {inv.invitedByName} · Expires{" "}
+												{new Date(inv.expiresAt).toLocaleDateString()}
+											</span>
 										</p>
 									</div>
 								</div>
 
-								<div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-									<Badge variant="outline" className="capitalize text-xs">
+								<div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+									<Badge variant="outline" className="text-xs font-medium capitalize">
 										{ROLE_DETAILS[inv.role]?.label || inv.role}
 									</Badge>
 
@@ -589,7 +608,7 @@ export default function TeamPage() {
 													{copiedToken === inv.token ? (
 														<>
 															<Check className="size-3 text-emerald-500" />
-															<span>Copied!</span>
+															<span>Copied</span>
 														</>
 													) : (
 														<>
@@ -602,7 +621,7 @@ export default function TeamPage() {
 											<Button
 												variant="outline"
 												size="sm"
-												className="text-xs h-7 px-2.5 text-muted-foreground hover:text-destructive"
+												className="text-xs h-7 px-2.5 text-muted-foreground hover:text-destructive hover:border-destructive/30"
 												disabled={actionBusyId === inv.id}
 												onClick={() => handleRevokeInvite(inv.id)}
 											>
@@ -617,35 +636,50 @@ export default function TeamPage() {
 				</section>
 			)}
 
-			{/* Roles & Permissions Explanation Card */}
-			<section className="space-y-3 pt-4">
-				<PanelHeading title="Role Permissions Reference" />
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-					<Card className="p-4 space-y-2">
-						<div className="flex items-center gap-2">
-							<Shield className="size-4 text-brand" />
-							<h3 className="font-medium text-sm">Administrator</h3>
+			{/* Roles & Permissions Reference */}
+			<section className="space-y-3 pt-2">
+				<PanelHeading
+					title="Role Permissions Reference"
+					description="Access and capability levels for each workspace role."
+				/>
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+					<Card className="p-4 space-y-2 border-border/80">
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-semibold text-foreground">Owner</span>
+							<Badge variant="brand" className="text-[10px]">Primary</Badge>
 						</div>
-						<p className="text-xs text-muted-foreground">
-							Can invite and remove team members, configure forms, calendar booking rules, integrations, and company settings.
+						<p className="text-xs text-muted-foreground leading-relaxed">
+							Full workspace ownership, subscription billing, plan seat upgrades, and workspace transfer rights.
 						</p>
 					</Card>
-					<Card className="p-4 space-y-2">
-						<div className="flex items-center gap-2">
-							<Users className="size-4 text-amber-500" />
-							<h3 className="font-medium text-sm">Manager (Operator)</h3>
+
+					<Card className="p-4 space-y-2 border-border/80">
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-semibold text-foreground">Administrator</span>
+							<Badge variant="default" className="text-[10px]">Admin</Badge>
 						</div>
-						<p className="text-xs text-muted-foreground">
-							Operational staff: can view and manage calendar bookings, cancel or reschedule meetings, and manage form submissions.
+						<p className="text-xs text-muted-foreground leading-relaxed">
+							Invite and remove team members, configure booking rules, custom forms, integrations, and workspace settings.
 						</p>
 					</Card>
-					<Card className="p-4 space-y-2">
-						<div className="flex items-center gap-2">
-							<Users className="size-4 text-muted-foreground" />
-							<h3 className="font-medium text-sm">Viewer</h3>
+
+					<Card className="p-4 space-y-2 border-border/80">
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-semibold text-foreground">Manager</span>
+							<Badge variant="success" className="text-[10px]">Operator</Badge>
 						</div>
-						<p className="text-xs text-muted-foreground">
-							Read-only observer: can check booking availability, event details, and form responses without making modifications.
+						<p className="text-xs text-muted-foreground leading-relaxed">
+							Operational control: schedule and manage calendar bookings, handle cancellations, and view form submissions.
+						</p>
+					</Card>
+
+					<Card className="p-4 space-y-2 border-border/80">
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-semibold text-foreground">Viewer</span>
+							<Badge variant="outline" className="text-[10px]">Read-only</Badge>
+						</div>
+						<p className="text-xs text-muted-foreground leading-relaxed">
+							Read-only observer: view calendar schedules, event bookings, and submitted form responses without edit access.
 						</p>
 					</Card>
 				</div>
@@ -653,3 +687,4 @@ export default function TeamPage() {
 		</div>
 	);
 }
+

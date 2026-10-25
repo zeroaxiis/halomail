@@ -15,11 +15,11 @@ plugins:
     opt: paths=source_relative
 
   # ---- TypeScript SDK (client) ----
-  - remote: buf.build/bufbuild/es
+  - remote: buf.build/bufbuild/es:v2.16.0
     out: packages/sdk-js/src/gen
     opt:
       - target=ts
-  - remote: buf.build/connectrpc/es
+  - remote: buf.build/connectrpc/es:v1.6.1
     out: packages/sdk-js/src/gen
     opt:
       - target=ts
