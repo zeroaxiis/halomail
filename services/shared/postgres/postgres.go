@@ -4,6 +4,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -13,6 +14,15 @@ import (
 func New(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	if url == "" {
 		return nil, fmt.Errorf("postgres: DATABASE_URL is empty")
+	}
+
+	// Neon's PgBouncer pooler endpoint (-pooler) operates in transaction pooling mode
+	// which does not preserve session parameters like search_path and causes
+	// intermittent "relation does not exist" errors. Persistent Go servers already
+	// run native connection pools (pgxpool), so we automatically route Neon connections
+	// to the direct unpooled endpoint.
+	if strings.Contains(url, ".neon.tech") && strings.Contains(url, "-pooler.") {
+		url = strings.Replace(url, "-pooler.", ".", 1)
 	}
 
 	cfg, err := pgxpool.ParseConfig(url)
