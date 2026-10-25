@@ -32,11 +32,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.24"
-      - uses: bufbuild/buf-setup-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate code from proto
-        run: buf generate
       - name: Vet & test each Go module
         run: |
           set -euo pipefail
