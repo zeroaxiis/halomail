@@ -27,6 +27,10 @@ func New(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	// CRITICAL FIX: Neon uses PgBouncer in transaction mode.
 	// Prepared statements (which pgx uses by default) crash with "prepared statement name is already in use".
 	cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+	if cfg.ConnConfig.RuntimeParams == nil {
+		cfg.ConnConfig.RuntimeParams = make(map[string]string)
+	}
+	cfg.ConnConfig.RuntimeParams["search_path"] = "public"
 
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
