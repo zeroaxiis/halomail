@@ -86,11 +86,15 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pr
       return NextResponse.json({ challengeId: data.challengeId, expiresIn: data.expiresIn }, { headers: { "Cache-Control": "no-store" } });
     }
     const session = data.session;
-    if (authResponse || refreshing) delete data.session;
+    if (authResponse || refreshing || procedure.endsWith("TeamService/AcceptInvitation")) delete data.session;
     const response = NextResponse.json(data, { status: upstream.status, headers: { "Cache-Control": "no-store" } });
-    if (upstream.ok && session && (signingIn || refreshing)) {
+    if (upstream.ok && session && (signingIn || refreshing || procedure.endsWith("TeamService/AcceptInvitation"))) {
       response.cookies.set("halomail_access", session.accessToken, { ...cookieOptions, maxAge: 900 });
       response.cookies.set("halomail_refresh", session.refreshToken, { ...cookieOptions, maxAge: 30 * 86400 });
+    }
+    if (refreshing && !upstream.ok) {
+      response.cookies.set("halomail_access", "", { ...cookieOptions, maxAge: 0 });
+      response.cookies.set("halomail_refresh", "", { ...cookieOptions, maxAge: 0 });
     }
     if (signingOut) {
       response.cookies.set("halomail_access", "", { ...cookieOptions, maxAge: 0 });

@@ -22,6 +22,28 @@ export default function LoginPage() {
   const [now, setNow] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // If already authenticated with a valid session, redirect immediately to dashboard
+  useEffect(() => {
+    let cancelled = false;
+    rpc<{ user: SessionUser }>("halomail.identity.v1.AuthService/GetCurrentUser")
+      .then((res) => {
+        if (cancelled) return;
+        saveSession("", res.user);
+        const searchParams = new URLSearchParams(window.location.search);
+        const redirect = searchParams.get("redirect") || "/dashboard";
+        router.replace(redirect);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCheckingAuth(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   useEffect(() => {
     if (!challengeId) return;
@@ -52,7 +74,25 @@ export default function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!challengeId) { await requestCode(); return; }
+    if (!challengeId) {
+      // Pre-check: if a valid session exists, redirect immediately instead of requesting OTP
+      setLoading(true);
+      try {
+        const active = await rpc<{ user: SessionUser }>("halomail.identity.v1.AuthService/GetCurrentUser");
+        if (active?.user) {
+          saveSession("", active.user);
+          const searchParams = new URLSearchParams(window.location.search);
+          router.replace(searchParams.get("redirect") || "/dashboard");
+          return;
+        }
+      } catch {
+        // Not authenticated, proceed with credentials + OTP
+      } finally {
+        setLoading(false);
+      }
+      await requestCode();
+      return;
+    }
     setError(null);
     setLoading(true);
     try {
@@ -65,6 +105,15 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className={styles.form}>
+        <h2 className={styles.formTitle}>Welcome back.</h2>
+        <p className={styles.formDescription}>Verifying your session…</p>
+      </div>
+    );
   }
 
   return (
