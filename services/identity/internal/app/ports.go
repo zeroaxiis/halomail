@@ -22,6 +22,10 @@ type UserRepo interface {
 	ApplyPayment(ctx context.Context, orgID, orderID, paymentID, tier string, paidAt, cycleEnd time.Time) error
 	ApplyRefunds(ctx context.Context, orgID, orderID, paymentID, currency string, paymentAmount int64, refunds []domain.BillingRefund) (domain.RefundResult, error)
 	UpdateOrgBilling(ctx context.Context, orgID, customerID, subID, tier string, cycleEnd time.Time) error
+	ScheduleAccountDeletion(ctx context.Context, userID string, scheduledAt time.Time) error
+	CancelAccountDeletion(ctx context.Context, userID string) error
+	HardDeleteUser(ctx context.Context, userID string) error
+	PurgeExpiredUserByEmail(ctx context.Context, email string) (bool, error)
 }
 
 // SessionRepo persists refresh-token sessions.
@@ -30,6 +34,7 @@ type SessionRepo interface {
 	GetByRefreshHash(ctx context.Context, hash string) (*domain.Session, error)
 	Consume(ctx context.Context, id string) error
 	Revoke(ctx context.Context, id string) error
+	RevokeAllForUser(ctx context.Context, userID string) error
 }
 
 // APIKeyRepo persists API keys.
@@ -59,6 +64,7 @@ type TeamRepo interface {
 	RevokeInvitation(ctx context.Context, orgID, invitationID string) error
 	UpdateUserRole(ctx context.Context, orgID, userID, newRole string) error
 	RemoveUserFromOrg(ctx context.Context, orgID, userID string) error
+	LeaveTeam(ctx context.Context, orgID, userID string) error
 	AcceptInvitation(ctx context.Context, inv *domain.Invitation, user *domain.User) error
 }
 

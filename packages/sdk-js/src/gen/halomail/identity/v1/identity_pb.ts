@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file halomail/identity/v1/identity.proto.
  */
 export const file_halomail_identity_v1_identity: GenFile = /*@__PURE__*/
-  fileDesc("CiNoYWxvbWFpbC9pZGVudGl0eS92MS9pZGVudGl0eS5wcm90bxIUaGFsb21haWwuaWRlbnRpdHkudjEi4wEKBFVzZXISCgoCaWQYASABKAkSDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCRIOCgZoYW5kbGUYBCABKAkSEgoKYXZhdGFyX3VybBgFIAEoCRIQCgh0aW1lem9uZRgGIAEoCRIOCgZvcmdfaWQYByABKAkSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKdXBkYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDAoEcm9sZRgKIAEoCSJdCgNPcmcSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIMCgRzbHVnGAMgASgJEi4KCmNyZWF0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIm0KB1Nlc3Npb24SFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSNQoRYWNjZXNzX2V4cGlyZXNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIsgBCgZBcGlLZXkSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIOCgZwcmVmaXgYAyABKAkSEQoJbGFzdF9mb3VyGAQgASgJEg4KBnNjb3BlcxgFIAMoCRIuCgpjcmVhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxsYXN0X3VzZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg8KB3Jldm9rZWQYCCABKAgirgEKCEF1ZGl0TG9nEgoKAmlkGAEgASgJEhAKCGFjdG9yX2lkGAIgASgJEg4KBmFjdGlvbhgDIAEoCRITCgt0YXJnZXRfdHlwZRgEIAEoCRIRCgl0YXJnZXRfaWQYBSABKAkSEAoIbWV0YWRhdGEYBiABKAkSCgoCaXAYByABKAkSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiQAoPUmVnaXN0ZXJSZXF1ZXN0Eg0KBWVtYWlsGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJEgwKBG5hbWUYAyABKAkibAoQUmVnaXN0ZXJSZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlchIuCgdzZXNzaW9uGAIgASgLMh0uaGFsb21haWwuaWRlbnRpdHkudjEuU2Vzc2lvbiIvCgxMb2dpblJlcXVlc3QSDQoFZW1haWwYASABKAkSEAoIcGFzc3dvcmQYAiABKAkiaQoNTG9naW5SZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlchIuCgdzZXNzaW9uGAIgASgLMh0uaGFsb21haWwuaWRlbnRpdHkudjEuU2Vzc2lvbiImCg1Mb2dvdXRSZXF1ZXN0EhUKDXJlZnJlc2hfdG9rZW4YASABKAkiEAoOTG9nb3V0UmVzcG9uc2UiLgoVUmVmcmVzaFNlc3Npb25SZXF1ZXN0EhUKDXJlZnJlc2hfdG9rZW4YASABKAkiSAoWUmVmcmVzaFNlc3Npb25SZXNwb25zZRIuCgdzZXNzaW9uGAEgASgLMh0uaGFsb21haWwuaWRlbnRpdHkudjEuU2Vzc2lvbiIXChVHZXRDdXJyZW50VXNlclJlcXVlc3QiQgoWR2V0Q3VycmVudFVzZXJSZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlciIqChJWZXJpZnlUb2tlblJlcXVlc3QSFAoMYWNjZXNzX3Rva2VuGAEgASgJIkUKE1ZlcmlmeVRva2VuUmVzcG9uc2USDQoFdmFsaWQYASABKAgSDwoHdXNlcl9pZBgCIAEoCRIOCgZvcmdfaWQYAyABKAkiJgoVRm9yZ290UGFzc3dvcmRSZXF1ZXN0Eg0KBWVtYWlsGAEgASgJIikKFkZvcmdvdFBhc3N3b3JkUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCI7ChRSZXNldFBhc3N3b3JkUmVxdWVzdBINCgV0b2tlbhgBIAEoCRIUCgxuZXdfcGFzc3dvcmQYAiABKAkiKAoVUmVzZXRQYXNzd29yZFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiHAoOR2V0VXNlclJlcXVlc3QSCgoCaWQYASABKAkiOwoPR2V0VXNlclJlc3BvbnNlEigKBHVzZXIYASABKAsyGi5oYWxvbWFpbC5pZGVudGl0eS52MS5Vc2VyIigKFkdldFVzZXJCeUhhbmRsZVJlcXVlc3QSDgoGaGFuZGxlGAEgASgJIkMKF0dldFVzZXJCeUhhbmRsZVJlc3BvbnNlEigKBHVzZXIYASABKAsyGi5oYWxvbWFpbC5pZGVudGl0eS52MS5Vc2VyIlcKEVVwZGF0ZVVzZXJSZXF1ZXN0EgwKBG5hbWUYASABKAkSDgoGaGFuZGxlGAIgASgJEhIKCmF2YXRhcl91cmwYAyABKAkSEAoIdGltZXpvbmUYBCABKAkiPgoSVXBkYXRlVXNlclJlc3BvbnNlEigKBHVzZXIYASABKAsyGi5oYWxvbWFpbC5pZGVudGl0eS52MS5Vc2VyIjMKE0NyZWF0ZUFwaUtleVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIOCgZzY29wZXMYAiADKAkiUQoUQ3JlYXRlQXBpS2V5UmVzcG9uc2USKQoDa2V5GAEgASgLMhwuaGFsb21haWwuaWRlbnRpdHkudjEuQXBpS2V5Eg4KBnNlY3JldBgCIAEoCSIUChJMaXN0QXBpS2V5c1JlcXVlc3QiQQoTTGlzdEFwaUtleXNSZXNwb25zZRIqCgRrZXlzGAEgAygLMhwuaGFsb21haWwuaWRlbnRpdHkudjEuQXBpS2V5IiEKE1Jldm9rZUFwaUtleVJlcXVlc3QSCgoCaWQYASABKAkiFgoUUmV2b2tlQXBpS2V5UmVzcG9uc2UiJQoTVmVyaWZ5QXBpS2V5UmVxdWVzdBIOCgZzZWNyZXQYASABKAkiVgoUVmVyaWZ5QXBpS2V5UmVzcG9uc2USDQoFdmFsaWQYASABKAgSDwoHdXNlcl9pZBgCIAEoCRIOCgZvcmdfaWQYAyABKAkSDgoGc2NvcGVzGAQgAygJIkUKFExpc3RBdWRpdExvZ3NSZXF1ZXN0Ei0KBHBhZ2UYASABKAsyHy5oYWxvbWFpbC5jb21tb24udjEuUGFnZVJlcXVlc3QidQoVTGlzdEF1ZGl0TG9nc1Jlc3BvbnNlEiwKBGxvZ3MYASADKAsyHi5oYWxvbWFpbC5pZGVudGl0eS52MS5BdWRpdExvZxIuCgRwYWdlGAIgASgLMiAuaGFsb21haWwuY29tbW9uLnYxLlBhZ2VSZXNwb25zZSJ/ChVSZWNvcmRBdWRpdExvZ1JlcXVlc3QSEAoIYWN0b3JfaWQYASABKAkSDgoGYWN0aW9uGAIgASgJEhMKC3RhcmdldF90eXBlGAMgASgJEhEKCXRhcmdldF9pZBgEIAEoCRIQCghtZXRhZGF0YRgFIAEoCRIKCgJpcBgGIAEoCSIkChZSZWNvcmRBdWRpdExvZ1Jlc3BvbnNlEgoKAmlkGAEgASgJIpcBCgpUZWFtTWVtYmVyEgoKAmlkGAEgASgJEg0KBWVtYWlsGAIgASgJEgwKBG5hbWUYAyABKAkSDgoGaGFuZGxlGAQgASgJEhIKCmF2YXRhcl91cmwYBSABKAkSDAoEcm9sZRgGIAEoCRIuCgpjcmVhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCLNAQoKSW52aXRhdGlvbhIKCgJpZBgBIAEoCRINCgVlbWFpbBgCIAEoCRIMCgRyb2xlGAMgASgJEhcKD2ludml0ZWRfYnlfbmFtZRgEIAEoCRIOCgZzdGF0dXMYBSABKAkSLgoKZXhwaXJlc19hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDQoFdG9rZW4YCCABKAkiGAoWTGlzdFRlYW1NZW1iZXJzUmVxdWVzdCLTAQoXTGlzdFRlYW1NZW1iZXJzUmVzcG9uc2USMQoHbWVtYmVycxgBIAMoCzIgLmhhbG9tYWlsLmlkZW50aXR5LnYxLlRlYW1NZW1iZXISNQoLaW52aXRhdGlvbnMYAiADKAsyIC5oYWxvbWFpbC5pZGVudGl0eS52MS5JbnZpdGF0aW9uEhEKCW1heF9zZWF0cxgDIAEoBRISCgp1c2VkX3NlYXRzGAQgASgFEgwKBHRpZXIYBSABKAkSGQoRY3VycmVudF91c2VyX3JvbGUYBiABKAkiNgoXSW52aXRlVGVhbU1lbWJlclJlcXVlc3QSDQoFZW1haWwYASABKAkSDAoEcm9sZRgCIAEoCSJQChhJbnZpdGVUZWFtTWVtYmVyUmVzcG9uc2USNAoKaW52aXRhdGlvbhgBIAEoCzIgLmhhbG9tYWlsLmlkZW50aXR5LnYxLkludml0YXRpb24iOAoXVXBkYXRlTWVtYmVyUm9sZVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIMCgRyb2xlGAIgASgJIkwKGFVwZGF0ZU1lbWJlclJvbGVSZXNwb25zZRIwCgZtZW1iZXIYASABKAsyIC5oYWxvbWFpbC5pZGVudGl0eS52MS5UZWFtTWVtYmVyIioKF1JlbW92ZVRlYW1NZW1iZXJSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkiGgoYUmVtb3ZlVGVhbU1lbWJlclJlc3BvbnNlIjAKF1Jldm9rZUludml0YXRpb25SZXF1ZXN0EhUKDWludml0YXRpb25faWQYASABKAkiGgoYUmV2b2tlSW52aXRhdGlvblJlc3BvbnNlIigKF0FjY2VwdEludml0YXRpb25SZXF1ZXN0Eg0KBXRva2VuGAEgASgJInQKGEFjY2VwdEludml0YXRpb25SZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlchIuCgdzZXNzaW9uGAIgASgLMh0uaGFsb21haWwuaWRlbnRpdHkudjEuU2Vzc2lvbjKkBgoLQXV0aFNlcnZpY2USWQoIUmVnaXN0ZXISJS5oYWxvbWFpbC5pZGVudGl0eS52MS5SZWdpc3RlclJlcXVlc3QaJi5oYWxvbWFpbC5pZGVudGl0eS52MS5SZWdpc3RlclJlc3BvbnNlElAKBUxvZ2luEiIuaGFsb21haWwuaWRlbnRpdHkudjEuTG9naW5SZXF1ZXN0GiMuaGFsb21haWwuaWRlbnRpdHkudjEuTG9naW5SZXNwb25zZRJTCgZMb2dvdXQSIy5oYWxvbWFpbC5pZGVudGl0eS52MS5Mb2dvdXRSZXF1ZXN0GiQuaGFsb21haWwuaWRlbnRpdHkudjEuTG9nb3V0UmVzcG9uc2USawoOUmVmcmVzaFNlc3Npb24SKy5oYWxvbWFpbC5pZGVudGl0eS52MS5SZWZyZXNoU2Vzc2lvblJlcXVlc3QaLC5oYWxvbWFpbC5pZGVudGl0eS52MS5SZWZyZXNoU2Vzc2lvblJlc3BvbnNlEmsKDkdldEN1cnJlbnRVc2VyEisuaGFsb21haWwuaWRlbnRpdHkudjEuR2V0Q3VycmVudFVzZXJSZXF1ZXN0GiwuaGFsb21haWwuaWRlbnRpdHkudjEuR2V0Q3VycmVudFVzZXJSZXNwb25zZRJiCgtWZXJpZnlUb2tlbhIoLmhhbG9tYWlsLmlkZW50aXR5LnYxLlZlcmlmeVRva2VuUmVxdWVzdBopLmhhbG9tYWlsLmlkZW50aXR5LnYxLlZlcmlmeVRva2VuUmVzcG9uc2USawoORm9yZ290UGFzc3dvcmQSKy5oYWxvbWFpbC5pZGVudGl0eS52MS5Gb3Jnb3RQYXNzd29yZFJlcXVlc3QaLC5oYWxvbWFpbC5pZGVudGl0eS52MS5Gb3Jnb3RQYXNzd29yZFJlc3BvbnNlEmgKDVJlc2V0UGFzc3dvcmQSKi5oYWxvbWFpbC5pZGVudGl0eS52MS5SZXNldFBhc3N3b3JkUmVxdWVzdBorLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJlc2V0UGFzc3dvcmRSZXNwb25zZTK2AgoLVXNlclNlcnZpY2USVgoHR2V0VXNlchIkLmhhbG9tYWlsLmlkZW50aXR5LnYxLkdldFVzZXJSZXF1ZXN0GiUuaGFsb21haWwuaWRlbnRpdHkudjEuR2V0VXNlclJlc3BvbnNlEm4KD0dldFVzZXJCeUhhbmRsZRIsLmhhbG9tYWlsLmlkZW50aXR5LnYxLkdldFVzZXJCeUhhbmRsZVJlcXVlc3QaLS5oYWxvbWFpbC5pZGVudGl0eS52MS5HZXRVc2VyQnlIYW5kbGVSZXNwb25zZRJfCgpVcGRhdGVVc2VyEicuaGFsb21haWwuaWRlbnRpdHkudjEuVXBkYXRlVXNlclJlcXVlc3QaKC5oYWxvbWFpbC5pZGVudGl0eS52MS5VcGRhdGVVc2VyUmVzcG9uc2UyqAMKDUFwaUtleVNlcnZpY2USZQoMQ3JlYXRlQXBpS2V5EikuaGFsb21haWwuaWRlbnRpdHkudjEuQ3JlYXRlQXBpS2V5UmVxdWVzdBoqLmhhbG9tYWlsLmlkZW50aXR5LnYxLkNyZWF0ZUFwaUtleVJlc3BvbnNlEmIKC0xpc3RBcGlLZXlzEiguaGFsb21haWwuaWRlbnRpdHkudjEuTGlzdEFwaUtleXNSZXF1ZXN0GikuaGFsb21haWwuaWRlbnRpdHkudjEuTGlzdEFwaUtleXNSZXNwb25zZRJlCgxSZXZva2VBcGlLZXkSKS5oYWxvbWFpbC5pZGVudGl0eS52MS5SZXZva2VBcGlLZXlSZXF1ZXN0GiouaGFsb21haWwuaWRlbnRpdHkudjEuUmV2b2tlQXBpS2V5UmVzcG9uc2USZQoMVmVyaWZ5QXBpS2V5EikuaGFsb21haWwuaWRlbnRpdHkudjEuVmVyaWZ5QXBpS2V5UmVxdWVzdBoqLmhhbG9tYWlsLmlkZW50aXR5LnYxLlZlcmlmeUFwaUtleVJlc3BvbnNlMuUBCgxBdWRpdFNlcnZpY2USaAoNTGlzdEF1ZGl0TG9ncxIqLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxpc3RBdWRpdExvZ3NSZXF1ZXN0GisuaGFsb21haWwuaWRlbnRpdHkudjEuTGlzdEF1ZGl0TG9nc1Jlc3BvbnNlEmsKDlJlY29yZEF1ZGl0TG9nEisuaGFsb21haWwuaWRlbnRpdHkudjEuUmVjb3JkQXVkaXRMb2dSZXF1ZXN0GiwuaGFsb21haWwuaWRlbnRpdHkudjEuUmVjb3JkQXVkaXRMb2dSZXNwb25zZTK8BQoLVGVhbVNlcnZpY2USbgoPTGlzdFRlYW1NZW1iZXJzEiwuaGFsb21haWwuaWRlbnRpdHkudjEuTGlzdFRlYW1NZW1iZXJzUmVxdWVzdBotLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxpc3RUZWFtTWVtYmVyc1Jlc3BvbnNlEnEKEEludml0ZVRlYW1NZW1iZXISLS5oYWxvbWFpbC5pZGVudGl0eS52MS5JbnZpdGVUZWFtTWVtYmVyUmVxdWVzdBouLmhhbG9tYWlsLmlkZW50aXR5LnYxLkludml0ZVRlYW1NZW1iZXJSZXNwb25zZRJxChBVcGRhdGVNZW1iZXJSb2xlEi0uaGFsb21haWwuaWRlbnRpdHkudjEuVXBkYXRlTWVtYmVyUm9sZVJlcXVlc3QaLi5oYWxvbWFpbC5pZGVudGl0eS52MS5VcGRhdGVNZW1iZXJSb2xlUmVzcG9uc2UScQoQUmVtb3ZlVGVhbU1lbWJlchItLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJlbW92ZVRlYW1NZW1iZXJSZXF1ZXN0Gi4uaGFsb21haWwuaWRlbnRpdHkudjEuUmVtb3ZlVGVhbU1lbWJlclJlc3BvbnNlEnEKEFJldm9rZUludml0YXRpb24SLS5oYWxvbWFpbC5pZGVudGl0eS52MS5SZXZva2VJbnZpdGF0aW9uUmVxdWVzdBouLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJldm9rZUludml0YXRpb25SZXNwb25zZRJxChBBY2NlcHRJbnZpdGF0aW9uEi0uaGFsb21haWwuaWRlbnRpdHkudjEuQWNjZXB0SW52aXRhdGlvblJlcXVlc3QaLi5oYWxvbWFpbC5pZGVudGl0eS52MS5BY2NlcHRJbnZpdGF0aW9uUmVzcG9uc2VC7gEKGGNvbS5oYWxvbWFpbC5pZGVudGl0eS52MUINSWRlbnRpdHlQcm90b1ABWlFnaXRodWIuY29tL3plcm9heGlpcy9oYWxvbWFpbC9zZXJ2aWNlcy9zaGFyZWQvZ2VuL2hhbG9tYWlsL2lkZW50aXR5L3YxO2lkZW50aXR5djGiAgNISViqAhRIYWxvbWFpbC5JZGVudGl0eS5WMcoCFEhhbG9tYWlsXElkZW50aXR5XFYx4gIgSGFsb21haWxcSWRlbnRpdHlcVjFcR1BCTWV0YWRhdGHqAhZIYWxvbWFpbDo6SWRlbnRpdHk6OlYxYgZwcm90bzM", [file_google_protobuf_timestamp, file_halomail_common_v1_common]);
+  fileDesc("CiNoYWxvbWFpbC9pZGVudGl0eS92MS9pZGVudGl0eS5wcm90bxIUaGFsb21haWwuaWRlbnRpdHkudjEi1wIKBFVzZXISCgoCaWQYASABKAkSDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCRIOCgZoYW5kbGUYBCABKAkSEgoKYXZhdGFyX3VybBgFIAEoCRIQCgh0aW1lem9uZRgGIAEoCRIOCgZvcmdfaWQYByABKAkSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKdXBkYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDAoEcm9sZRgKIAEoCRI5ChVkZWxldGlvbl9zY2hlZHVsZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjcKE3NjaGVkdWxlZF9kZWxldGVfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIl0KA09yZxIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEgwKBHNsdWcYAyABKAkSLgoKY3JlYXRlZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAibQoHU2Vzc2lvbhIUCgxhY2Nlc3NfdG9rZW4YASABKAkSFQoNcmVmcmVzaF90b2tlbhgCIAEoCRI1ChFhY2Nlc3NfZXhwaXJlc19hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiyAEKBkFwaUtleRIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEg4KBnByZWZpeBgDIAEoCRIRCglsYXN0X2ZvdXIYBCABKAkSDgoGc2NvcGVzGAUgAygJEi4KCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGxhc3RfdXNlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDwoHcmV2b2tlZBgIIAEoCCKuAQoIQXVkaXRMb2cSCgoCaWQYASABKAkSEAoIYWN0b3JfaWQYAiABKAkSDgoGYWN0aW9uGAMgASgJEhMKC3RhcmdldF90eXBlGAQgASgJEhEKCXRhcmdldF9pZBgFIAEoCRIQCghtZXRhZGF0YRgGIAEoCRIKCgJpcBgHIAEoCRIuCgpjcmVhdGVkX2F0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJACg9SZWdpc3RlclJlcXVlc3QSDQoFZW1haWwYASABKAkSEAoIcGFzc3dvcmQYAiABKAkSDAoEbmFtZRgDIAEoCSJsChBSZWdpc3RlclJlc3BvbnNlEigKBHVzZXIYASABKAsyGi5oYWxvbWFpbC5pZGVudGl0eS52MS5Vc2VyEi4KB3Nlc3Npb24YAiABKAsyHS5oYWxvbWFpbC5pZGVudGl0eS52MS5TZXNzaW9uIi8KDExvZ2luUmVxdWVzdBINCgVlbWFpbBgBIAEoCRIQCghwYXNzd29yZBgCIAEoCSJpCg1Mb2dpblJlc3BvbnNlEigKBHVzZXIYASABKAsyGi5oYWxvbWFpbC5pZGVudGl0eS52MS5Vc2VyEi4KB3Nlc3Npb24YAiABKAsyHS5oYWxvbWFpbC5pZGVudGl0eS52MS5TZXNzaW9uIiYKDUxvZ291dFJlcXVlc3QSFQoNcmVmcmVzaF90b2tlbhgBIAEoCSIQCg5Mb2dvdXRSZXNwb25zZSIuChVSZWZyZXNoU2Vzc2lvblJlcXVlc3QSFQoNcmVmcmVzaF90b2tlbhgBIAEoCSJIChZSZWZyZXNoU2Vzc2lvblJlc3BvbnNlEi4KB3Nlc3Npb24YASABKAsyHS5oYWxvbWFpbC5pZGVudGl0eS52MS5TZXNzaW9uIhcKFUdldEN1cnJlbnRVc2VyUmVxdWVzdCJCChZHZXRDdXJyZW50VXNlclJlc3BvbnNlEigKBHVzZXIYASABKAsyGi5oYWxvbWFpbC5pZGVudGl0eS52MS5Vc2VyIioKElZlcmlmeVRva2VuUmVxdWVzdBIUCgxhY2Nlc3NfdG9rZW4YASABKAkiRQoTVmVyaWZ5VG9rZW5SZXNwb25zZRINCgV2YWxpZBgBIAEoCBIPCgd1c2VyX2lkGAIgASgJEg4KBm9yZ19pZBgDIAEoCSImChVGb3Jnb3RQYXNzd29yZFJlcXVlc3QSDQoFZW1haWwYASABKAkiKQoWRm9yZ290UGFzc3dvcmRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIjsKFFJlc2V0UGFzc3dvcmRSZXF1ZXN0Eg0KBXRva2VuGAEgASgJEhQKDG5ld19wYXNzd29yZBgCIAEoCSIoChVSZXNldFBhc3N3b3JkUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCIeChxTY2hlZHVsZURlbGV0ZUFjY291bnRSZXF1ZXN0IlgKHVNjaGVkdWxlRGVsZXRlQWNjb3VudFJlc3BvbnNlEjcKE3NjaGVkdWxlZF9kZWxldGVfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhwKGkNhbmNlbERlbGV0ZUFjY291bnRSZXF1ZXN0Ii4KG0NhbmNlbERlbGV0ZUFjY291bnRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIhwKDkdldFVzZXJSZXF1ZXN0EgoKAmlkGAEgASgJIjsKD0dldFVzZXJSZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlciIoChZHZXRVc2VyQnlIYW5kbGVSZXF1ZXN0Eg4KBmhhbmRsZRgBIAEoCSJDChdHZXRVc2VyQnlIYW5kbGVSZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlciJXChFVcGRhdGVVc2VyUmVxdWVzdBIMCgRuYW1lGAEgASgJEg4KBmhhbmRsZRgCIAEoCRISCgphdmF0YXJfdXJsGAMgASgJEhAKCHRpbWV6b25lGAQgASgJIj4KElVwZGF0ZVVzZXJSZXNwb25zZRIoCgR1c2VyGAEgASgLMhouaGFsb21haWwuaWRlbnRpdHkudjEuVXNlciIzChNDcmVhdGVBcGlLZXlSZXF1ZXN0EgwKBG5hbWUYASABKAkSDgoGc2NvcGVzGAIgAygJIlEKFENyZWF0ZUFwaUtleVJlc3BvbnNlEikKA2tleRgBIAEoCzIcLmhhbG9tYWlsLmlkZW50aXR5LnYxLkFwaUtleRIOCgZzZWNyZXQYAiABKAkiFAoSTGlzdEFwaUtleXNSZXF1ZXN0IkEKE0xpc3RBcGlLZXlzUmVzcG9uc2USKgoEa2V5cxgBIAMoCzIcLmhhbG9tYWlsLmlkZW50aXR5LnYxLkFwaUtleSIhChNSZXZva2VBcGlLZXlSZXF1ZXN0EgoKAmlkGAEgASgJIhYKFFJldm9rZUFwaUtleVJlc3BvbnNlIiUKE1ZlcmlmeUFwaUtleVJlcXVlc3QSDgoGc2VjcmV0GAEgASgJIlYKFFZlcmlmeUFwaUtleVJlc3BvbnNlEg0KBXZhbGlkGAEgASgIEg8KB3VzZXJfaWQYAiABKAkSDgoGb3JnX2lkGAMgASgJEg4KBnNjb3BlcxgEIAMoCSJFChRMaXN0QXVkaXRMb2dzUmVxdWVzdBItCgRwYWdlGAEgASgLMh8uaGFsb21haWwuY29tbW9uLnYxLlBhZ2VSZXF1ZXN0InUKFUxpc3RBdWRpdExvZ3NSZXNwb25zZRIsCgRsb2dzGAEgAygLMh4uaGFsb21haWwuaWRlbnRpdHkudjEuQXVkaXRMb2cSLgoEcGFnZRgCIAEoCzIgLmhhbG9tYWlsLmNvbW1vbi52MS5QYWdlUmVzcG9uc2UifwoVUmVjb3JkQXVkaXRMb2dSZXF1ZXN0EhAKCGFjdG9yX2lkGAEgASgJEg4KBmFjdGlvbhgCIAEoCRITCgt0YXJnZXRfdHlwZRgDIAEoCRIRCgl0YXJnZXRfaWQYBCABKAkSEAoIbWV0YWRhdGEYBSABKAkSCgoCaXAYBiABKAkiJAoWUmVjb3JkQXVkaXRMb2dSZXNwb25zZRIKCgJpZBgBIAEoCSKXAQoKVGVhbU1lbWJlchIKCgJpZBgBIAEoCRINCgVlbWFpbBgCIAEoCRIMCgRuYW1lGAMgASgJEg4KBmhhbmRsZRgEIAEoCRISCgphdmF0YXJfdXJsGAUgASgJEgwKBHJvbGUYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAizQEKCkludml0YXRpb24SCgoCaWQYASABKAkSDQoFZW1haWwYAiABKAkSDAoEcm9sZRgDIAEoCRIXCg9pbnZpdGVkX2J5X25hbWUYBCABKAkSDgoGc3RhdHVzGAUgASgJEi4KCmV4cGlyZXNfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCmNyZWF0ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg0KBXRva2VuGAggASgJIhgKFkxpc3RUZWFtTWVtYmVyc1JlcXVlc3Qi0wEKF0xpc3RUZWFtTWVtYmVyc1Jlc3BvbnNlEjEKB21lbWJlcnMYASADKAsyIC5oYWxvbWFpbC5pZGVudGl0eS52MS5UZWFtTWVtYmVyEjUKC2ludml0YXRpb25zGAIgAygLMiAuaGFsb21haWwuaWRlbnRpdHkudjEuSW52aXRhdGlvbhIRCgltYXhfc2VhdHMYAyABKAUSEgoKdXNlZF9zZWF0cxgEIAEoBRIMCgR0aWVyGAUgASgJEhkKEWN1cnJlbnRfdXNlcl9yb2xlGAYgASgJIjYKF0ludml0ZVRlYW1NZW1iZXJSZXF1ZXN0Eg0KBWVtYWlsGAEgASgJEgwKBHJvbGUYAiABKAkiUAoYSW52aXRlVGVhbU1lbWJlclJlc3BvbnNlEjQKCmludml0YXRpb24YASABKAsyIC5oYWxvbWFpbC5pZGVudGl0eS52MS5JbnZpdGF0aW9uIjgKF1VwZGF0ZU1lbWJlclJvbGVSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSDAoEcm9sZRgCIAEoCSJMChhVcGRhdGVNZW1iZXJSb2xlUmVzcG9uc2USMAoGbWVtYmVyGAEgASgLMiAuaGFsb21haWwuaWRlbnRpdHkudjEuVGVhbU1lbWJlciIqChdSZW1vdmVUZWFtTWVtYmVyUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIhoKGFJlbW92ZVRlYW1NZW1iZXJSZXNwb25zZSIwChdSZXZva2VJbnZpdGF0aW9uUmVxdWVzdBIVCg1pbnZpdGF0aW9uX2lkGAEgASgJIhoKGFJldm9rZUludml0YXRpb25SZXNwb25zZSIoChdBY2NlcHRJbnZpdGF0aW9uUmVxdWVzdBINCgV0b2tlbhgBIAEoCSJ0ChhBY2NlcHRJbnZpdGF0aW9uUmVzcG9uc2USKAoEdXNlchgBIAEoCzIaLmhhbG9tYWlsLmlkZW50aXR5LnYxLlVzZXISLgoHc2Vzc2lvbhgCIAEoCzIdLmhhbG9tYWlsLmlkZW50aXR5LnYxLlNlc3Npb24iJQoUR2V0SW52aXRhdGlvblJlcXVlc3QSDQoFdG9rZW4YASABKAkidAoVR2V0SW52aXRhdGlvblJlc3BvbnNlEjQKCmludml0YXRpb24YASABKAsyIC5oYWxvbWFpbC5pZGVudGl0eS52MS5JbnZpdGF0aW9uEhAKCG9yZ19uYW1lGAIgASgJEhMKC3VzZXJfZXhpc3RzGAMgASgIIhIKEExlYXZlVGVhbVJlcXVlc3QiEwoRTGVhdmVUZWFtUmVzcG9uc2UypAYKC0F1dGhTZXJ2aWNlElkKCFJlZ2lzdGVyEiUuaGFsb21haWwuaWRlbnRpdHkudjEuUmVnaXN0ZXJSZXF1ZXN0GiYuaGFsb21haWwuaWRlbnRpdHkudjEuUmVnaXN0ZXJSZXNwb25zZRJQCgVMb2dpbhIiLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxvZ2luUmVxdWVzdBojLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxvZ2luUmVzcG9uc2USUwoGTG9nb3V0EiMuaGFsb21haWwuaWRlbnRpdHkudjEuTG9nb3V0UmVxdWVzdBokLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxvZ291dFJlc3BvbnNlEmsKDlJlZnJlc2hTZXNzaW9uEisuaGFsb21haWwuaWRlbnRpdHkudjEuUmVmcmVzaFNlc3Npb25SZXF1ZXN0GiwuaGFsb21haWwuaWRlbnRpdHkudjEuUmVmcmVzaFNlc3Npb25SZXNwb25zZRJrCg5HZXRDdXJyZW50VXNlchIrLmhhbG9tYWlsLmlkZW50aXR5LnYxLkdldEN1cnJlbnRVc2VyUmVxdWVzdBosLmhhbG9tYWlsLmlkZW50aXR5LnYxLkdldEN1cnJlbnRVc2VyUmVzcG9uc2USYgoLVmVyaWZ5VG9rZW4SKC5oYWxvbWFpbC5pZGVudGl0eS52MS5WZXJpZnlUb2tlblJlcXVlc3QaKS5oYWxvbWFpbC5pZGVudGl0eS52MS5WZXJpZnlUb2tlblJlc3BvbnNlEmsKDkZvcmdvdFBhc3N3b3JkEisuaGFsb21haWwuaWRlbnRpdHkudjEuRm9yZ290UGFzc3dvcmRSZXF1ZXN0GiwuaGFsb21haWwuaWRlbnRpdHkudjEuRm9yZ290UGFzc3dvcmRSZXNwb25zZRJoCg1SZXNldFBhc3N3b3JkEiouaGFsb21haWwuaWRlbnRpdHkudjEuUmVzZXRQYXNzd29yZFJlcXVlc3QaKy5oYWxvbWFpbC5pZGVudGl0eS52MS5SZXNldFBhc3N3b3JkUmVzcG9uc2UytQQKC1VzZXJTZXJ2aWNlElYKB0dldFVzZXISJC5oYWxvbWFpbC5pZGVudGl0eS52MS5HZXRVc2VyUmVxdWVzdBolLmhhbG9tYWlsLmlkZW50aXR5LnYxLkdldFVzZXJSZXNwb25zZRJuCg9HZXRVc2VyQnlIYW5kbGUSLC5oYWxvbWFpbC5pZGVudGl0eS52MS5HZXRVc2VyQnlIYW5kbGVSZXF1ZXN0Gi0uaGFsb21haWwuaWRlbnRpdHkudjEuR2V0VXNlckJ5SGFuZGxlUmVzcG9uc2USXwoKVXBkYXRlVXNlchInLmhhbG9tYWlsLmlkZW50aXR5LnYxLlVwZGF0ZVVzZXJSZXF1ZXN0GiguaGFsb21haWwuaWRlbnRpdHkudjEuVXBkYXRlVXNlclJlc3BvbnNlEoABChVTY2hlZHVsZURlbGV0ZUFjY291bnQSMi5oYWxvbWFpbC5pZGVudGl0eS52MS5TY2hlZHVsZURlbGV0ZUFjY291bnRSZXF1ZXN0GjMuaGFsb21haWwuaWRlbnRpdHkudjEuU2NoZWR1bGVEZWxldGVBY2NvdW50UmVzcG9uc2USegoTQ2FuY2VsRGVsZXRlQWNjb3VudBIwLmhhbG9tYWlsLmlkZW50aXR5LnYxLkNhbmNlbERlbGV0ZUFjY291bnRSZXF1ZXN0GjEuaGFsb21haWwuaWRlbnRpdHkudjEuQ2FuY2VsRGVsZXRlQWNjb3VudFJlc3BvbnNlMqgDCg1BcGlLZXlTZXJ2aWNlEmUKDENyZWF0ZUFwaUtleRIpLmhhbG9tYWlsLmlkZW50aXR5LnYxLkNyZWF0ZUFwaUtleVJlcXVlc3QaKi5oYWxvbWFpbC5pZGVudGl0eS52MS5DcmVhdGVBcGlLZXlSZXNwb25zZRJiCgtMaXN0QXBpS2V5cxIoLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxpc3RBcGlLZXlzUmVxdWVzdBopLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxpc3RBcGlLZXlzUmVzcG9uc2USZQoMUmV2b2tlQXBpS2V5EikuaGFsb21haWwuaWRlbnRpdHkudjEuUmV2b2tlQXBpS2V5UmVxdWVzdBoqLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJldm9rZUFwaUtleVJlc3BvbnNlEmUKDFZlcmlmeUFwaUtleRIpLmhhbG9tYWlsLmlkZW50aXR5LnYxLlZlcmlmeUFwaUtleVJlcXVlc3QaKi5oYWxvbWFpbC5pZGVudGl0eS52MS5WZXJpZnlBcGlLZXlSZXNwb25zZTLlAQoMQXVkaXRTZXJ2aWNlEmgKDUxpc3RBdWRpdExvZ3MSKi5oYWxvbWFpbC5pZGVudGl0eS52MS5MaXN0QXVkaXRMb2dzUmVxdWVzdBorLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxpc3RBdWRpdExvZ3NSZXNwb25zZRJrCg5SZWNvcmRBdWRpdExvZxIrLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJlY29yZEF1ZGl0TG9nUmVxdWVzdBosLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJlY29yZEF1ZGl0TG9nUmVzcG9uc2UyhAcKC1RlYW1TZXJ2aWNlEm4KD0xpc3RUZWFtTWVtYmVycxIsLmhhbG9tYWlsLmlkZW50aXR5LnYxLkxpc3RUZWFtTWVtYmVyc1JlcXVlc3QaLS5oYWxvbWFpbC5pZGVudGl0eS52MS5MaXN0VGVhbU1lbWJlcnNSZXNwb25zZRJxChBJbnZpdGVUZWFtTWVtYmVyEi0uaGFsb21haWwuaWRlbnRpdHkudjEuSW52aXRlVGVhbU1lbWJlclJlcXVlc3QaLi5oYWxvbWFpbC5pZGVudGl0eS52MS5JbnZpdGVUZWFtTWVtYmVyUmVzcG9uc2UScQoQVXBkYXRlTWVtYmVyUm9sZRItLmhhbG9tYWlsLmlkZW50aXR5LnYxLlVwZGF0ZU1lbWJlclJvbGVSZXF1ZXN0Gi4uaGFsb21haWwuaWRlbnRpdHkudjEuVXBkYXRlTWVtYmVyUm9sZVJlc3BvbnNlEnEKEFJlbW92ZVRlYW1NZW1iZXISLS5oYWxvbWFpbC5pZGVudGl0eS52MS5SZW1vdmVUZWFtTWVtYmVyUmVxdWVzdBouLmhhbG9tYWlsLmlkZW50aXR5LnYxLlJlbW92ZVRlYW1NZW1iZXJSZXNwb25zZRJxChBSZXZva2VJbnZpdGF0aW9uEi0uaGFsb21haWwuaWRlbnRpdHkudjEuUmV2b2tlSW52aXRhdGlvblJlcXVlc3QaLi5oYWxvbWFpbC5pZGVudGl0eS52MS5SZXZva2VJbnZpdGF0aW9uUmVzcG9uc2UScQoQQWNjZXB0SW52aXRhdGlvbhItLmhhbG9tYWlsLmlkZW50aXR5LnYxLkFjY2VwdEludml0YXRpb25SZXF1ZXN0Gi4uaGFsb21haWwuaWRlbnRpdHkudjEuQWNjZXB0SW52aXRhdGlvblJlc3BvbnNlEmgKDUdldEludml0YXRpb24SKi5oYWxvbWFpbC5pZGVudGl0eS52MS5HZXRJbnZpdGF0aW9uUmVxdWVzdBorLmhhbG9tYWlsLmlkZW50aXR5LnYxLkdldEludml0YXRpb25SZXNwb25zZRJcCglMZWF2ZVRlYW0SJi5oYWxvbWFpbC5pZGVudGl0eS52MS5MZWF2ZVRlYW1SZXF1ZXN0GicuaGFsb21haWwuaWRlbnRpdHkudjEuTGVhdmVUZWFtUmVzcG9uc2VC7gEKGGNvbS5oYWxvbWFpbC5pZGVudGl0eS52MUINSWRlbnRpdHlQcm90b1ABWlFnaXRodWIuY29tL3plcm9heGlpcy9oYWxvbWFpbC9zZXJ2aWNlcy9zaGFyZWQvZ2VuL2hhbG9tYWlsL2lkZW50aXR5L3YxO2lkZW50aXR5djGiAgNISViqAhRIYWxvbWFpbC5JZGVudGl0eS5WMcoCFEhhbG9tYWlsXElkZW50aXR5XFYx4gIgSGFsb21haWxcSWRlbnRpdHlcVjFcR1BCTWV0YWRhdGHqAhZIYWxvbWFpbDo6SWRlbnRpdHk6OlYxYgZwcm90bzM", [file_google_protobuf_timestamp, file_halomail_common_v1_common]);
 
 /**
  * @generated from message halomail.identity.v1.User
@@ -73,6 +73,16 @@ export type User = Message<"halomail.identity.v1.User"> & {
    * @generated from field: string role = 10;
    */
   role: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp deletion_scheduled_at = 11;
+   */
+  deletionScheduledAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp scheduled_delete_at = 12;
+   */
+  scheduledDeleteAt?: Timestamp | undefined;
 };
 
 /**
@@ -560,6 +570,66 @@ export const ResetPasswordResponseSchema: GenMessage<ResetPasswordResponse> = /*
   messageDesc(file_halomail_identity_v1_identity, 20);
 
 /**
+ * @generated from message halomail.identity.v1.ScheduleDeleteAccountRequest
+ */
+export type ScheduleDeleteAccountRequest = Message<"halomail.identity.v1.ScheduleDeleteAccountRequest"> & {
+};
+
+/**
+ * Describes the message halomail.identity.v1.ScheduleDeleteAccountRequest.
+ * Use `create(ScheduleDeleteAccountRequestSchema)` to create a new message.
+ */
+export const ScheduleDeleteAccountRequestSchema: GenMessage<ScheduleDeleteAccountRequest> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 21);
+
+/**
+ * @generated from message halomail.identity.v1.ScheduleDeleteAccountResponse
+ */
+export type ScheduleDeleteAccountResponse = Message<"halomail.identity.v1.ScheduleDeleteAccountResponse"> & {
+  /**
+   * @generated from field: google.protobuf.Timestamp scheduled_delete_at = 1;
+   */
+  scheduledDeleteAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message halomail.identity.v1.ScheduleDeleteAccountResponse.
+ * Use `create(ScheduleDeleteAccountResponseSchema)` to create a new message.
+ */
+export const ScheduleDeleteAccountResponseSchema: GenMessage<ScheduleDeleteAccountResponse> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 22);
+
+/**
+ * @generated from message halomail.identity.v1.CancelDeleteAccountRequest
+ */
+export type CancelDeleteAccountRequest = Message<"halomail.identity.v1.CancelDeleteAccountRequest"> & {
+};
+
+/**
+ * Describes the message halomail.identity.v1.CancelDeleteAccountRequest.
+ * Use `create(CancelDeleteAccountRequestSchema)` to create a new message.
+ */
+export const CancelDeleteAccountRequestSchema: GenMessage<CancelDeleteAccountRequest> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 23);
+
+/**
+ * @generated from message halomail.identity.v1.CancelDeleteAccountResponse
+ */
+export type CancelDeleteAccountResponse = Message<"halomail.identity.v1.CancelDeleteAccountResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message halomail.identity.v1.CancelDeleteAccountResponse.
+ * Use `create(CancelDeleteAccountResponseSchema)` to create a new message.
+ */
+export const CancelDeleteAccountResponseSchema: GenMessage<CancelDeleteAccountResponse> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 24);
+
+/**
  * @generated from message halomail.identity.v1.GetUserRequest
  */
 export type GetUserRequest = Message<"halomail.identity.v1.GetUserRequest"> & {
@@ -574,7 +644,7 @@ export type GetUserRequest = Message<"halomail.identity.v1.GetUserRequest"> & {
  * Use `create(GetUserRequestSchema)` to create a new message.
  */
 export const GetUserRequestSchema: GenMessage<GetUserRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 21);
+  messageDesc(file_halomail_identity_v1_identity, 25);
 
 /**
  * @generated from message halomail.identity.v1.GetUserResponse
@@ -591,7 +661,7 @@ export type GetUserResponse = Message<"halomail.identity.v1.GetUserResponse"> & 
  * Use `create(GetUserResponseSchema)` to create a new message.
  */
 export const GetUserResponseSchema: GenMessage<GetUserResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 22);
+  messageDesc(file_halomail_identity_v1_identity, 26);
 
 /**
  * @generated from message halomail.identity.v1.GetUserByHandleRequest
@@ -608,7 +678,7 @@ export type GetUserByHandleRequest = Message<"halomail.identity.v1.GetUserByHand
  * Use `create(GetUserByHandleRequestSchema)` to create a new message.
  */
 export const GetUserByHandleRequestSchema: GenMessage<GetUserByHandleRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 23);
+  messageDesc(file_halomail_identity_v1_identity, 27);
 
 /**
  * @generated from message halomail.identity.v1.GetUserByHandleResponse
@@ -625,7 +695,7 @@ export type GetUserByHandleResponse = Message<"halomail.identity.v1.GetUserByHan
  * Use `create(GetUserByHandleResponseSchema)` to create a new message.
  */
 export const GetUserByHandleResponseSchema: GenMessage<GetUserByHandleResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 24);
+  messageDesc(file_halomail_identity_v1_identity, 28);
 
 /**
  * @generated from message halomail.identity.v1.UpdateUserRequest
@@ -657,7 +727,7 @@ export type UpdateUserRequest = Message<"halomail.identity.v1.UpdateUserRequest"
  * Use `create(UpdateUserRequestSchema)` to create a new message.
  */
 export const UpdateUserRequestSchema: GenMessage<UpdateUserRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 25);
+  messageDesc(file_halomail_identity_v1_identity, 29);
 
 /**
  * @generated from message halomail.identity.v1.UpdateUserResponse
@@ -674,7 +744,7 @@ export type UpdateUserResponse = Message<"halomail.identity.v1.UpdateUserRespons
  * Use `create(UpdateUserResponseSchema)` to create a new message.
  */
 export const UpdateUserResponseSchema: GenMessage<UpdateUserResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 26);
+  messageDesc(file_halomail_identity_v1_identity, 30);
 
 /**
  * @generated from message halomail.identity.v1.CreateApiKeyRequest
@@ -696,7 +766,7 @@ export type CreateApiKeyRequest = Message<"halomail.identity.v1.CreateApiKeyRequ
  * Use `create(CreateApiKeyRequestSchema)` to create a new message.
  */
 export const CreateApiKeyRequestSchema: GenMessage<CreateApiKeyRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 27);
+  messageDesc(file_halomail_identity_v1_identity, 31);
 
 /**
  * @generated from message halomail.identity.v1.CreateApiKeyResponse
@@ -720,7 +790,7 @@ export type CreateApiKeyResponse = Message<"halomail.identity.v1.CreateApiKeyRes
  * Use `create(CreateApiKeyResponseSchema)` to create a new message.
  */
 export const CreateApiKeyResponseSchema: GenMessage<CreateApiKeyResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 28);
+  messageDesc(file_halomail_identity_v1_identity, 32);
 
 /**
  * @generated from message halomail.identity.v1.ListApiKeysRequest
@@ -733,7 +803,7 @@ export type ListApiKeysRequest = Message<"halomail.identity.v1.ListApiKeysReques
  * Use `create(ListApiKeysRequestSchema)` to create a new message.
  */
 export const ListApiKeysRequestSchema: GenMessage<ListApiKeysRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 29);
+  messageDesc(file_halomail_identity_v1_identity, 33);
 
 /**
  * @generated from message halomail.identity.v1.ListApiKeysResponse
@@ -750,7 +820,7 @@ export type ListApiKeysResponse = Message<"halomail.identity.v1.ListApiKeysRespo
  * Use `create(ListApiKeysResponseSchema)` to create a new message.
  */
 export const ListApiKeysResponseSchema: GenMessage<ListApiKeysResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 30);
+  messageDesc(file_halomail_identity_v1_identity, 34);
 
 /**
  * @generated from message halomail.identity.v1.RevokeApiKeyRequest
@@ -767,7 +837,7 @@ export type RevokeApiKeyRequest = Message<"halomail.identity.v1.RevokeApiKeyRequ
  * Use `create(RevokeApiKeyRequestSchema)` to create a new message.
  */
 export const RevokeApiKeyRequestSchema: GenMessage<RevokeApiKeyRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 31);
+  messageDesc(file_halomail_identity_v1_identity, 35);
 
 /**
  * @generated from message halomail.identity.v1.RevokeApiKeyResponse
@@ -780,7 +850,7 @@ export type RevokeApiKeyResponse = Message<"halomail.identity.v1.RevokeApiKeyRes
  * Use `create(RevokeApiKeyResponseSchema)` to create a new message.
  */
 export const RevokeApiKeyResponseSchema: GenMessage<RevokeApiKeyResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 32);
+  messageDesc(file_halomail_identity_v1_identity, 36);
 
 /**
  * @generated from message halomail.identity.v1.VerifyApiKeyRequest
@@ -797,7 +867,7 @@ export type VerifyApiKeyRequest = Message<"halomail.identity.v1.VerifyApiKeyRequ
  * Use `create(VerifyApiKeyRequestSchema)` to create a new message.
  */
 export const VerifyApiKeyRequestSchema: GenMessage<VerifyApiKeyRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 33);
+  messageDesc(file_halomail_identity_v1_identity, 37);
 
 /**
  * @generated from message halomail.identity.v1.VerifyApiKeyResponse
@@ -829,7 +899,7 @@ export type VerifyApiKeyResponse = Message<"halomail.identity.v1.VerifyApiKeyRes
  * Use `create(VerifyApiKeyResponseSchema)` to create a new message.
  */
 export const VerifyApiKeyResponseSchema: GenMessage<VerifyApiKeyResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 34);
+  messageDesc(file_halomail_identity_v1_identity, 38);
 
 /**
  * @generated from message halomail.identity.v1.ListAuditLogsRequest
@@ -846,7 +916,7 @@ export type ListAuditLogsRequest = Message<"halomail.identity.v1.ListAuditLogsRe
  * Use `create(ListAuditLogsRequestSchema)` to create a new message.
  */
 export const ListAuditLogsRequestSchema: GenMessage<ListAuditLogsRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 35);
+  messageDesc(file_halomail_identity_v1_identity, 39);
 
 /**
  * @generated from message halomail.identity.v1.ListAuditLogsResponse
@@ -868,7 +938,7 @@ export type ListAuditLogsResponse = Message<"halomail.identity.v1.ListAuditLogsR
  * Use `create(ListAuditLogsResponseSchema)` to create a new message.
  */
 export const ListAuditLogsResponseSchema: GenMessage<ListAuditLogsResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 36);
+  messageDesc(file_halomail_identity_v1_identity, 40);
 
 /**
  * @generated from message halomail.identity.v1.RecordAuditLogRequest
@@ -910,7 +980,7 @@ export type RecordAuditLogRequest = Message<"halomail.identity.v1.RecordAuditLog
  * Use `create(RecordAuditLogRequestSchema)` to create a new message.
  */
 export const RecordAuditLogRequestSchema: GenMessage<RecordAuditLogRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 37);
+  messageDesc(file_halomail_identity_v1_identity, 41);
 
 /**
  * @generated from message halomail.identity.v1.RecordAuditLogResponse
@@ -927,7 +997,7 @@ export type RecordAuditLogResponse = Message<"halomail.identity.v1.RecordAuditLo
  * Use `create(RecordAuditLogResponseSchema)` to create a new message.
  */
 export const RecordAuditLogResponseSchema: GenMessage<RecordAuditLogResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 38);
+  messageDesc(file_halomail_identity_v1_identity, 42);
 
 /**
  * @generated from message halomail.identity.v1.TeamMember
@@ -974,7 +1044,7 @@ export type TeamMember = Message<"halomail.identity.v1.TeamMember"> & {
  * Use `create(TeamMemberSchema)` to create a new message.
  */
 export const TeamMemberSchema: GenMessage<TeamMember> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 39);
+  messageDesc(file_halomail_identity_v1_identity, 43);
 
 /**
  * @generated from message halomail.identity.v1.Invitation
@@ -1026,7 +1096,7 @@ export type Invitation = Message<"halomail.identity.v1.Invitation"> & {
  * Use `create(InvitationSchema)` to create a new message.
  */
 export const InvitationSchema: GenMessage<Invitation> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 40);
+  messageDesc(file_halomail_identity_v1_identity, 44);
 
 /**
  * @generated from message halomail.identity.v1.ListTeamMembersRequest
@@ -1039,7 +1109,7 @@ export type ListTeamMembersRequest = Message<"halomail.identity.v1.ListTeamMembe
  * Use `create(ListTeamMembersRequestSchema)` to create a new message.
  */
 export const ListTeamMembersRequestSchema: GenMessage<ListTeamMembersRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 41);
+  messageDesc(file_halomail_identity_v1_identity, 45);
 
 /**
  * @generated from message halomail.identity.v1.ListTeamMembersResponse
@@ -1081,7 +1151,7 @@ export type ListTeamMembersResponse = Message<"halomail.identity.v1.ListTeamMemb
  * Use `create(ListTeamMembersResponseSchema)` to create a new message.
  */
 export const ListTeamMembersResponseSchema: GenMessage<ListTeamMembersResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 42);
+  messageDesc(file_halomail_identity_v1_identity, 46);
 
 /**
  * @generated from message halomail.identity.v1.InviteTeamMemberRequest
@@ -1103,7 +1173,7 @@ export type InviteTeamMemberRequest = Message<"halomail.identity.v1.InviteTeamMe
  * Use `create(InviteTeamMemberRequestSchema)` to create a new message.
  */
 export const InviteTeamMemberRequestSchema: GenMessage<InviteTeamMemberRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 43);
+  messageDesc(file_halomail_identity_v1_identity, 47);
 
 /**
  * @generated from message halomail.identity.v1.InviteTeamMemberResponse
@@ -1120,7 +1190,7 @@ export type InviteTeamMemberResponse = Message<"halomail.identity.v1.InviteTeamM
  * Use `create(InviteTeamMemberResponseSchema)` to create a new message.
  */
 export const InviteTeamMemberResponseSchema: GenMessage<InviteTeamMemberResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 44);
+  messageDesc(file_halomail_identity_v1_identity, 48);
 
 /**
  * @generated from message halomail.identity.v1.UpdateMemberRoleRequest
@@ -1142,7 +1212,7 @@ export type UpdateMemberRoleRequest = Message<"halomail.identity.v1.UpdateMember
  * Use `create(UpdateMemberRoleRequestSchema)` to create a new message.
  */
 export const UpdateMemberRoleRequestSchema: GenMessage<UpdateMemberRoleRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 45);
+  messageDesc(file_halomail_identity_v1_identity, 49);
 
 /**
  * @generated from message halomail.identity.v1.UpdateMemberRoleResponse
@@ -1159,7 +1229,7 @@ export type UpdateMemberRoleResponse = Message<"halomail.identity.v1.UpdateMembe
  * Use `create(UpdateMemberRoleResponseSchema)` to create a new message.
  */
 export const UpdateMemberRoleResponseSchema: GenMessage<UpdateMemberRoleResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 46);
+  messageDesc(file_halomail_identity_v1_identity, 50);
 
 /**
  * @generated from message halomail.identity.v1.RemoveTeamMemberRequest
@@ -1176,7 +1246,7 @@ export type RemoveTeamMemberRequest = Message<"halomail.identity.v1.RemoveTeamMe
  * Use `create(RemoveTeamMemberRequestSchema)` to create a new message.
  */
 export const RemoveTeamMemberRequestSchema: GenMessage<RemoveTeamMemberRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 47);
+  messageDesc(file_halomail_identity_v1_identity, 51);
 
 /**
  * @generated from message halomail.identity.v1.RemoveTeamMemberResponse
@@ -1189,7 +1259,7 @@ export type RemoveTeamMemberResponse = Message<"halomail.identity.v1.RemoveTeamM
  * Use `create(RemoveTeamMemberResponseSchema)` to create a new message.
  */
 export const RemoveTeamMemberResponseSchema: GenMessage<RemoveTeamMemberResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 48);
+  messageDesc(file_halomail_identity_v1_identity, 52);
 
 /**
  * @generated from message halomail.identity.v1.RevokeInvitationRequest
@@ -1206,7 +1276,7 @@ export type RevokeInvitationRequest = Message<"halomail.identity.v1.RevokeInvita
  * Use `create(RevokeInvitationRequestSchema)` to create a new message.
  */
 export const RevokeInvitationRequestSchema: GenMessage<RevokeInvitationRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 49);
+  messageDesc(file_halomail_identity_v1_identity, 53);
 
 /**
  * @generated from message halomail.identity.v1.RevokeInvitationResponse
@@ -1219,7 +1289,7 @@ export type RevokeInvitationResponse = Message<"halomail.identity.v1.RevokeInvit
  * Use `create(RevokeInvitationResponseSchema)` to create a new message.
  */
 export const RevokeInvitationResponseSchema: GenMessage<RevokeInvitationResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 50);
+  messageDesc(file_halomail_identity_v1_identity, 54);
 
 /**
  * @generated from message halomail.identity.v1.AcceptInvitationRequest
@@ -1236,7 +1306,7 @@ export type AcceptInvitationRequest = Message<"halomail.identity.v1.AcceptInvita
  * Use `create(AcceptInvitationRequestSchema)` to create a new message.
  */
 export const AcceptInvitationRequestSchema: GenMessage<AcceptInvitationRequest> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 51);
+  messageDesc(file_halomail_identity_v1_identity, 55);
 
 /**
  * @generated from message halomail.identity.v1.AcceptInvitationResponse
@@ -1258,7 +1328,77 @@ export type AcceptInvitationResponse = Message<"halomail.identity.v1.AcceptInvit
  * Use `create(AcceptInvitationResponseSchema)` to create a new message.
  */
 export const AcceptInvitationResponseSchema: GenMessage<AcceptInvitationResponse> = /*@__PURE__*/
-  messageDesc(file_halomail_identity_v1_identity, 52);
+  messageDesc(file_halomail_identity_v1_identity, 56);
+
+/**
+ * @generated from message halomail.identity.v1.GetInvitationRequest
+ */
+export type GetInvitationRequest = Message<"halomail.identity.v1.GetInvitationRequest"> & {
+  /**
+   * @generated from field: string token = 1;
+   */
+  token: string;
+};
+
+/**
+ * Describes the message halomail.identity.v1.GetInvitationRequest.
+ * Use `create(GetInvitationRequestSchema)` to create a new message.
+ */
+export const GetInvitationRequestSchema: GenMessage<GetInvitationRequest> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 57);
+
+/**
+ * @generated from message halomail.identity.v1.GetInvitationResponse
+ */
+export type GetInvitationResponse = Message<"halomail.identity.v1.GetInvitationResponse"> & {
+  /**
+   * @generated from field: halomail.identity.v1.Invitation invitation = 1;
+   */
+  invitation?: Invitation | undefined;
+
+  /**
+   * @generated from field: string org_name = 2;
+   */
+  orgName: string;
+
+  /**
+   * @generated from field: bool user_exists = 3;
+   */
+  userExists: boolean;
+};
+
+/**
+ * Describes the message halomail.identity.v1.GetInvitationResponse.
+ * Use `create(GetInvitationResponseSchema)` to create a new message.
+ */
+export const GetInvitationResponseSchema: GenMessage<GetInvitationResponse> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 58);
+
+/**
+ * @generated from message halomail.identity.v1.LeaveTeamRequest
+ */
+export type LeaveTeamRequest = Message<"halomail.identity.v1.LeaveTeamRequest"> & {
+};
+
+/**
+ * Describes the message halomail.identity.v1.LeaveTeamRequest.
+ * Use `create(LeaveTeamRequestSchema)` to create a new message.
+ */
+export const LeaveTeamRequestSchema: GenMessage<LeaveTeamRequest> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 59);
+
+/**
+ * @generated from message halomail.identity.v1.LeaveTeamResponse
+ */
+export type LeaveTeamResponse = Message<"halomail.identity.v1.LeaveTeamResponse"> & {
+};
+
+/**
+ * Describes the message halomail.identity.v1.LeaveTeamResponse.
+ * Use `create(LeaveTeamResponseSchema)` to create a new message.
+ */
+export const LeaveTeamResponseSchema: GenMessage<LeaveTeamResponse> = /*@__PURE__*/
+  messageDesc(file_halomail_identity_v1_identity, 60);
 
 /**
  * @generated from service halomail.identity.v1.AuthService
@@ -1362,6 +1502,22 @@ export const UserService: GenService<{
     methodKind: "unary";
     input: typeof UpdateUserRequestSchema;
     output: typeof UpdateUserResponseSchema;
+  },
+  /**
+   * @generated from rpc halomail.identity.v1.UserService.ScheduleDeleteAccount
+   */
+  scheduleDeleteAccount: {
+    methodKind: "unary";
+    input: typeof ScheduleDeleteAccountRequestSchema;
+    output: typeof ScheduleDeleteAccountResponseSchema;
+  },
+  /**
+   * @generated from rpc halomail.identity.v1.UserService.CancelDeleteAccount
+   */
+  cancelDeleteAccount: {
+    methodKind: "unary";
+    input: typeof CancelDeleteAccountRequestSchema;
+    output: typeof CancelDeleteAccountResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_halomail_identity_v1_identity, 1);
@@ -1483,6 +1639,22 @@ export const TeamService: GenService<{
     methodKind: "unary";
     input: typeof AcceptInvitationRequestSchema;
     output: typeof AcceptInvitationResponseSchema;
+  },
+  /**
+   * @generated from rpc halomail.identity.v1.TeamService.GetInvitation
+   */
+  getInvitation: {
+    methodKind: "unary";
+    input: typeof GetInvitationRequestSchema;
+    output: typeof GetInvitationResponseSchema;
+  },
+  /**
+   * @generated from rpc halomail.identity.v1.TeamService.LeaveTeam
+   */
+  leaveTeam: {
+    methodKind: "unary";
+    input: typeof LeaveTeamRequestSchema;
+    output: typeof LeaveTeamResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_halomail_identity_v1_identity, 4);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
 	UserPlus,
 	Mail,
@@ -13,6 +14,7 @@ import {
 	Clock,
 	X,
 	ChevronDown,
+	LogOut,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { PanelHeading } from "@/components/dashboard/ui";
@@ -24,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { rpc } from "@/lib/api";
 import { useRpc } from "@/lib/use-rpc";
 import { useWorkspace } from "@/components/dashboard/workspace-context";
+import { clearSession } from "@/lib/auth";
 
 interface TeamMember {
 	id: string;
@@ -80,9 +83,27 @@ const ROLE_DETAILS = {
 
 export default function TeamPage() {
 	const { user } = useWorkspace();
+	const router = useRouter();
 	const { data, loading, error, reload } = useRpc<TeamResponse>(
 		"halomail.identity.v1.TeamService/ListTeamMembers",
 	);
+
+	const [showLeaveModal, setShowLeaveModal] = useState(false);
+	const [leaveBusy, setLeaveBusy] = useState(false);
+	const [leaveError, setLeaveError] = useState("");
+
+	async function handleLeaveTeam() {
+		setLeaveBusy(true);
+		setLeaveError("");
+		try {
+			await rpc("halomail.identity.v1.TeamService/LeaveTeam");
+			clearSession();
+			router.push("/login");
+		} catch (err) {
+			setLeaveError(err instanceof Error ? err.message : "Failed to leave workspace.");
+			setLeaveBusy(false);
+		}
+	}
 
 	const [showInviteModal, setShowInviteModal] = useState(false);
 	const [inviteEmail, setInviteEmail] = useState("");
@@ -553,6 +574,18 @@ export default function TeamPage() {
 											<span className="sr-only">Remove member</span>
 										</Button>
 									)}
+
+									{isSelf && !isOwner && (
+										<Button
+											variant="outline"
+											size="sm"
+											className="h-8 px-2.5 text-xs text-muted-foreground hover:text-destructive hover:border-destructive/40 gap-1.5"
+											onClick={() => setShowLeaveModal(true)}
+										>
+											<LogOut className="size-3.5" />
+											<span>Leave</span>
+										</Button>
+									)}
 								</div>
 							</div>
 						);
@@ -684,6 +717,53 @@ export default function TeamPage() {
 					</Card>
 				</div>
 			</section>
+			{/* Leave Workspace Modal */}
+			{showLeaveModal && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in-50">
+					<div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-2xl space-y-4">
+						<div className="flex items-start gap-3">
+							<div className="flex size-10 rounded-full bg-amber-500/10 text-amber-500 items-center justify-center shrink-0">
+								<LogOut className="size-5" />
+							</div>
+							<div className="space-y-1">
+								<h3 className="text-lg font-semibold text-foreground">Leave Workspace</h3>
+								<p className="text-xs text-muted-foreground leading-relaxed">
+									Are you sure you want to leave this workspace? You will lose access immediately.
+								</p>
+							</div>
+						</div>
+
+						<p className="text-xs text-muted-foreground leading-relaxed">
+							After leaving, your email will no longer be attached to this team workspace. You will be able to create your own new account or accept an invitation to another team.
+						</p>
+
+						{leaveError && (
+							<p className="text-xs text-destructive font-medium">{leaveError}</p>
+						)}
+
+						<div className="flex justify-end gap-2 pt-2">
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								disabled={leaveBusy}
+								onClick={() => setShowLeaveModal(false)}
+							>
+								Stay in Workspace
+							</Button>
+							<Button
+								type="button"
+								variant="destructive"
+								size="sm"
+								disabled={leaveBusy}
+								onClick={handleLeaveTeam}
+							>
+								{leaveBusy ? "Leaving…" : "Leave Workspace"}
+							</Button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

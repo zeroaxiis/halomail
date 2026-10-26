@@ -11,6 +11,8 @@ export interface SessionUser {
   org_id: string;
   role?: string;
   timezone?: string;
+  scheduledDeleteAt?: { seconds: string } | string;
+  deletionScheduledAt?: { seconds: string } | string;
 }
 
 export function saveSession(token: string, user: SessionUser) {

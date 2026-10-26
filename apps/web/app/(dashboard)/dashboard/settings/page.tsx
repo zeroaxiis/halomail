@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useWorkspace } from "@/components/dashboard/workspace-context";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
@@ -9,9 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { rpc } from "@/lib/api";
-import { getToken } from "@/lib/auth";
+import { getToken, clearSession } from "@/lib/auth";
 import { localTimezone, timezones } from "@/lib/timezones";
 import { useRpc } from "@/lib/use-rpc";
+import { Trash2, AlertTriangle, LogOut } from "lucide-react";
 
 interface User {
 	id: string;
@@ -19,9 +21,13 @@ interface User {
 	name: string;
 	handle: string;
 	timezone: string;
+	role?: string;
+	scheduledDeleteAt?: { seconds: string } | string;
+	deletionScheduledAt?: { seconds: string } | string;
 }
 
 export default function SettingsPage() {
+	const router = useRouter();
 	const { user, updateUser, usage } = useWorkspace();
 	const {
 		data,
@@ -36,6 +42,63 @@ export default function SettingsPage() {
 	const [saved, setSaved] = useState(false);
 	const [busy, setBusy] = useState(false);
 	const [origin, setOrigin] = useState("");
+
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [showLeaveModal, setShowLeaveModal] = useState(false);
+	const [dangerBusy, setDangerBusy] = useState(false);
+	const [dangerError, setDangerError] = useState("");
+
+	const scheduledDeleteAt = data?.user?.scheduledDeleteAt;
+
+	function formatDeletionDate(raw: { seconds: string } | string | undefined): string {
+		if (!raw) return "in 24 hours";
+		const ms = typeof raw === "object" && raw.seconds ? Number(raw.seconds) * 1000 : new Date(raw as string).getTime();
+		return new Date(ms).toLocaleString(undefined, {
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	}
+
+	async function handleScheduleDeletion() {
+		setDangerBusy(true);
+		setDangerError("");
+		try {
+			await rpc("halomail.identity.v1.UserService/ScheduleDeleteAccount");
+			clearSession();
+			router.push("/login");
+		} catch (err) {
+			setDangerError(err instanceof Error ? err.message : "Failed to schedule account deletion.");
+			setDangerBusy(false);
+		}
+	}
+
+	async function handleCancelDeletion() {
+		setDangerBusy(true);
+		setDangerError("");
+		try {
+			await rpc("halomail.identity.v1.UserService/CancelDeleteAccount");
+			await reload();
+		} catch (err) {
+			setDangerError(err instanceof Error ? err.message : "Failed to cancel account deletion.");
+		} finally {
+			setDangerBusy(false);
+		}
+	}
+
+	async function handleLeaveWorkspace() {
+		setDangerBusy(true);
+		setDangerError("");
+		try {
+			await rpc("halomail.identity.v1.TeamService/LeaveTeam");
+			clearSession();
+			router.push("/login");
+		} catch (err) {
+			setDangerError(err instanceof Error ? err.message : "Failed to leave workspace.");
+			setDangerBusy(false);
+		}
+	}
 
 	// Keep the saved value selectable even if it is not in the browser's list.
 	const zones = useMemo(() => {
@@ -213,6 +276,191 @@ export default function SettingsPage() {
 					</Link>
 				</div>
 			</section>
+
+			{/* Danger Zone */}
+			<section className="workspace-settings-grid border-t border-destructive/20 pt-8 mt-8">
+				<div>
+					<h2 className="text-destructive font-semibold">Danger Zone</h2>
+					<p className="text-xs text-muted-foreground mt-1">
+						Irreversible actions and workspace departure.
+					</p>
+				</div>
+
+				<div className="space-y-6">
+					{/* Active Deletion Banner if scheduled */}
+					{scheduledDeleteAt ? (
+						<div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
+							<div className="flex items-start gap-2.5">
+								<AlertTriangle className="size-5 text-amber-500 shrink-0 mt-0.5" />
+								<div className="space-y-1">
+									<h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+										Account Deletion Scheduled
+									</h3>
+									<p className="text-xs text-muted-foreground leading-relaxed">
+										Your account is scheduled for permanent deletion on{" "}
+										<strong>{formatDeletionDate(scheduledDeleteAt)}</strong> (within 24 hours).
+										After this window expires, all your account data will be permanently wiped and your email will be freed.
+									</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-3 pt-1">
+								<Button
+									size="sm"
+									variant="outline"
+									disabled={dangerBusy}
+									onClick={handleCancelDeletion}
+									className="text-xs border-amber-500/40 hover:bg-amber-500/20"
+								>
+									{dangerBusy ? "Cancelling…" : "Cancel Deletion Request"}
+								</Button>
+							</div>
+						</div>
+					) : (
+						/* Normal Delete Account Card */
+						<div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-destructive/20 bg-destructive/5 gap-4">
+							<div className="space-y-0.5">
+								<h3 className="text-sm font-medium text-foreground">Delete Account</h3>
+								<p className="text-xs text-muted-foreground max-w-md">
+									Schedule permanent account deletion with a 24-hour grace period. You can cancel at any time within 24 hours. After 24 hours, all data is permanently purged and your email is freed.
+								</p>
+							</div>
+							<Button
+								type="button"
+								variant="destructive"
+								size="sm"
+								onClick={() => setShowDeleteModal(true)}
+								className="shrink-0 gap-1.5"
+							>
+								<Trash2 className="size-3.5" />
+								<span>Delete Account</span>
+							</Button>
+						</div>
+					)}
+
+					{/* Leave Workspace Option if not owner */}
+					{data?.user?.role && data.user.role !== "owner" && (
+						<div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-border bg-card gap-4">
+							<div className="space-y-0.5">
+								<h3 className="text-sm font-medium text-foreground">Leave Team Workspace</h3>
+								<p className="text-xs text-muted-foreground max-w-md">
+									Revoke your membership from this workspace immediately. This frees your email so you can create your own workspace or accept another invitation.
+								</p>
+							</div>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={() => setShowLeaveModal(true)}
+								className="shrink-0 gap-1.5 text-muted-foreground hover:text-destructive hover:border-destructive/40"
+							>
+								<LogOut className="size-3.5" />
+								<span>Leave Workspace</span>
+							</Button>
+						</div>
+					)}
+				</div>
+			</section>
+
+			{/* Delete Account Modal */}
+			{showDeleteModal && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in-50">
+					<div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-2xl space-y-4">
+						<div className="flex items-start gap-3">
+							<div className="flex size-10 rounded-full bg-destructive/10 text-destructive items-center justify-center shrink-0">
+								<AlertTriangle className="size-5" />
+							</div>
+							<div className="space-y-1">
+								<h3 className="text-lg font-semibold text-foreground">Delete Account (24-Hour Delay)</h3>
+								<p className="text-xs text-muted-foreground leading-relaxed">
+									Scheduling deletion begins a <strong>24-hour grace period</strong>. Your active sessions will be signed out.
+								</p>
+							</div>
+						</div>
+
+						<div className="rounded-md border bg-muted/40 p-3.5 text-xs text-muted-foreground space-y-2">
+							<p className="text-foreground font-medium">How 24-hour deletion works:</p>
+							<ul className="list-disc list-inside space-y-1">
+								<li>Within 24 hours: Log in to cancel deletion and keep your account.</li>
+								<li>After 24 hours: All meetings, templates, forms, and data are permanently purged.</li>
+								<li>Your email is released, allowing you to accept invitations or register fresh.</li>
+							</ul>
+						</div>
+
+						{dangerError && (
+							<p className="text-xs text-destructive font-medium">{dangerError}</p>
+						)}
+
+						<div className="flex justify-end gap-2 pt-2">
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								disabled={dangerBusy}
+								onClick={() => setShowDeleteModal(false)}
+							>
+								Cancel
+							</Button>
+							<Button
+								type="button"
+								variant="destructive"
+								size="sm"
+								disabled={dangerBusy}
+								onClick={handleScheduleDeletion}
+							>
+								{dangerBusy ? "Scheduling…" : "Schedule 24h Deletion"}
+							</Button>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Leave Workspace Modal */}
+			{showLeaveModal && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in-50">
+					<div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-2xl space-y-4">
+						<div className="flex items-start gap-3">
+							<div className="flex size-10 rounded-full bg-amber-500/10 text-amber-500 items-center justify-center shrink-0">
+								<LogOut className="size-5" />
+							</div>
+							<div className="space-y-1">
+								<h3 className="text-lg font-semibold text-foreground">Leave Workspace</h3>
+								<p className="text-xs text-muted-foreground leading-relaxed">
+									Are you sure you want to leave this workspace? You will lose access to team meetings, forms, and templates immediately.
+								</p>
+							</div>
+						</div>
+
+						<p className="text-xs text-muted-foreground">
+							After leaving, your email will no longer be bound to this workspace, allowing you to create your own account or accept an invitation to another team.
+						</p>
+
+						{dangerError && (
+							<p className="text-xs text-destructive font-medium">{dangerError}</p>
+						)}
+
+						<div className="flex justify-end gap-2 pt-2">
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								disabled={dangerBusy}
+								onClick={() => setShowLeaveModal(false)}
+							>
+								Stay in Workspace
+							</Button>
+							<Button
+								type="button"
+								variant="destructive"
+								size="sm"
+								disabled={dangerBusy}
+								onClick={handleLeaveWorkspace}
+							>
+								{dangerBusy ? "Leaving…" : "Leave Workspace"}
+							</Button>
+						</div>
+					</div>
+				</div>
+			)}
 		</>
 	);
 }

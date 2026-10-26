@@ -32,6 +32,19 @@ func (m *mockUserRepoForReset) GetUserByID(ctx context.Context, id string) (*dom
 	return nil, errs.NotFound("user not found")
 }
 
+func (m *mockUserRepoForReset) PurgeExpiredUserByEmail(_ context.Context, _ string) (bool, error) {
+	return false, nil
+}
+func (m *mockUserRepoForReset) HardDeleteUser(_ context.Context, _ string) error {
+	return nil
+}
+func (m *mockUserRepoForReset) ScheduleAccountDeletion(_ context.Context, _ string, _ time.Time) error {
+	return nil
+}
+func (m *mockUserRepoForReset) CancelAccountDeletion(_ context.Context, _ string) error {
+	return nil
+}
+
 type mockAuditRepoForReset struct {
 	AuditRepo
 }

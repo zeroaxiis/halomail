@@ -14,9 +14,11 @@ type User struct {
 	AvatarURL    string
 	Timezone     string
 	PasswordHash string
-	Role         string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Role                string
+	DeletionScheduledAt *time.Time
+	ScheduledDeleteAt   *time.Time
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
 }
 
 const (

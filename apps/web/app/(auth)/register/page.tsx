@@ -65,7 +65,16 @@ export default function RegisterPage() {
               </button>
             </div>
           </div>
-          {error && <p role="alert" className={styles.error}>{error}</p>}
+          {error && (
+            <div role="alert" className={`${styles.error} text-left space-y-1`}>
+              <p>{error}</p>
+              {error.includes("already a member of a team") && (
+                <p className="text-[11px] opacity-90 pt-1">
+                  To access your team, please <Link href="/login" className="underline font-medium">log in here</Link>. If you want to create your own separate account, leave the team from the Team page first.
+                </p>
+              )}
+            </div>
+          )}
           <Button type="submit" className={styles.submit} disabled={loading}>
             {loading ? "Creating…" : "Create account"}
           </Button>

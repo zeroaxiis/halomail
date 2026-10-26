@@ -68,6 +68,12 @@ const (
 	UserServiceGetUserByHandleProcedure = "/halomail.identity.v1.UserService/GetUserByHandle"
 	// UserServiceUpdateUserProcedure is the fully-qualified name of the UserService's UpdateUser RPC.
 	UserServiceUpdateUserProcedure = "/halomail.identity.v1.UserService/UpdateUser"
+	// UserServiceScheduleDeleteAccountProcedure is the fully-qualified name of the UserService's
+	// ScheduleDeleteAccount RPC.
+	UserServiceScheduleDeleteAccountProcedure = "/halomail.identity.v1.UserService/ScheduleDeleteAccount"
+	// UserServiceCancelDeleteAccountProcedure is the fully-qualified name of the UserService's
+	// CancelDeleteAccount RPC.
+	UserServiceCancelDeleteAccountProcedure = "/halomail.identity.v1.UserService/CancelDeleteAccount"
 	// ApiKeyServiceCreateApiKeyProcedure is the fully-qualified name of the ApiKeyService's
 	// CreateApiKey RPC.
 	ApiKeyServiceCreateApiKeyProcedure = "/halomail.identity.v1.ApiKeyService/CreateApiKey"
@@ -104,38 +110,47 @@ const (
 	// TeamServiceAcceptInvitationProcedure is the fully-qualified name of the TeamService's
 	// AcceptInvitation RPC.
 	TeamServiceAcceptInvitationProcedure = "/halomail.identity.v1.TeamService/AcceptInvitation"
+	// TeamServiceGetInvitationProcedure is the fully-qualified name of the TeamService's GetInvitation
+	// RPC.
+	TeamServiceGetInvitationProcedure = "/halomail.identity.v1.TeamService/GetInvitation"
+	// TeamServiceLeaveTeamProcedure is the fully-qualified name of the TeamService's LeaveTeam RPC.
+	TeamServiceLeaveTeamProcedure = "/halomail.identity.v1.TeamService/LeaveTeam"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	authServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuthService")
-	authServiceRegisterMethodDescriptor         = authServiceServiceDescriptor.Methods().ByName("Register")
-	authServiceLoginMethodDescriptor            = authServiceServiceDescriptor.Methods().ByName("Login")
-	authServiceLogoutMethodDescriptor           = authServiceServiceDescriptor.Methods().ByName("Logout")
-	authServiceRefreshSessionMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("RefreshSession")
-	authServiceGetCurrentUserMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("GetCurrentUser")
-	authServiceVerifyTokenMethodDescriptor      = authServiceServiceDescriptor.Methods().ByName("VerifyToken")
-	authServiceForgotPasswordMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("ForgotPassword")
-	authServiceResetPasswordMethodDescriptor    = authServiceServiceDescriptor.Methods().ByName("ResetPassword")
-	userServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("UserService")
-	userServiceGetUserMethodDescriptor          = userServiceServiceDescriptor.Methods().ByName("GetUser")
-	userServiceGetUserByHandleMethodDescriptor  = userServiceServiceDescriptor.Methods().ByName("GetUserByHandle")
-	userServiceUpdateUserMethodDescriptor       = userServiceServiceDescriptor.Methods().ByName("UpdateUser")
-	apiKeyServiceServiceDescriptor              = v1.File_halomail_identity_v1_identity_proto.Services().ByName("ApiKeyService")
-	apiKeyServiceCreateApiKeyMethodDescriptor   = apiKeyServiceServiceDescriptor.Methods().ByName("CreateApiKey")
-	apiKeyServiceListApiKeysMethodDescriptor    = apiKeyServiceServiceDescriptor.Methods().ByName("ListApiKeys")
-	apiKeyServiceRevokeApiKeyMethodDescriptor   = apiKeyServiceServiceDescriptor.Methods().ByName("RevokeApiKey")
-	apiKeyServiceVerifyApiKeyMethodDescriptor   = apiKeyServiceServiceDescriptor.Methods().ByName("VerifyApiKey")
-	auditServiceServiceDescriptor               = v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuditService")
-	auditServiceListAuditLogsMethodDescriptor   = auditServiceServiceDescriptor.Methods().ByName("ListAuditLogs")
-	auditServiceRecordAuditLogMethodDescriptor  = auditServiceServiceDescriptor.Methods().ByName("RecordAuditLog")
-	teamServiceServiceDescriptor                = v1.File_halomail_identity_v1_identity_proto.Services().ByName("TeamService")
-	teamServiceListTeamMembersMethodDescriptor  = teamServiceServiceDescriptor.Methods().ByName("ListTeamMembers")
-	teamServiceInviteTeamMemberMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("InviteTeamMember")
-	teamServiceUpdateMemberRoleMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("UpdateMemberRole")
-	teamServiceRemoveTeamMemberMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("RemoveTeamMember")
-	teamServiceRevokeInvitationMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("RevokeInvitation")
-	teamServiceAcceptInvitationMethodDescriptor = teamServiceServiceDescriptor.Methods().ByName("AcceptInvitation")
+	authServiceServiceDescriptor                     = v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuthService")
+	authServiceRegisterMethodDescriptor              = authServiceServiceDescriptor.Methods().ByName("Register")
+	authServiceLoginMethodDescriptor                 = authServiceServiceDescriptor.Methods().ByName("Login")
+	authServiceLogoutMethodDescriptor                = authServiceServiceDescriptor.Methods().ByName("Logout")
+	authServiceRefreshSessionMethodDescriptor        = authServiceServiceDescriptor.Methods().ByName("RefreshSession")
+	authServiceGetCurrentUserMethodDescriptor        = authServiceServiceDescriptor.Methods().ByName("GetCurrentUser")
+	authServiceVerifyTokenMethodDescriptor           = authServiceServiceDescriptor.Methods().ByName("VerifyToken")
+	authServiceForgotPasswordMethodDescriptor        = authServiceServiceDescriptor.Methods().ByName("ForgotPassword")
+	authServiceResetPasswordMethodDescriptor         = authServiceServiceDescriptor.Methods().ByName("ResetPassword")
+	userServiceServiceDescriptor                     = v1.File_halomail_identity_v1_identity_proto.Services().ByName("UserService")
+	userServiceGetUserMethodDescriptor               = userServiceServiceDescriptor.Methods().ByName("GetUser")
+	userServiceGetUserByHandleMethodDescriptor       = userServiceServiceDescriptor.Methods().ByName("GetUserByHandle")
+	userServiceUpdateUserMethodDescriptor            = userServiceServiceDescriptor.Methods().ByName("UpdateUser")
+	userServiceScheduleDeleteAccountMethodDescriptor = userServiceServiceDescriptor.Methods().ByName("ScheduleDeleteAccount")
+	userServiceCancelDeleteAccountMethodDescriptor   = userServiceServiceDescriptor.Methods().ByName("CancelDeleteAccount")
+	apiKeyServiceServiceDescriptor                   = v1.File_halomail_identity_v1_identity_proto.Services().ByName("ApiKeyService")
+	apiKeyServiceCreateApiKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("CreateApiKey")
+	apiKeyServiceListApiKeysMethodDescriptor         = apiKeyServiceServiceDescriptor.Methods().ByName("ListApiKeys")
+	apiKeyServiceRevokeApiKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("RevokeApiKey")
+	apiKeyServiceVerifyApiKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("VerifyApiKey")
+	auditServiceServiceDescriptor                    = v1.File_halomail_identity_v1_identity_proto.Services().ByName("AuditService")
+	auditServiceListAuditLogsMethodDescriptor        = auditServiceServiceDescriptor.Methods().ByName("ListAuditLogs")
+	auditServiceRecordAuditLogMethodDescriptor       = auditServiceServiceDescriptor.Methods().ByName("RecordAuditLog")
+	teamServiceServiceDescriptor                     = v1.File_halomail_identity_v1_identity_proto.Services().ByName("TeamService")
+	teamServiceListTeamMembersMethodDescriptor       = teamServiceServiceDescriptor.Methods().ByName("ListTeamMembers")
+	teamServiceInviteTeamMemberMethodDescriptor      = teamServiceServiceDescriptor.Methods().ByName("InviteTeamMember")
+	teamServiceUpdateMemberRoleMethodDescriptor      = teamServiceServiceDescriptor.Methods().ByName("UpdateMemberRole")
+	teamServiceRemoveTeamMemberMethodDescriptor      = teamServiceServiceDescriptor.Methods().ByName("RemoveTeamMember")
+	teamServiceRevokeInvitationMethodDescriptor      = teamServiceServiceDescriptor.Methods().ByName("RevokeInvitation")
+	teamServiceAcceptInvitationMethodDescriptor      = teamServiceServiceDescriptor.Methods().ByName("AcceptInvitation")
+	teamServiceGetInvitationMethodDescriptor         = teamServiceServiceDescriptor.Methods().ByName("GetInvitation")
+	teamServiceLeaveTeamMethodDescriptor             = teamServiceServiceDescriptor.Methods().ByName("LeaveTeam")
 )
 
 // AuthServiceClient is a client for the halomail.identity.v1.AuthService service.
@@ -396,6 +411,8 @@ type UserServiceClient interface {
 	// GetUserByHandle returns the public profile backing a booking page.
 	GetUserByHandle(context.Context, *connect.Request[v1.GetUserByHandleRequest]) (*connect.Response[v1.GetUserByHandleResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.UpdateUserResponse], error)
+	ScheduleDeleteAccount(context.Context, *connect.Request[v1.ScheduleDeleteAccountRequest]) (*connect.Response[v1.ScheduleDeleteAccountResponse], error)
+	CancelDeleteAccount(context.Context, *connect.Request[v1.CancelDeleteAccountRequest]) (*connect.Response[v1.CancelDeleteAccountResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the halomail.identity.v1.UserService service. By
@@ -426,14 +443,28 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceUpdateUserMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		scheduleDeleteAccount: connect.NewClient[v1.ScheduleDeleteAccountRequest, v1.ScheduleDeleteAccountResponse](
+			httpClient,
+			baseURL+UserServiceScheduleDeleteAccountProcedure,
+			connect.WithSchema(userServiceScheduleDeleteAccountMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		cancelDeleteAccount: connect.NewClient[v1.CancelDeleteAccountRequest, v1.CancelDeleteAccountResponse](
+			httpClient,
+			baseURL+UserServiceCancelDeleteAccountProcedure,
+			connect.WithSchema(userServiceCancelDeleteAccountMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	getUser         *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
-	getUserByHandle *connect.Client[v1.GetUserByHandleRequest, v1.GetUserByHandleResponse]
-	updateUser      *connect.Client[v1.UpdateUserRequest, v1.UpdateUserResponse]
+	getUser               *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
+	getUserByHandle       *connect.Client[v1.GetUserByHandleRequest, v1.GetUserByHandleResponse]
+	updateUser            *connect.Client[v1.UpdateUserRequest, v1.UpdateUserResponse]
+	scheduleDeleteAccount *connect.Client[v1.ScheduleDeleteAccountRequest, v1.ScheduleDeleteAccountResponse]
+	cancelDeleteAccount   *connect.Client[v1.CancelDeleteAccountRequest, v1.CancelDeleteAccountResponse]
 }
 
 // GetUser calls halomail.identity.v1.UserService.GetUser.
@@ -451,12 +482,24 @@ func (c *userServiceClient) UpdateUser(ctx context.Context, req *connect.Request
 	return c.updateUser.CallUnary(ctx, req)
 }
 
+// ScheduleDeleteAccount calls halomail.identity.v1.UserService.ScheduleDeleteAccount.
+func (c *userServiceClient) ScheduleDeleteAccount(ctx context.Context, req *connect.Request[v1.ScheduleDeleteAccountRequest]) (*connect.Response[v1.ScheduleDeleteAccountResponse], error) {
+	return c.scheduleDeleteAccount.CallUnary(ctx, req)
+}
+
+// CancelDeleteAccount calls halomail.identity.v1.UserService.CancelDeleteAccount.
+func (c *userServiceClient) CancelDeleteAccount(ctx context.Context, req *connect.Request[v1.CancelDeleteAccountRequest]) (*connect.Response[v1.CancelDeleteAccountResponse], error) {
+	return c.cancelDeleteAccount.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the halomail.identity.v1.UserService service.
 type UserServiceHandler interface {
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error)
 	// GetUserByHandle returns the public profile backing a booking page.
 	GetUserByHandle(context.Context, *connect.Request[v1.GetUserByHandleRequest]) (*connect.Response[v1.GetUserByHandleResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.UpdateUserResponse], error)
+	ScheduleDeleteAccount(context.Context, *connect.Request[v1.ScheduleDeleteAccountRequest]) (*connect.Response[v1.ScheduleDeleteAccountResponse], error)
+	CancelDeleteAccount(context.Context, *connect.Request[v1.CancelDeleteAccountRequest]) (*connect.Response[v1.CancelDeleteAccountResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -483,6 +526,18 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceUpdateUserMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceScheduleDeleteAccountHandler := connect.NewUnaryHandler(
+		UserServiceScheduleDeleteAccountProcedure,
+		svc.ScheduleDeleteAccount,
+		connect.WithSchema(userServiceScheduleDeleteAccountMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceCancelDeleteAccountHandler := connect.NewUnaryHandler(
+		UserServiceCancelDeleteAccountProcedure,
+		svc.CancelDeleteAccount,
+		connect.WithSchema(userServiceCancelDeleteAccountMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/halomail.identity.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceGetUserProcedure:
@@ -491,6 +546,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceGetUserByHandleHandler.ServeHTTP(w, r)
 		case UserServiceUpdateUserProcedure:
 			userServiceUpdateUserHandler.ServeHTTP(w, r)
+		case UserServiceScheduleDeleteAccountProcedure:
+			userServiceScheduleDeleteAccountHandler.ServeHTTP(w, r)
+		case UserServiceCancelDeleteAccountProcedure:
+			userServiceCancelDeleteAccountHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -510,6 +569,14 @@ func (UnimplementedUserServiceHandler) GetUserByHandle(context.Context, *connect
 
 func (UnimplementedUserServiceHandler) UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.UpdateUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.UserService.UpdateUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ScheduleDeleteAccount(context.Context, *connect.Request[v1.ScheduleDeleteAccountRequest]) (*connect.Response[v1.ScheduleDeleteAccountResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.UserService.ScheduleDeleteAccount is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CancelDeleteAccount(context.Context, *connect.Request[v1.CancelDeleteAccountRequest]) (*connect.Response[v1.CancelDeleteAccountResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.UserService.CancelDeleteAccount is not implemented"))
 }
 
 // ApiKeyServiceClient is a client for the halomail.identity.v1.ApiKeyService service.
@@ -764,6 +831,8 @@ type TeamServiceClient interface {
 	RemoveTeamMember(context.Context, *connect.Request[v1.RemoveTeamMemberRequest]) (*connect.Response[v1.RemoveTeamMemberResponse], error)
 	RevokeInvitation(context.Context, *connect.Request[v1.RevokeInvitationRequest]) (*connect.Response[v1.RevokeInvitationResponse], error)
 	AcceptInvitation(context.Context, *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error)
+	GetInvitation(context.Context, *connect.Request[v1.GetInvitationRequest]) (*connect.Response[v1.GetInvitationResponse], error)
+	LeaveTeam(context.Context, *connect.Request[v1.LeaveTeamRequest]) (*connect.Response[v1.LeaveTeamResponse], error)
 }
 
 // NewTeamServiceClient constructs a client for the halomail.identity.v1.TeamService service. By
@@ -812,6 +881,18 @@ func NewTeamServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(teamServiceAcceptInvitationMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		getInvitation: connect.NewClient[v1.GetInvitationRequest, v1.GetInvitationResponse](
+			httpClient,
+			baseURL+TeamServiceGetInvitationProcedure,
+			connect.WithSchema(teamServiceGetInvitationMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		leaveTeam: connect.NewClient[v1.LeaveTeamRequest, v1.LeaveTeamResponse](
+			httpClient,
+			baseURL+TeamServiceLeaveTeamProcedure,
+			connect.WithSchema(teamServiceLeaveTeamMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -823,6 +904,8 @@ type teamServiceClient struct {
 	removeTeamMember *connect.Client[v1.RemoveTeamMemberRequest, v1.RemoveTeamMemberResponse]
 	revokeInvitation *connect.Client[v1.RevokeInvitationRequest, v1.RevokeInvitationResponse]
 	acceptInvitation *connect.Client[v1.AcceptInvitationRequest, v1.AcceptInvitationResponse]
+	getInvitation    *connect.Client[v1.GetInvitationRequest, v1.GetInvitationResponse]
+	leaveTeam        *connect.Client[v1.LeaveTeamRequest, v1.LeaveTeamResponse]
 }
 
 // ListTeamMembers calls halomail.identity.v1.TeamService.ListTeamMembers.
@@ -855,6 +938,16 @@ func (c *teamServiceClient) AcceptInvitation(ctx context.Context, req *connect.R
 	return c.acceptInvitation.CallUnary(ctx, req)
 }
 
+// GetInvitation calls halomail.identity.v1.TeamService.GetInvitation.
+func (c *teamServiceClient) GetInvitation(ctx context.Context, req *connect.Request[v1.GetInvitationRequest]) (*connect.Response[v1.GetInvitationResponse], error) {
+	return c.getInvitation.CallUnary(ctx, req)
+}
+
+// LeaveTeam calls halomail.identity.v1.TeamService.LeaveTeam.
+func (c *teamServiceClient) LeaveTeam(ctx context.Context, req *connect.Request[v1.LeaveTeamRequest]) (*connect.Response[v1.LeaveTeamResponse], error) {
+	return c.leaveTeam.CallUnary(ctx, req)
+}
+
 // TeamServiceHandler is an implementation of the halomail.identity.v1.TeamService service.
 type TeamServiceHandler interface {
 	ListTeamMembers(context.Context, *connect.Request[v1.ListTeamMembersRequest]) (*connect.Response[v1.ListTeamMembersResponse], error)
@@ -863,6 +956,8 @@ type TeamServiceHandler interface {
 	RemoveTeamMember(context.Context, *connect.Request[v1.RemoveTeamMemberRequest]) (*connect.Response[v1.RemoveTeamMemberResponse], error)
 	RevokeInvitation(context.Context, *connect.Request[v1.RevokeInvitationRequest]) (*connect.Response[v1.RevokeInvitationResponse], error)
 	AcceptInvitation(context.Context, *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error)
+	GetInvitation(context.Context, *connect.Request[v1.GetInvitationRequest]) (*connect.Response[v1.GetInvitationResponse], error)
+	LeaveTeam(context.Context, *connect.Request[v1.LeaveTeamRequest]) (*connect.Response[v1.LeaveTeamResponse], error)
 }
 
 // NewTeamServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -907,6 +1002,18 @@ func NewTeamServiceHandler(svc TeamServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(teamServiceAcceptInvitationMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	teamServiceGetInvitationHandler := connect.NewUnaryHandler(
+		TeamServiceGetInvitationProcedure,
+		svc.GetInvitation,
+		connect.WithSchema(teamServiceGetInvitationMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	teamServiceLeaveTeamHandler := connect.NewUnaryHandler(
+		TeamServiceLeaveTeamProcedure,
+		svc.LeaveTeam,
+		connect.WithSchema(teamServiceLeaveTeamMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/halomail.identity.v1.TeamService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case TeamServiceListTeamMembersProcedure:
@@ -921,6 +1028,10 @@ func NewTeamServiceHandler(svc TeamServiceHandler, opts ...connect.HandlerOption
 			teamServiceRevokeInvitationHandler.ServeHTTP(w, r)
 		case TeamServiceAcceptInvitationProcedure:
 			teamServiceAcceptInvitationHandler.ServeHTTP(w, r)
+		case TeamServiceGetInvitationProcedure:
+			teamServiceGetInvitationHandler.ServeHTTP(w, r)
+		case TeamServiceLeaveTeamProcedure:
+			teamServiceLeaveTeamHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -952,4 +1063,12 @@ func (UnimplementedTeamServiceHandler) RevokeInvitation(context.Context, *connec
 
 func (UnimplementedTeamServiceHandler) AcceptInvitation(context.Context, *connect.Request[v1.AcceptInvitationRequest]) (*connect.Response[v1.AcceptInvitationResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.AcceptInvitation is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) GetInvitation(context.Context, *connect.Request[v1.GetInvitationRequest]) (*connect.Response[v1.GetInvitationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.GetInvitation is not implemented"))
+}
+
+func (UnimplementedTeamServiceHandler) LeaveTeam(context.Context, *connect.Request[v1.LeaveTeamRequest]) (*connect.Response[v1.LeaveTeamResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("halomail.identity.v1.TeamService.LeaveTeam is not implemented"))
 }
