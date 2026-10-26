@@ -68,10 +68,10 @@ function SectionHead({
   desc?: string;
 }) {
   return (
-    <div className="mb-12 flex flex-col items-center gap-4 text-center">
+    <div className="mb-10 sm:mb-12 flex flex-col items-center gap-3 sm:gap-4 text-center px-2">
       <SectionLabel>{label}</SectionLabel>
-      <h2 className="max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
-      {desc ? <p className="max-w-xl text-balance text-muted-foreground">{desc}</p> : null}
+      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
+      {desc ? <p className="max-w-xl text-balance text-sm sm:text-base text-muted-foreground">{desc}</p> : null}
     </div>
   );
 }
@@ -89,30 +89,30 @@ function Hero() {
         className="bg-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:radial-gradient(ellipse_at_top,black,transparent_65%)]"
       />
 
-      <div className="container relative flex flex-col items-center py-24 text-center md:py-32">
-        <h1 className="max-w-4xl animate-fade-up text-4xl font-semibold leading-[1.08] tracking-tight md:text-6xl">
+      <div className="container relative flex flex-col items-center py-16 text-center sm:py-24 md:py-32">
+        <h1 className="max-w-4xl animate-fade-up text-3xl font-semibold leading-[1.12] tracking-tight sm:text-5xl md:text-6xl">
           Scheduling and contact forms,
           <br className="hidden md:block" /> behind one clean API.
         </h1>
 
-        <p className="mt-6 max-w-xl animate-fade-up text-balance text-lg text-muted-foreground">
+        <p className="mt-5 max-w-xl animate-fade-up text-balance text-base sm:text-lg text-muted-foreground px-2">
           Give every user a public booking page and an embeddable contact form, backed by
           typed ConnectRPC, a generated SDK, signed webhooks, and a dashboard you don&apos;t
           have to build.
         </p>
 
-        <div className="mt-9 flex animate-fade-up flex-wrap items-center justify-center gap-3">
-          <Button asChild size="lg">
+        <div className="mt-8 flex w-full max-w-xs sm:max-w-none animate-fade-up flex-col sm:flex-row items-center justify-center gap-3">
+          <Button asChild size="lg" className="w-full sm:w-auto">
             <Link href="/register">
               Get started <ArrowRight className="size-4" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
+          <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
             <a href="/docs/integrate.html">Read the guide</a>
           </Button>
         </div>
 
-        <p className="mt-5 text-sm text-muted-foreground font-medium">
+        <p className="mt-5 text-xs sm:text-sm text-muted-foreground font-medium px-4">
           Zero friction for the Free tier — no credit or debit card required. Keep your plastic in your wallet.
         </p>
 
@@ -170,7 +170,7 @@ function LogoStrip() {
 
 function Features() {
   return (
-    <section id="features" className="container scroll-mt-24 py-20 md:py-28">
+    <section id="features" className="container scroll-mt-24 py-16 sm:py-20 md:py-28">
       <SectionHead
         label="Features"
         title="Everything a booking link needs, and nothing it doesn't"
@@ -179,7 +179,7 @@ function Features() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Scheduling — wide */}
-        <Card className="bg-card relative overflow-hidden p-6 lg:col-span-2">
+        <Card className="bg-card relative overflow-hidden p-4 sm:p-6 lg:col-span-2">
           <FeatureHead
             icon={<CalendarClock />}
             title="Scheduling that respects timezones"
@@ -189,7 +189,7 @@ function Features() {
         </Card>
 
         {/* Spam */}
-        <Card className="bg-card p-6">
+        <Card className="bg-card p-4 sm:p-6">
           <FeatureHead
             icon={<ShieldCheck />}
             title="Spam-proof by default"
@@ -199,14 +199,14 @@ function Features() {
         </Card>
 
         {/* Developer */}
-        <Card className="bg-card overflow-hidden p-6">
+        <Card className="bg-card overflow-hidden p-4 sm:p-6">
           <FeatureHead
             icon={<Code2 />}
             title="Typed end to end"
             desc="Protobuf definitions generate both the Go server and the TypeScript SDK, so a renamed field breaks the build instead of production."
           />
-          <div className="mt-6 rounded-lg border border-border bg-background p-4">
-            <pre className="whitespace-pre-wrap break-words font-mono text-[12px] leading-relaxed text-muted-foreground">
+          <div className="mt-6 rounded-lg border border-border bg-background p-3 sm:p-4">
+            <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[11px] sm:text-[12px] leading-relaxed text-muted-foreground">
               <code>{`const halo = new HaloMail({
   apiUrl: process.env.API_URL,
 });
@@ -222,7 +222,7 @@ await halo.contact.submitMessage({
         </Card>
 
         {/* Email designer — wide so the theme previews get room */}
-        <Card className="bg-card p-6 lg:col-span-2">
+        <Card className="bg-card p-4 sm:p-6 lg:col-span-2">
           <FeatureHead
             icon={<Palette />}
             title="Emails that don't look templated"
@@ -261,17 +261,17 @@ function FeatureHead({
 
 function Dashboard() {
   return (
-    <section className="border-y border-border bg-card/30 py-20 md:py-28">
-      <div className="container grid items-center gap-12 lg:grid-cols-2">
+    <section className="border-y border-border bg-card/30 py-16 sm:py-20 md:py-28">
+      <div className="container grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
         <div>
-          <h2 className="max-w-md text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
             One dashboard for meetings and messages.
           </h2>
-          <p className="mt-5 max-w-md text-muted-foreground">
+          <p className="mt-4 sm:mt-5 max-w-md text-sm sm:text-base text-muted-foreground">
             Every booking, every form submission, every API key and webhook delivery in a
             single place, with an audit log that records who changed what.
           </p>
-          <ul className="mt-7 space-y-3">
+          <ul className="mt-6 sm:mt-7 space-y-3">
             {[
               "Read, search, and mark submissions without leaving the app",
               "Rotate scoped API keys and replay failed webhooks",
@@ -283,7 +283,7 @@ function Dashboard() {
               </li>
             ))}
           </ul>
-          <Button asChild className="mt-8" size="lg">
+          <Button asChild className="mt-7 sm:mt-8 w-full sm:w-auto" size="lg">
             <Link href="/dashboard">
               Open the dashboard <ArrowRight className="size-4" />
             </Link>
@@ -302,18 +302,18 @@ function Dashboard() {
 
 function FormsTable() {
   return (
-    <section className="container py-20 md:py-28">
-      <div className="grid items-center gap-12 lg:grid-cols-2">
+    <section className="container py-16 sm:py-20 md:py-28">
+      <div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
         <FormsTableCard />
 
         <div className="order-1 lg:order-2">
-          <h2 className="max-w-md text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
             Embed forms anywhere with an access key.
           </h2>
-          <p className="mt-5 max-w-md text-muted-foreground">
+          <p className="mt-4 sm:mt-5 max-w-md text-sm sm:text-base text-muted-foreground">
             Just like Web3Forms, generate a unique access key for your website. When users submit the form, data is stored and email notifications are instantly routed to you.
           </p>
-          <Button asChild variant="outline" size="lg" className="mt-8">
+          <Button asChild variant="outline" size="lg" className="mt-7 sm:mt-8 w-full sm:w-auto">
             <a href="/docs/integrate.html">
               See the embed guide <ArrowUpRight className="size-4" />
             </a>
@@ -351,7 +351,7 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section className="border-y border-border bg-card/30 py-20 md:py-28">
+    <section className="border-y border-border bg-card/30 py-16 sm:py-20 md:py-28">
       <div className="container">
         <SectionHead
           label="How it works"
@@ -361,7 +361,7 @@ function HowItWorks() {
         <div className="relative grid gap-4 md:grid-cols-3">
           {STEPS.map((s, i) => (
             <div key={s.n} className="relative">
-              <Card className="bg-card h-full p-6">
+              <Card className="bg-card h-full p-4 sm:p-6">
                 <div className="flex items-center gap-3">
                   <span className="flex size-7 items-center justify-center rounded-full border border-brand/40 bg-brand/10 font-mono text-sm text-brand">
                     {s.n}
@@ -438,13 +438,13 @@ function Integrate() {
 function CodeCard({ title, children }: { title: string; children: string }) {
   return (
     <Card className="bg-card overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+      <div className="flex items-center gap-2 border-b border-border px-3 sm:px-4 py-3">
         <span className="size-2.5 rounded-full bg-destructive/60" />
         <span className="size-2.5 rounded-full bg-yellow-500/60" />
         <span className="size-2.5 rounded-full bg-emerald-500/60" />
-        <span className="ml-2 font-mono text-[11px] text-muted-foreground">{title}</span>
+        <span className="ml-2 font-mono text-[11px] text-muted-foreground truncate">{title}</span>
       </div>
-      <pre className="whitespace-pre-wrap break-words p-5 font-mono text-[12.5px] leading-relaxed">
+      <pre className="overflow-x-auto whitespace-pre-wrap break-words p-4 sm:p-5 font-mono text-[11.5px] sm:text-[12.5px] leading-relaxed">
         <code>{children}</code>
       </pre>
     </Card>
@@ -509,7 +509,7 @@ const DETAIL = [
 
 function FeatureDetail() {
   return (
-    <section className="border-t border-border bg-card/30 py-20 md:py-28">
+    <section className="border-t border-border bg-card/30 py-16 sm:py-20 md:py-28">
       <div className="container">
         <SectionHead
           label="The full surface"
@@ -518,7 +518,7 @@ function FeatureDetail() {
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {DETAIL.map((s) => (
-            <Card key={s.title} className="bg-card p-6">
+            <Card key={s.title} className="bg-card p-4 sm:p-6">
               <div className="mb-4 inline-flex size-9 items-center justify-center rounded-lg border border-border bg-secondary [&_svg]:size-4">
                 {s.icon}
               </div>
@@ -554,11 +554,11 @@ const STATS = [
 function Stats() {
   return (
     <section className="border-y border-border">
-      <div className="container grid divide-y divide-border sm:grid-cols-2 sm:divide-x lg:grid-cols-4 lg:divide-y-0">
-        {STATS.map(([v, k]) => (
-          <div key={k} className="px-6 py-10 text-center">
-            <p className="text-3xl font-semibold tracking-tight md:text-4xl">{v}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{k}</p>
+      <div className="container grid grid-cols-2 divide-y divide-border sm:divide-y-0 sm:divide-x lg:grid-cols-4">
+        {STATS.map(([v, k], i) => (
+          <div key={k} className={`px-4 sm:px-6 py-6 sm:py-10 text-center ${i % 2 === 1 ? "border-l border-border sm:border-l-0" : ""}`}>
+            <p className="text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">{v}</p>
+            <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-muted-foreground">{k}</p>
           </div>
         ))}
       </div>
@@ -626,19 +626,19 @@ function Faq() {
 
 function FinalCta() {
   return (
-    <section className="container pb-24">
-      <Card className="bg-card relative overflow-hidden p-12 text-center md:p-16">
+    <section className="container pb-20 sm:pb-24">
+      <Card className="bg-card relative overflow-hidden p-6 sm:p-12 md:p-16 text-center">
         <div aria-hidden className="bg-spotlight pointer-events-none absolute inset-0" />
-        <div className="relative flex flex-col items-center gap-5">
+        <div className="relative flex flex-col items-center gap-4 sm:gap-5">
           <SectionLabel>Get started</SectionLabel>
-          <h2 className="max-w-xl text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="max-w-xl text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
             Ship scheduling and contact in an afternoon.
           </h2>
-          <p className="max-w-md text-muted-foreground">
+          <p className="max-w-md text-sm sm:text-base text-muted-foreground">
             Run the whole platform seamlessly.
           </p>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg">
+          <div className="mt-2 flex w-full max-w-xs sm:max-w-none flex-col sm:flex-row items-center justify-center gap-3">
+            <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/register">
                 Create your account <ArrowRight className="size-4" />
               </Link>

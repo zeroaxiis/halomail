@@ -132,18 +132,18 @@ export function WeekCard() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
         {data.stats.map(([k, v]) => (
-          <div key={k} className="rounded-lg border border-border bg-background p-3">
-            <p className="text-[11px] text-muted-foreground">{k}</p>
-            <p className="mt-1 text-xl font-semibold tracking-tight">
+          <div key={k} className="rounded-lg border border-border bg-background p-2.5 sm:p-3">
+            <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">{k}</p>
+            <p className="mt-1 text-lg sm:text-xl font-semibold tracking-tight">
               <AnimatedNumber value={v} />
             </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 rounded-lg border border-border bg-background p-4">
+      <div className="mt-4 rounded-lg border border-border bg-background p-3 sm:p-4">
         <div className="relative">
           <svg
             viewBox={`0 0 ${CHART.w} ${CHART.h}`}

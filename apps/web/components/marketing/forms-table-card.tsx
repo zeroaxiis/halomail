@@ -51,9 +51,8 @@ export function FormsTableCard() {
             type="button"
             onClick={() => toggleSort(c.key)}
             aria-label={`Sort by ${c.label}`}
-            className={`flex items-center gap-1 py-1 uppercase tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:text-foreground ${
-              c.align === "text-right" ? "justify-end" : ""
-            }`}
+            className={`flex items-center gap-1 py-1 uppercase tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:text-foreground ${c.align === "text-right" ? "justify-end" : ""
+              }`}
           >
             {c.label}
             {sort.key === c.key ? (
@@ -72,9 +71,8 @@ export function FormsTableCard() {
           type="button"
           onClick={() => setSelected(selected === r.slug ? null : r.slug)}
           aria-pressed={selected === r.slug}
-          className={`grid w-full grid-cols-4 items-center border-b border-border px-5 py-3.5 text-left text-sm transition-colors last:border-0 focus-visible:outline-none ${
-            selected === r.slug ? "bg-brand/10" : "hover:bg-secondary/50"
-          }`}
+          className={`grid w-full grid-cols-4 items-center border-b border-border px-5 py-3.5 text-left text-sm transition-colors last:border-0 focus-visible:outline-none ${selected === r.slug ? "bg-brand/10" : "hover:bg-secondary/50"
+            }`}
         >
           <span className="flex items-center gap-2 font-mono text-xs">
             <Inbox className="size-3.5 text-muted-foreground" />
