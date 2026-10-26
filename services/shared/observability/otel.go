@@ -5,6 +5,7 @@ package observability
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -33,7 +34,12 @@ func Setup(ctx context.Context, cfg Config) (func(context.Context) error, error)
 		return noop, nil
 	}
 
-	exp, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(cfg.Endpoint))
+	endpoint := strings.TrimRight(cfg.Endpoint, "/")
+	if strings.HasSuffix(endpoint, "/otlp") {
+		endpoint += "/v1/traces"
+	}
+
+	exp, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("otel: exporter: %w", err)
 	}
