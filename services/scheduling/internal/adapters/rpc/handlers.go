@@ -36,19 +36,22 @@ func NewHandlers(a *app.Service, v authn.Verifier, pools ...*pgxpool.Pool) *Hand
 }
 
 func (h *Handlers) bookingKey(ctx context.Context, req connect.AnyRequest, eventID string) error {
-	if h.pool == nil {
-		return errs.Unauthorized("meeting access key required")
-	}
-	owner, err := accesskey.Verify(ctx, h.pool, req.Header().Get("X-HaloMail-Key"), "meetings")
-	if err != nil {
-		return err
-	}
 	event, err := h.app.GetEventType(ctx, eventID)
 	if err != nil {
 		return err
 	}
-	if owner.ID != event.OwnerID {
-		return errs.Forbidden("access key does not belong to this event")
+	if !event.Active {
+		return errs.Invalid("this event type is not accepting bookings")
+	}
+	key := req.Header().Get("X-HaloMail-Key")
+	if key != "" && h.pool != nil {
+		owner, err := accesskey.Verify(ctx, h.pool, key, "meetings")
+		if err != nil {
+			return err
+		}
+		if owner.ID != event.OwnerID {
+			return errs.Forbidden("access key does not belong to this event")
+		}
 	}
 	return nil
 }
