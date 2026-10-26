@@ -24,6 +24,7 @@ type Config struct {
 	MaxAge        time.Duration `env:"R2_BACKUP_MAX_AGE" envDefault:"2h"`
 	DumpBinary    string        `env:"PG_DUMP_PATH" envDefault:"pg_dump"`
 	RestoreBinary string        `env:"PG_RESTORE_PATH" envDefault:"pg_restore"`
+	Retention     int           `env:"R2_BACKUP_RETENTION" envDefault:"24"`
 }
 
 // Load uses the already-loaded server environment. Credentials never enter logs.

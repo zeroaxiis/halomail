@@ -44,9 +44,15 @@ export default function SettingsPage() {
 	const [origin, setOrigin] = useState("");
 
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
 	const [showLeaveModal, setShowLeaveModal] = useState(false);
 	const [dangerBusy, setDangerBusy] = useState(false);
 	const [dangerError, setDangerError] = useState("");
+
+	const userHandle = (data?.user?.handle || handle || user?.handle || "").trim();
+	const isDeleteConfirmed = userHandle
+		? deleteConfirmInput.trim().toLowerCase() === userHandle.toLowerCase()
+		: deleteConfirmInput.trim().toUpperCase() === "DELETE";
 
 	const scheduledDeleteAt = data?.user?.scheduledDeleteAt;
 
@@ -62,6 +68,7 @@ export default function SettingsPage() {
 	}
 
 	async function handleScheduleDeletion() {
+		if (!isDeleteConfirmed) return;
 		setDangerBusy(true);
 		setDangerError("");
 		try {
@@ -328,7 +335,11 @@ export default function SettingsPage() {
 								type="button"
 								variant="destructive"
 								size="sm"
-								onClick={() => setShowDeleteModal(true)}
+								onClick={() => {
+									setDeleteConfirmInput("");
+									setDangerError("");
+									setShowDeleteModal(true);
+								}}
 								className="shrink-0 gap-1.5"
 							>
 								<Trash2 className="size-3.5" />
@@ -386,6 +397,26 @@ export default function SettingsPage() {
 							</ul>
 						</div>
 
+						<div className="space-y-2 pt-1">
+							<Label htmlFor="delete-confirm-handle" className="text-xs text-muted-foreground font-normal">
+								To confirm deletion, please type your handle{" "}
+								<strong className="text-foreground font-semibold">
+									{userHandle || "DELETE"}
+								</strong>{" "}
+								below:
+							</Label>
+							<Input
+								id="delete-confirm-handle"
+								type="text"
+								autoComplete="off"
+								spellCheck={false}
+								value={deleteConfirmInput}
+								onChange={(e) => setDeleteConfirmInput(e.target.value)}
+								placeholder={userHandle || "DELETE"}
+								className="h-9 text-xs"
+							/>
+						</div>
+
 						{dangerError && (
 							<p className="text-xs text-destructive font-medium">{dangerError}</p>
 						)}
@@ -396,7 +427,11 @@ export default function SettingsPage() {
 								variant="outline"
 								size="sm"
 								disabled={dangerBusy}
-								onClick={() => setShowDeleteModal(false)}
+								onClick={() => {
+									setShowDeleteModal(false);
+									setDeleteConfirmInput("");
+									setDangerError("");
+								}}
 							>
 								Cancel
 							</Button>
@@ -404,7 +439,7 @@ export default function SettingsPage() {
 								type="button"
 								variant="destructive"
 								size="sm"
-								disabled={dangerBusy}
+								disabled={dangerBusy || !isDeleteConfirmed}
 								onClick={handleScheduleDeletion}
 							>
 								{dangerBusy ? "Scheduling…" : "Schedule 24h Deletion"}

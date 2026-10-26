@@ -118,12 +118,18 @@ func (s *Service) snapshot(ctx context.Context) (string, error) {
 	return key, nil
 }
 
-const retainedBatches = 2
+func (s *Service) retainedBatches() int {
+	if s.config.Retention >= 2 {
+		return s.config.Retention
+	}
+	return 2
+}
 
-// prune verifies BOTH retained batches before deleting anything. Archive-first
+// prune verifies retained batches before deleting anything. Archive-first
 // deletion leaves a manifest to retry if the second deletion fails. A failed
-// cleanup may temporarily leave more than two batches; it never deletes a keeper.
+// cleanup may temporarily leave more than configured batches; it never deletes a keeper.
 func (s *Service) prune(ctx context.Context) (err error) {
+	retainedBatches := s.retainedBatches()
 	defer func() {
 		s.mu.Lock()
 		s.retentionFailed = err != nil
@@ -136,6 +142,18 @@ func (s *Service) prune(ctx context.Context) (err error) {
 	if len(keys) < retainedBatches {
 		return nil
 	}
+
+	// Safety guard: protect historical backups from being pruned if the newest backup
+	// suffered an unexpected dramatic size collapse (>50% drop compared to previous archive),
+	// which typically signals an empty/corrupted database restore.
+	if len(keys) > 1 {
+		latest, errLatest := s.ReadManifest(ctx, keys[0])
+		prev, errPrev := s.ReadManifest(ctx, keys[1])
+		if errLatest == nil && errPrev == nil && prev.Size > 10240 && latest.Size < prev.Size/2 {
+			return fmt.Errorf("safety check: latest backup size (%d) shrunk significantly compared to previous (%d); retention prune skipped to preserve historical recovery points", latest.Size, prev.Size)
+		}
+	}
+
 	for _, key := range keys[:retainedBatches] {
 		if err := s.Verify(ctx, key); err != nil {
 			return fmt.Errorf("retained batch could not be verified: %w", err)

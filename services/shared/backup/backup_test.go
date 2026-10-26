@@ -487,3 +487,47 @@ func TestRetentionIgnoresOtherObjects(t *testing.T) {
 		t.Fatal("deleted unrelated object")
 	}
 }
+
+func TestRetentionSafetyGuardPreventsPruneOnDramaticSizeDrop(t *testing.T) {
+	s, store, engine := fixture()
+	ctx := context.Background()
+	now := time.Now().UTC().Add(-3 * time.Hour)
+	s.now = func() time.Time { return now }
+
+	// First two snapshots are large healthy database backups (> 10KB)
+	largeData := bytes.Repeat([]byte("A"), 25000)
+	engine.data = largeData
+	k1, err := s.Snapshot(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	now = now.Add(time.Hour)
+	k2, err := s.Snapshot(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Third snapshot is suspiciously small (e.g., table truncation or bad restore)
+	now = now.Add(time.Hour)
+	engine.data = []byte("tiny")
+	_, err = s.Snapshot(ctx)
+	if err == nil || !strings.Contains(err.Error(), "safety check") {
+		t.Fatalf("expected safety check error on dramatic size drop, got: %v", err)
+	}
+
+	// Verify both previous healthy snapshots were NOT pruned/deleted
+	keys, err := s.List(ctx)
+	if err != nil || len(keys) < 3 {
+		t.Fatalf("historical backups should have been preserved, found: %v", keys)
+	}
+	m1, _ := s.ReadManifest(ctx, k1)
+	m2, _ := s.ReadManifest(ctx, k2)
+	if _, ok := store.objects[m1.Archive]; !ok {
+		t.Fatal("k1 archive was pruned despite safety check failure")
+	}
+	if _, ok := store.objects[m2.Archive]; !ok {
+		t.Fatal("k2 archive was pruned despite safety check failure")
+	}
+}
+
