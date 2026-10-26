@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import styles from "@/components/auth/login.module.css";
+import { GoogleSignInButton, AuthDivider } from "@/components/auth/google-button";
 import { rpc } from "@/lib/api";
 
 export default function RegisterPage() {
@@ -44,6 +45,8 @@ export default function RegisterPage() {
     <div className={`${styles.form} ${styles.registerForm}`}>
       <h2 className={styles.formTitle}>Create your account.</h2>
       <p className={styles.formDescription}>Start your HaloMail workspace.</p>
+      <GoogleSignInButton text="Sign up with Google" />
+      <AuthDivider text="or sign up with email" />
         <form onSubmit={onSubmit} className={styles.fields} aria-busy={loading}>
           <div className={styles.field}>
             <Label htmlFor="name">Name</Label>

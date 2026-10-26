@@ -1,0 +1,66 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--login-ink);
+  background: rgb(255 255 255 / .7);
+  border: 1px solid var(--login-line);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .03);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: all .15s ease-in-out;
+}
+
+:global(.dark) .button {
+  background: rgb(255 255 255 / .04);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .2);
+}
+
+.button:hover {
+  background: rgb(255 255 255 / .95);
+  border-color: rgb(76 51 106 / .28);
+  box-shadow: 0 2px 5px rgb(0 0 0 / .06);
+}
+
+:global(.dark) .button:hover {
+  background: rgb(255 255 255 / .08);
+  border-color: rgb(219 191 249 / .3);
+}
+
+.button:active {
+  transform: scale(0.99);
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0;
+  width: 100%;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--login-line);
+}
+
+.dividerText {
+  font-size: 11px;
+  color: var(--login-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 500;
+}
