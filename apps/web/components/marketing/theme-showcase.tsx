@@ -99,27 +99,56 @@ export function ThemeShowcase() {
   const [active, setActive] = useState(FEATURED);
 
   return (
-    <div
-      className="mt-6 flex h-64 gap-2"
-      onMouseLeave={() => setActive(FEATURED)}
-    >
-      {THEMES.map((t, i) => (
-        <div
-          key={t.name}
-          onMouseEnter={() => setActive(i)}
-          onFocus={() => setActive(i)}
-          tabIndex={0}
-          role="img"
-          aria-label={`${t.name} email theme preview`}
-          style={{ flexGrow: active === i ? 4 : 1 }}
-          className="relative min-w-0 basis-0 overflow-hidden rounded-md border border-border transition-[flex-grow] duration-500 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        >
-          <div className="h-full w-[200px] min-w-full">{t.body}</div>
-          <span className="absolute bottom-1.5 left-1.5 rounded bg-background/75 px-1.5 py-0.5 text-[10px] text-foreground backdrop-blur">
-            {t.name}
+    <div className="mt-6">
+      {/* Mobile view: interactive pills + full width card */}
+      <div className="md:hidden">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-3">
+          {THEMES.map((t, i) => (
+            <button
+              key={t.name}
+              type="button"
+              onClick={() => setActive(i)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors shrink-0 ${
+                active === i
+                  ? "bg-brand text-white shadow-sm"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.name}
+            </button>
+          ))}
+        </div>
+        <div className="relative h-60 w-full overflow-hidden rounded-lg border border-border bg-background shadow-sm">
+          {THEMES[active].body}
+          <span className="absolute bottom-2 left-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium text-foreground backdrop-blur">
+            {THEMES[active].name} Theme
           </span>
         </div>
-      ))}
+      </div>
+
+      {/* Desktop view: expanding accordion */}
+      <div
+        className="hidden md:flex h-64 gap-2"
+        onMouseLeave={() => setActive(FEATURED)}
+      >
+        {THEMES.map((t, i) => (
+          <div
+            key={t.name}
+            onMouseEnter={() => setActive(i)}
+            onFocus={() => setActive(i)}
+            tabIndex={0}
+            role="img"
+            aria-label={`${t.name} email theme preview`}
+            style={{ flexGrow: active === i ? 4 : 1 }}
+            className="relative min-w-0 basis-0 overflow-hidden rounded-md border border-border transition-[flex-grow] duration-500 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <div className="h-full w-[200px] min-w-full">{t.body}</div>
+            <span className="absolute bottom-1.5 left-1.5 rounded bg-background/75 px-1.5 py-0.5 text-[10px] text-foreground backdrop-blur">
+              {t.name}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

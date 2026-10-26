@@ -7,7 +7,15 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
   ],
   theme: {
-    container: { center: true, padding: "1.5rem", screens: { "2xl": "1200px" } },
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        lg: "2rem",
+      },
+      screens: { "2xl": "1200px" },
+    },
     extend: {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],

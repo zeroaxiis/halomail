@@ -80,27 +80,27 @@ export function HeroPreview() {
     <div className="relative mt-16 w-full max-w-4xl animate-fade-up">
       <Card className="glass overflow-hidden p-2 shadow-2xl">
         <div className="rounded-md border border-border bg-background">
-          <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+          <div className="flex items-center gap-2 border-b border-border px-3 sm:px-4 py-2.5">
             <span className="size-2.5 rounded-full bg-destructive/60" />
             <span className="size-2.5 rounded-full bg-yellow-500/60" />
             <span className="size-2.5 rounded-full bg-emerald-500/60" />
-            <span className="ml-3 font-mono text-[11px] text-muted-foreground">
+            <span className="ml-2 sm:ml-3 font-mono text-[11px] text-muted-foreground truncate">
               halomail.app/book/grace-hopper
             </span>
           </div>
 
-          <div className="grid gap-4 p-4 text-left sm:grid-cols-2">
-            <div className="rounded-lg border border-border p-4">
+          <div className="grid gap-3 sm:gap-4 p-3 sm:p-4 text-left sm:grid-cols-2">
+            <div className="rounded-lg border border-border p-3 sm:p-4">
               <p className="text-xs text-muted-foreground">Intro Call · 30 min</p>
               <p className="mt-1 font-medium">Pick a time</p>
-              <div className="mt-3 flex gap-1.5">
+              <div className="mt-3 flex gap-1 sm:gap-1.5 overflow-x-auto pb-0.5">
                 {DAYS.map((d, i) => (
                   <button
                     key={d.day}
                     type="button"
                     aria-pressed={i === day}
                     onClick={() => pickDay(i)}
-                    className={`flex-1 rounded-md border px-2 py-2 text-center text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
+                    className={`flex-1 rounded-md border px-1.5 sm:px-2 py-2 text-center text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
                       i === day
                         ? "border-foreground/30 bg-secondary font-medium"
                         : "border-border text-muted-foreground hover:bg-secondary/50"
@@ -130,7 +130,7 @@ export function HeroPreview() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-border p-4">
+            <div className="rounded-lg border border-border p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">Inbox</p>
                 <Badge variant="success" className="px-1.5 py-0 text-[10px]">live</Badge>

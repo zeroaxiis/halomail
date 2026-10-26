@@ -4,8 +4,8 @@ import { Logo } from "@/components/logo";
 export function SiteFooter() {
   return (
     <footer className="border-t border-border">
-      <div className="container grid gap-8 py-12 md:grid-cols-4">
-        <div className="space-y-3">
+      <div className="container grid grid-cols-2 gap-8 py-12 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="col-span-2 sm:col-span-3 lg:col-span-1 space-y-3">
           <Logo />
           <p className="max-w-xs text-sm text-muted-foreground">
             API-first scheduling and contact forms. Minimal, premium,
@@ -49,7 +49,7 @@ export function SiteFooter() {
         />
       </div>
       <div className="border-t border-border">
-        <div className="container flex h-12 items-center justify-between text-xs text-muted-foreground">
+        <div className="container flex flex-col sm:flex-row gap-2 sm:gap-0 sm:h-12 py-4 sm:py-0 items-center justify-between text-xs text-muted-foreground text-center sm:text-left">
           <span>© {new Date().getFullYear()} zeroaxiis. All rights reserved.</span>
           <span className="hidden sm:inline-block italic">Everything starts from zero.</span>
           <span>Build from zero</span>
