@@ -140,6 +140,98 @@ func (s *Service) Login(ctx context.Context, email, password string) (*AuthResul
 	return nil, errs.Unauthorized("email verification required; request and verify a login code")
 }
 
+// GoogleLogin authenticates or registers a user via verified Google OAuth.
+func (s *Service) GoogleLogin(ctx context.Context, email, name, avatarURL, googleID string) (*AuthResult, error) {
+	normEmail := normalizeEmail(email)
+	if !validEmail(normEmail) {
+		return nil, errs.Invalid("a valid email is required")
+	}
+
+	// Purge expired deleted account if any (>24h since scheduled)
+	_, _ = s.users.PurgeExpiredUserByEmail(ctx, normEmail)
+
+	existing, err := s.users.GetUserByEmail(ctx, normEmail)
+	if err == nil && existing != nil {
+		if existing.ScheduledDeleteAt != nil {
+			if s.now().After(*existing.ScheduledDeleteAt) {
+				_ = s.users.HardDeleteUser(ctx, existing.ID)
+				existing = nil
+			} else {
+				_ = s.users.CancelAccountDeletion(ctx, existing.ID)
+				existing.ScheduledDeleteAt = nil
+				existing.DeletionScheduledAt = nil
+			}
+		}
+	}
+
+	if existing != nil {
+		updated := false
+		if existing.AvatarURL == "" && avatarURL != "" {
+			existing.AvatarURL = avatarURL
+			updated = true
+		}
+		if (existing.Name == "" || existing.Name == localPart(normEmail)) && name != "" {
+			existing.Name = name
+			updated = true
+		}
+		if updated {
+			existing.UpdatedAt = s.now()
+			_ = s.users.UpdateUser(ctx, existing)
+		}
+
+		session, err := s.issueSession(ctx, existing)
+		if err != nil {
+			return nil, err
+		}
+		s.record(ctx, existing.OrgID, existing.ID, "user.login_google", "user", existing.ID)
+		return &AuthResult{User: existing, Session: session}, nil
+	}
+
+	// New user registration via Google
+	randomSecret, err := crypto.RandomToken(32)
+	if err != nil {
+		return nil, errs.Wrap(err, errs.KindInternal, "generate initial password")
+	}
+	hash, err := crypto.HashPassword(randomSecret)
+	if err != nil {
+		return nil, errs.Wrap(err, errs.KindInternal, "hash initial password")
+	}
+
+	now := s.now()
+	if strings.TrimSpace(name) == "" {
+		name = defaultOrgName("", normEmail)
+	}
+	org := &domain.Org{
+		ID:        idgen.Prefixed("org_"),
+		Name:      defaultOrgName(name, normEmail),
+		Slug:      idgen.Prefixed("org-"),
+		CreatedAt: now,
+	}
+	user := &domain.User{
+		ID:           idgen.Prefixed("usr_"),
+		OrgID:        org.ID,
+		Email:        normEmail,
+		Name:         name,
+		Handle:       deriveHandle(normEmail),
+		AvatarURL:    avatarURL,
+		Timezone:     "UTC",
+		PasswordHash: hash,
+		Role:         domain.RoleOwner,
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	}
+	if err := s.users.CreateOrgAndUser(ctx, org, user); err != nil {
+		return nil, err
+	}
+
+	session, err := s.issueSession(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	s.record(ctx, org.ID, user.ID, "user.registered_google", "user", user.ID)
+	return &AuthResult{User: user, Session: session}, nil
+}
+
 func (s *Service) checkCredentials(ctx context.Context, email, password string) (*domain.User, error) {
 	if len(password) > 1024 || len(email) > 254 {
 		return nil, errs.Unauthorized("invalid email or password")

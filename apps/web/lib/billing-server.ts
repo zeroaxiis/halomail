@@ -66,9 +66,19 @@ export function invoiceStorage() {
     credentials: { accessKeyId: R2_ACCESS_KEY_ID, secretAccessKey: R2_SECRET_ACCESS_KEY } }), bucket: R2_BUCKET_NAME };
 }
 export function invoicePrefix() { return (process.env.R2_INVOICE_PREFIX || "halomail/invice").replace(/^\/+|\/+$/g, ""); }
-export function invoicePrefixes(user: BillingUser) { return [`${invoicePrefix()}/${user.orgId}/${user.id}/`, `invoices/${user.orgId}/`]; }
+export function invoicePrefixes(user: BillingUser) {
+  const custom = invoicePrefix();
+  const prefixes = [
+    `${custom}/${user.orgId}/${user.id}/`,
+    `${custom}/${user.orgId}/`,
+    `halomail/invice/${user.orgId}/${user.id}/`,
+    `halomail/invoice/${user.orgId}/${user.id}/`,
+    `invoices/${user.orgId}/`,
+  ];
+  return Array.from(new Set(prefixes));
+}
 export function ownsInvoice(key: string, user: BillingUser) {
-  return invoicePrefixes(user).some(prefix => key.startsWith(prefix) && /^invoice_pay_[A-Za-z0-9]+\.(html|pdf)$/.test(key.slice(prefix.length)));
+  return invoicePrefixes(user).some(prefix => key.startsWith(prefix) && /^invoice_pay_[A-Za-z0-9_-]+\.(html|pdf)$/.test(key.slice(prefix.length)));
 }
 
 type RefundPayment = { id: string; order_id: string; status: string; amount: number | string; currency: string };

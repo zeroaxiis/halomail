@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import styles from "@/components/auth/login.module.css";
+import { GoogleSignInButton, AuthDivider } from "@/components/auth/google-button";
 import { rpc } from "@/lib/api";
 import { saveSession, type SessionUser } from "@/lib/auth";
 
@@ -107,6 +108,23 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const err = searchParams.get("error");
+    if (err) {
+      const messages: Record<string, string> = {
+        google_not_configured: "Google sign-in is not configured yet. Please configure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.",
+        google_cancelled: "Google sign-in was cancelled.",
+        unverified_email: "Your Google email address is unverified.",
+        invalid_state: "Your sign-in session expired. Please try again.",
+        missing_code: "Missing authorization code from Google.",
+        token_exchange_failed: "Could not exchange authorization code with Google.",
+        login_failed: "Could not sign in with Google. Please try again.",
+      };
+      setError(messages[err] || decodeURIComponent(err));
+    }
+  }, []);
+
   if (checkingAuth) {
     return (
       <div className={styles.form}>
@@ -122,6 +140,12 @@ export default function LoginPage() {
       <p className={styles.formDescription}>
         {challengeId ? `Enter the 6-digit code we sent to ${email}.` : "Sign in to your HaloMail workspace."}
       </p>
+      {!challengeId && (
+        <>
+          <GoogleSignInButton text="Continue with Google" />
+          <AuthDivider text="or continue with email" />
+        </>
+      )}
         <form onSubmit={onSubmit} className={styles.fields} aria-busy={loading}>
           {challengeId ? (
             <div className={styles.field}>
