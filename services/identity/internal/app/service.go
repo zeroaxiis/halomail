@@ -88,6 +88,21 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (*
 		return nil, errs.Invalid("use an 8 to 1024 character password and a name up to 200 characters")
 	}
 
+	// Purge expired deleted account if any (>24h since scheduled)
+	_, _ = s.users.PurgeExpiredUserByEmail(ctx, email)
+
+	// Check if active account exists
+	existing, err := s.users.GetUserByEmail(ctx, email)
+	if err == nil && existing != nil {
+		if existing.ScheduledDeleteAt != nil && s.now().After(*existing.ScheduledDeleteAt) {
+			_ = s.users.HardDeleteUser(ctx, existing.ID)
+		} else if existing.Role != domain.RoleOwner {
+			return nil, errs.Conflict("You are already a member of a team workspace with this email. You cannot create a new account until you leave your current team or delete your account.")
+		} else {
+			return nil, errs.Conflict("An account with this email already exists. Please log in instead.")
+		}
+	}
+
 	hash, err := crypto.HashPassword(password)
 	if err != nil {
 		return nil, errs.Wrap(err, errs.KindInternal, "hash password")
@@ -129,12 +144,19 @@ func (s *Service) checkCredentials(ctx context.Context, email, password string) 
 	if len(password) > 1024 || len(email) > 254 {
 		return nil, errs.Unauthorized("invalid email or password")
 	}
-	user, err := s.users.GetUserByEmail(ctx, normalizeEmail(email))
+	normEmail := normalizeEmail(email)
+	_, _ = s.users.PurgeExpiredUserByEmail(ctx, normEmail)
+
+	user, err := s.users.GetUserByEmail(ctx, normEmail)
 	if err != nil {
 		if errs.KindOf(err) == errs.KindNotFound {
 			return nil, errs.Unauthorized("invalid email or password")
 		}
 		return nil, err
+	}
+	if user.ScheduledDeleteAt != nil && s.now().After(*user.ScheduledDeleteAt) {
+		_ = s.users.HardDeleteUser(ctx, user.ID)
+		return nil, errs.Unauthorized("invalid email or password")
 	}
 	ok, err := crypto.VerifyPassword(user.PasswordHash, password)
 	if err != nil || !ok {
@@ -243,6 +265,38 @@ func (s *Service) UpdateUser(ctx context.Context, userID, name, handle, avatarUR
 		return nil, err
 	}
 	return user, nil
+}
+
+func (s *Service) ScheduleDeleteAccount(ctx context.Context, userID string) (*time.Time, error) {
+	user, err := s.users.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if user.Role == domain.RoleOwner {
+		members, err := s.team.ListMembersByOrg(ctx, user.OrgID)
+		if err == nil && len(members) > 1 {
+			return nil, errs.Forbidden("as the workspace owner with active teammates, please transfer ownership or remove teammates before deleting your account")
+		}
+	}
+	scheduledAt := s.now().Add(24 * time.Hour)
+	if err := s.users.ScheduleAccountDeletion(ctx, userID, scheduledAt); err != nil {
+		return nil, err
+	}
+	_ = s.sessions.RevokeAllForUser(ctx, userID)
+	s.record(ctx, user.OrgID, userID, "user.deletion_scheduled", "user", userID)
+	return &scheduledAt, nil
+}
+
+func (s *Service) CancelDeleteAccount(ctx context.Context, userID string) error {
+	user, err := s.users.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if err := s.users.CancelAccountDeletion(ctx, userID); err != nil {
+		return err
+	}
+	s.record(ctx, user.OrgID, userID, "user.deletion_cancelled", "user", userID)
+	return nil
 }
 
 func (s *Service) ProcessSubscription(ctx context.Context, orgID, customerID, subID, tier, status string, cycleEnd time.Time) error {
@@ -401,6 +455,9 @@ func (s *Service) RecordAudit(ctx context.Context, in RecordAuditInput) (string,
 
 // record is a best-effort internal audit append (errors are swallowed).
 func (s *Service) record(ctx context.Context, orgID, actorID, action, targetType, targetID string) {
+	if s.audit == nil {
+		return
+	}
 	_ = s.audit.Insert(ctx, &domain.AuditLog{
 		ID:         idgen.Prefixed("aud_"),
 		OrgID:      orgID,
@@ -803,6 +860,12 @@ func (s *Service) AcceptInvitation(ctx context.Context, token string, currentUse
 		return nil, IssuedSession{}, err
 	}
 
+	if user.ScheduledDeleteAt != nil {
+		_ = s.users.CancelAccountDeletion(ctx, user.ID)
+		user.ScheduledDeleteAt = nil
+		user.DeletionScheduledAt = nil
+	}
+
 	user.OrgID = inv.OrgID
 	user.Role = inv.Role
 
@@ -814,4 +877,55 @@ func (s *Service) AcceptInvitation(ctx context.Context, token string, currentUse
 	s.record(ctx, inv.OrgID, user.ID, "team.invitation.accepted", "invitation", inv.ID)
 	return user, session, nil
 }
+
+func (s *Service) GetInvitation(ctx context.Context, token string) (*domain.Invitation, string, bool, error) {
+	inv, err := s.team.GetInvitationByToken(ctx, token)
+	if err != nil {
+		return nil, "", false, err
+	}
+	if inv.Status != domain.InvitePending {
+		return nil, "", false, errs.Invalid("this invitation has already been processed or revoked")
+	}
+	if s.now().After(inv.ExpiresAt) {
+		return nil, "", false, errs.Invalid("this invitation has expired")
+	}
+
+	orgName, _ := s.team.GetOrgName(ctx, inv.OrgID)
+	if strings.TrimSpace(orgName) == "" {
+		orgName = "Workspace"
+	}
+
+	// Purge expired deleted account if any (>24h since scheduled)
+	_, _ = s.users.PurgeExpiredUserByEmail(ctx, inv.Email)
+
+	existing, err := s.users.GetUserByEmail(ctx, inv.Email)
+	userExists := false
+	if err == nil && existing != nil {
+		if existing.ScheduledDeleteAt != nil && s.now().After(*existing.ScheduledDeleteAt) {
+			_ = s.users.HardDeleteUser(ctx, existing.ID)
+			userExists = false
+		} else {
+			userExists = true
+		}
+	}
+
+	return inv, orgName, userExists, nil
+}
+
+func (s *Service) LeaveTeam(ctx context.Context, userID string) error {
+	user, err := s.users.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if user.Role == domain.RoleOwner {
+		return errs.Forbidden("the workspace owner cannot leave the workspace; transfer ownership or delete the organization instead")
+	}
+	if err := s.team.LeaveTeam(ctx, user.OrgID, userID); err != nil {
+		return err
+	}
+	_ = s.sessions.RevokeAllForUser(ctx, userID)
+	s.record(ctx, user.OrgID, userID, "team.member.left", "user", userID)
+	return nil
+}
+
 

@@ -22,6 +22,8 @@ message User {
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
   string role = 10;
+  google.protobuf.Timestamp deletion_scheduled_at = 11;
+  google.protobuf.Timestamp scheduled_delete_at = 12;
 }
 
 message Org {
@@ -149,6 +151,18 @@ service UserService {
   // GetUserByHandle returns the public profile backing a booking page.
   rpc GetUserByHandle(GetUserByHandleRequest) returns (GetUserByHandleResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc ScheduleDeleteAccount(ScheduleDeleteAccountRequest) returns (ScheduleDeleteAccountResponse);
+  rpc CancelDeleteAccount(CancelDeleteAccountRequest) returns (CancelDeleteAccountResponse);
+}
+
+message ScheduleDeleteAccountRequest {}
+message ScheduleDeleteAccountResponse {
+  google.protobuf.Timestamp scheduled_delete_at = 1;
+}
+
+message CancelDeleteAccountRequest {}
+message CancelDeleteAccountResponse {
+  bool success = 1;
 }
 
 message GetUserRequest {
@@ -279,6 +293,8 @@ service TeamService {
   rpc RemoveTeamMember(RemoveTeamMemberRequest) returns (RemoveTeamMemberResponse);
   rpc RevokeInvitation(RevokeInvitationRequest) returns (RevokeInvitationResponse);
   rpc AcceptInvitation(AcceptInvitationRequest) returns (AcceptInvitationResponse);
+  rpc GetInvitation(GetInvitationRequest) returns (GetInvitationResponse);
+  rpc LeaveTeam(LeaveTeamRequest) returns (LeaveTeamResponse);
 }
 
 message ListTeamMembersRequest {}
@@ -324,3 +340,15 @@ message AcceptInvitationResponse {
   User user = 1;
   Session session = 2;
 }
+
+message GetInvitationRequest {
+  string token = 1;
+}
+message GetInvitationResponse {
+  Invitation invitation = 1;
+  string org_name = 2;
+  bool user_exists = 3;
+}
+
+message LeaveTeamRequest {}
+message LeaveTeamResponse {}

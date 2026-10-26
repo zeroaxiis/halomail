@@ -23,7 +23,7 @@ type Users struct{ pool *pgxpool.Pool }
 
 func NewUsers(pool *pgxpool.Pool) *Users { return &Users{pool: pool} }
 
-const userColumns = `id, org_id, email, name, handle, avatar_url, timezone, password_hash, created_at, updated_at, COALESCE(role, 'owner')`
+const userColumns = `id, org_id, email, name, handle, avatar_url, timezone, password_hash, created_at, updated_at, COALESCE(role, 'owner'), deletion_scheduled_at, scheduled_delete_at`
 
 func (r *Users) CreateOrgAndUser(ctx context.Context, org *domain.Org, user *domain.User) error {
 	tx, err := r.pool.Begin(ctx)
@@ -86,10 +86,71 @@ func (r *Users) UpdateOrgBilling(ctx context.Context, orgID, customerID, subID, 
 	return mapWrite(err)
 }
 
+func (r *Users) ScheduleAccountDeletion(ctx context.Context, userID string, scheduledAt time.Time) error {
+	now := time.Now()
+	_, err := r.pool.Exec(ctx,
+		`UPDATE users SET deletion_scheduled_at = $1, scheduled_delete_at = $2, updated_at = $1 WHERE id = $3`,
+		now, scheduledAt, userID,
+	)
+	return mapWrite(err)
+}
+
+func (r *Users) CancelAccountDeletion(ctx context.Context, userID string) error {
+	_, err := r.pool.Exec(ctx,
+		`UPDATE users SET deletion_scheduled_at = NULL, scheduled_delete_at = NULL, updated_at = now() WHERE id = $1`,
+		userID,
+	)
+	return mapWrite(err)
+}
+
+func (r *Users) HardDeleteUser(ctx context.Context, userID string) error {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var orgID, role string
+	err = tx.QueryRow(ctx, `SELECT org_id, role FROM users WHERE id = $1`, userID).Scan(&orgID, &role)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil
+		}
+		return err
+	}
+
+	if _, err := tx.Exec(ctx, `DELETE FROM users WHERE id = $1`, userID); err != nil {
+		return err
+	}
+
+	var remainingMembers int
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM users WHERE org_id = $1`, orgID).Scan(&remainingMembers); err == nil && remainingMembers == 0 {
+		_, _ = tx.Exec(ctx, `DELETE FROM orgs WHERE id = $1`, orgID)
+	}
+
+	return tx.Commit(ctx)
+}
+
+func (r *Users) PurgeExpiredUserByEmail(ctx context.Context, email string) (bool, error) {
+	var userID string
+	err := r.pool.QueryRow(ctx,
+		`SELECT id FROM users WHERE lower(email) = lower($1) AND scheduled_delete_at IS NOT NULL AND scheduled_delete_at <= now()`,
+		email,
+	).Scan(&userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, r.HardDeleteUser(ctx, userID)
+}
+
 func scanUser(row pgx.Row) (*domain.User, error) {
 	var u domain.User
 	if err := row.Scan(&u.ID, &u.OrgID, &u.Email, &u.Name, &u.Handle, &u.AvatarURL,
-		&u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role); err != nil {
+		&u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role,
+		&u.DeletionScheduledAt, &u.ScheduledDeleteAt); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errs.NotFound("user not found")
 		}
@@ -130,6 +191,11 @@ func (r *Sessions) GetByRefreshHash(ctx context.Context, hash string) (*domain.S
 
 func (r *Sessions) Revoke(ctx context.Context, id string) error {
 	_, err := r.pool.Exec(ctx, `UPDATE sessions SET revoked = true WHERE id = $1`, id)
+	return err
+}
+
+func (r *Sessions) RevokeAllForUser(ctx context.Context, userID string) error {
+	_, err := r.pool.Exec(ctx, `UPDATE sessions SET revoked = true WHERE user_id = $1`, userID)
 	return err
 }
 

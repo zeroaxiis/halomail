@@ -150,6 +150,33 @@ func (h *Handlers) UpdateUser(ctx context.Context, req *connect.Request[identity
 	return connect.NewResponse(&identityv1.UpdateUserResponse{User: toProtoUser(user)}), nil
 }
 
+func (h *Handlers) ScheduleDeleteAccount(ctx context.Context, req *connect.Request[identityv1.ScheduleDeleteAccountRequest]) (*connect.Response[identityv1.ScheduleDeleteAccountResponse], error) {
+	userID, _, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	scheduledAt, err := h.app.ScheduleDeleteAccount(ctx, userID)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&identityv1.ScheduleDeleteAccountResponse{
+		ScheduledDeleteAt: ts(*scheduledAt),
+	}), nil
+}
+
+func (h *Handlers) CancelDeleteAccount(ctx context.Context, req *connect.Request[identityv1.CancelDeleteAccountRequest]) (*connect.Response[identityv1.CancelDeleteAccountResponse], error) {
+	userID, _, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	if err := h.app.CancelDeleteAccount(ctx, userID); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&identityv1.CancelDeleteAccountResponse{
+		Success: true,
+	}), nil
+}
+
 // ---- ApiKeyService -------------------------------------------------------
 
 func (h *Handlers) CreateApiKey(ctx context.Context, req *connect.Request[identityv1.CreateApiKeyRequest]) (*connect.Response[identityv1.CreateApiKeyResponse], error) {
@@ -362,6 +389,29 @@ func (h *Handlers) AcceptInvitation(ctx context.Context, req *connect.Request[id
 		User:    toProtoUser(user),
 		Session: toProtoSession(session),
 	}), nil
+}
+
+func (h *Handlers) GetInvitation(ctx context.Context, req *connect.Request[identityv1.GetInvitationRequest]) (*connect.Response[identityv1.GetInvitationResponse], error) {
+	inv, orgName, userExists, err := h.app.GetInvitation(ctx, req.Msg.GetToken())
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&identityv1.GetInvitationResponse{
+		Invitation: toProtoInvitation(*inv),
+		OrgName:    orgName,
+		UserExists: userExists,
+	}), nil
+}
+
+func (h *Handlers) LeaveTeam(ctx context.Context, req *connect.Request[identityv1.LeaveTeamRequest]) (*connect.Response[identityv1.LeaveTeamResponse], error) {
+	userID, _, err := h.principal(ctx, req)
+	if err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	if err := h.app.LeaveTeam(ctx, userID); err != nil {
+		return nil, connectutil.ToConnect(err)
+	}
+	return connect.NewResponse(&identityv1.LeaveTeamResponse{}), nil
 }
 
 func atoiSafe(s string) int {

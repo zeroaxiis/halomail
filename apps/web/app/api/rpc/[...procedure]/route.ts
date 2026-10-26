@@ -96,7 +96,8 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pr
       response.cookies.set("halomail_access", "", { ...cookieOptions, maxAge: 0 });
       response.cookies.set("halomail_refresh", "", { ...cookieOptions, maxAge: 0 });
     }
-    if (signingOut) {
+    const clearingSession = signingOut || (upstream.ok && (procedure.endsWith("UserService/ScheduleDeleteAccount") || procedure.endsWith("TeamService/LeaveTeam")));
+    if (clearingSession) {
       response.cookies.set("halomail_access", "", { ...cookieOptions, maxAge: 0 });
       response.cookies.set("halomail_refresh", "", { ...cookieOptions, maxAge: 0 });
     }

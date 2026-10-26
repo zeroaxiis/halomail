@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { AcceptInvitationRequest, AcceptInvitationResponse, CreateApiKeyRequest, CreateApiKeyResponse, ForgotPasswordRequest, ForgotPasswordResponse, GetCurrentUserRequest, GetCurrentUserResponse, GetUserByHandleRequest, GetUserByHandleResponse, GetUserRequest, GetUserResponse, InviteTeamMemberRequest, InviteTeamMemberResponse, ListApiKeysRequest, ListApiKeysResponse, ListAuditLogsRequest, ListAuditLogsResponse, ListTeamMembersRequest, ListTeamMembersResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, RecordAuditLogRequest, RecordAuditLogResponse, RefreshSessionRequest, RefreshSessionResponse, RegisterRequest, RegisterResponse, RemoveTeamMemberRequest, RemoveTeamMemberResponse, ResetPasswordRequest, ResetPasswordResponse, RevokeApiKeyRequest, RevokeApiKeyResponse, RevokeInvitationRequest, RevokeInvitationResponse, UpdateMemberRoleRequest, UpdateMemberRoleResponse, UpdateUserRequest, UpdateUserResponse, VerifyApiKeyRequest, VerifyApiKeyResponse, VerifyTokenRequest, VerifyTokenResponse } from "./identity_pb.js";
+import { AcceptInvitationRequest, AcceptInvitationResponse, CancelDeleteAccountRequest, CancelDeleteAccountResponse, CreateApiKeyRequest, CreateApiKeyResponse, ForgotPasswordRequest, ForgotPasswordResponse, GetCurrentUserRequest, GetCurrentUserResponse, GetInvitationRequest, GetInvitationResponse, GetUserByHandleRequest, GetUserByHandleResponse, GetUserRequest, GetUserResponse, InviteTeamMemberRequest, InviteTeamMemberResponse, LeaveTeamRequest, LeaveTeamResponse, ListApiKeysRequest, ListApiKeysResponse, ListAuditLogsRequest, ListAuditLogsResponse, ListTeamMembersRequest, ListTeamMembersResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, RecordAuditLogRequest, RecordAuditLogResponse, RefreshSessionRequest, RefreshSessionResponse, RegisterRequest, RegisterResponse, RemoveTeamMemberRequest, RemoveTeamMemberResponse, ResetPasswordRequest, ResetPasswordResponse, RevokeApiKeyRequest, RevokeApiKeyResponse, RevokeInvitationRequest, RevokeInvitationResponse, ScheduleDeleteAccountRequest, ScheduleDeleteAccountResponse, UpdateMemberRoleRequest, UpdateMemberRoleResponse, UpdateUserRequest, UpdateUserResponse, VerifyApiKeyRequest, VerifyApiKeyResponse, VerifyTokenRequest, VerifyTokenResponse } from "./identity_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -122,6 +122,24 @@ export const UserService = {
       name: "UpdateUser",
       I: UpdateUserRequest,
       O: UpdateUserResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.UserService.ScheduleDeleteAccount
+     */
+    scheduleDeleteAccount: {
+      name: "ScheduleDeleteAccount",
+      I: ScheduleDeleteAccountRequest,
+      O: ScheduleDeleteAccountResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.UserService.CancelDeleteAccount
+     */
+    cancelDeleteAccount: {
+      name: "CancelDeleteAccount",
+      I: CancelDeleteAccountRequest,
+      O: CancelDeleteAccountResponse,
       kind: MethodKind.Unary,
     },
   }
@@ -261,6 +279,24 @@ export const TeamService = {
       name: "AcceptInvitation",
       I: AcceptInvitationRequest,
       O: AcceptInvitationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.GetInvitation
+     */
+    getInvitation: {
+      name: "GetInvitation",
+      I: GetInvitationRequest,
+      O: GetInvitationResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc halomail.identity.v1.TeamService.LeaveTeam
+     */
+    leaveTeam: {
+      name: "LeaveTeam",
+      I: LeaveTeamRequest,
+      O: LeaveTeamResponse,
       kind: MethodKind.Unary,
     },
   }

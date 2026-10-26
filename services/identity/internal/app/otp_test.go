@@ -36,6 +36,18 @@ func (r *otpUsers) CreateOrgAndUser(_ context.Context, _ *domain.Org, u *domain.
 	r.user = u
 	return nil
 }
+func (r *otpUsers) PurgeExpiredUserByEmail(_ context.Context, _ string) (bool, error) {
+	return false, nil
+}
+func (r *otpUsers) HardDeleteUser(_ context.Context, _ string) error {
+	return nil
+}
+func (r *otpUsers) ScheduleAccountDeletion(_ context.Context, _ string, _ time.Time) error {
+	return nil
+}
+func (r *otpUsers) CancelAccountDeletion(_ context.Context, _ string) error {
+	return nil
+}
 
 type otpSessions struct {
 	SessionRepo
@@ -44,6 +56,10 @@ type otpSessions struct {
 
 func (r *otpSessions) Create(context.Context, *domain.Session) error {
 	r.created.Add(1)
+	return nil
+}
+
+func (r *otpSessions) RevokeAllForUser(context.Context, string) error {
 	return nil
 }
 

@@ -22,17 +22,26 @@ func toProtoUser(u *domain.User) *identityv1.User {
 	if u == nil {
 		return nil
 	}
+	var deletionScheduledAt, scheduledDeleteAt *timestamppb.Timestamp
+	if u.DeletionScheduledAt != nil {
+		deletionScheduledAt = timestamppb.New(*u.DeletionScheduledAt)
+	}
+	if u.ScheduledDeleteAt != nil {
+		scheduledDeleteAt = timestamppb.New(*u.ScheduledDeleteAt)
+	}
 	return &identityv1.User{
-		Id:        u.ID,
-		Email:     u.Email,
-		Name:      u.Name,
-		Handle:    u.Handle,
-		AvatarUrl: u.AvatarURL,
-		Timezone:  u.Timezone,
-		OrgId:     u.OrgID,
-		Role:      u.Role,
-		CreatedAt: ts(u.CreatedAt),
-		UpdatedAt: ts(u.UpdatedAt),
+		Id:                  u.ID,
+		Email:               u.Email,
+		Name:                u.Name,
+		Handle:              u.Handle,
+		AvatarUrl:           u.AvatarURL,
+		Timezone:            u.Timezone,
+		OrgId:               u.OrgID,
+		Role:                u.Role,
+		CreatedAt:           ts(u.CreatedAt),
+		UpdatedAt:           ts(u.UpdatedAt),
+		DeletionScheduledAt: deletionScheduledAt,
+		ScheduledDeleteAt:   scheduledDeleteAt,
 	}
 }
 

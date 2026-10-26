@@ -94,6 +94,10 @@ func (m *mockTeamRepo) AcceptInvitation(ctx context.Context, inv *domain.Invitat
 	return nil
 }
 
+func (m *mockTeamRepo) LeaveTeam(ctx context.Context, orgID, userID string) error {
+	return nil
+}
+
 type mockUserRepoForTeam struct {
 	UserRepo
 	users map[string]*domain.User
@@ -114,6 +118,19 @@ func (m *mockUserRepoForTeam) GetUserByEmail(ctx context.Context, email string) 
 		}
 	}
 	return nil, errs.NotFound("user not found")
+}
+
+func (m *mockUserRepoForTeam) PurgeExpiredUserByEmail(_ context.Context, _ string) (bool, error) {
+	return false, nil
+}
+func (m *mockUserRepoForTeam) HardDeleteUser(_ context.Context, _ string) error {
+	return nil
+}
+func (m *mockUserRepoForTeam) ScheduleAccountDeletion(_ context.Context, _ string, _ time.Time) error {
+	return nil
+}
+func (m *mockUserRepoForTeam) CancelAccountDeletion(_ context.Context, _ string) error {
+	return nil
 }
 
 func TestTeamManagementTierLimits(t *testing.T) {

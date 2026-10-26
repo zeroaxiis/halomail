@@ -33,7 +33,8 @@ func (r *Team) ListMembersByOrg(ctx context.Context, orgID string) ([]domain.Use
 	for rows.Next() {
 		var u domain.User
 		if err := rows.Scan(&u.ID, &u.OrgID, &u.Email, &u.Name, &u.Handle, &u.AvatarURL,
-			&u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role); err != nil {
+			&u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role,
+			&u.DeletionScheduledAt, &u.ScheduledDeleteAt); err != nil {
 			return nil, err
 		}
 		members = append(members, u)
@@ -194,7 +195,7 @@ func (r *Team) RemoveUserFromOrg(ctx context.Context, orgID, userID string) erro
 
 	var u domain.User
 	err = tx.QueryRow(ctx, `SELECT `+userColumns+` FROM users WHERE id = $1 AND org_id = $2`, userID, orgID).
-		Scan(&u.ID, &u.OrgID, &u.Email, &u.Name, &u.Handle, &u.AvatarURL, &u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role)
+		Scan(&u.ID, &u.OrgID, &u.Email, &u.Name, &u.Handle, &u.AvatarURL, &u.Timezone, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt, &u.Role, &u.DeletionScheduledAt, &u.ScheduledDeleteAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return errs.NotFound("user not found in this organization")
@@ -242,6 +243,34 @@ func (r *Team) AcceptInvitation(ctx context.Context, inv *domain.Invitation, use
 		`UPDATE org_invitations SET status = 'accepted' WHERE id = $1`,
 		inv.ID)
 	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
+}
+
+func (r *Team) LeaveTeam(ctx context.Context, orgID, userID string) error {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var role string
+	err = tx.QueryRow(ctx, `SELECT role FROM users WHERE id = $1 AND org_id = $2`, userID, orgID).Scan(&role)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return errs.NotFound("user not found in this organization")
+		}
+		return err
+	}
+
+	if role == domain.RoleOwner {
+		return errs.Forbidden("the workspace owner cannot leave the workspace; transfer ownership or delete the organization instead")
+	}
+
+	// Delete the member user record, which frees their email so they can create a new account or accept another invite
+	if _, err := tx.Exec(ctx, `DELETE FROM users WHERE id = $1`, userID); err != nil {
 		return err
 	}
 
