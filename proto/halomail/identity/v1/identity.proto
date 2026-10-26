@@ -352,4 +352,3 @@ message GetInvitationResponse {
 
 message LeaveTeamRequest {}
 message LeaveTeamResponse {}
-
