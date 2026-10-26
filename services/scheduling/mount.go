@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -55,12 +56,39 @@ func Mount(mux *http.ServeMux, d Deps) {
 	mux.Handle(schedulingv1connect.NewBookingServiceHandler(h, opts))
 	mux.Handle(schedulingv1connect.NewCalendarServiceHandler(h, opts))
 	mux.HandleFunc("POST /v1/meetings/info", func(writer http.ResponseWriter, request *http.Request) {
-		owner, err := accesskey.Verify(request.Context(), d.Pool, request.Header.Get("X-HaloMail-Key"), "meetings")
-		if err != nil {
-			httpx.Error(writer, err)
-			return
+		key := request.Header.Get("X-HaloMail-Key")
+		var ownerID, ownerName, ownerHandle, avatarURL, tier string
+		if key != "" {
+			owner, err := accesskey.Verify(request.Context(), d.Pool, key, "meetings")
+			if err != nil {
+				httpx.Error(writer, err)
+				return
+			}
+			ownerID = owner.ID
+			ownerName = owner.Name
+			ownerHandle = owner.Handle
+			_ = d.Pool.QueryRow(request.Context(), `SELECT u.avatar_url, COALESCE(o.tier, 'free') FROM users u JOIN orgs o ON o.id = u.org_id WHERE u.id = $1`, ownerID).Scan(&avatarURL, &tier)
+		} else {
+			var body struct {
+				Handle string `json:"handle"`
+			}
+			_ = json.NewDecoder(request.Body).Decode(&body)
+			handle := strings.TrimSpace(body.Handle)
+			if handle == "" {
+				handle = strings.TrimSpace(request.URL.Query().Get("handle"))
+			}
+			if handle == "" {
+				httpx.Error(writer, errs.Invalid("handle or meeting access key required"))
+				return
+			}
+			err := d.Pool.QueryRow(request.Context(), `SELECT u.id, u.name, u.handle, u.avatar_url, COALESCE(o.tier, 'free') FROM users u JOIN orgs o ON o.id = u.org_id WHERE LOWER(u.handle) = LOWER($1)`, handle).Scan(&ownerID, &ownerName, &ownerHandle, &avatarURL, &tier)
+			if err != nil {
+				httpx.Error(writer, errs.NotFound("host not found"))
+				return
+			}
 		}
-		events, err := svc.ListEventTypes(request.Context(), owner.ID)
+
+		events, err := svc.ListEventTypes(request.Context(), ownerID)
 		if err != nil {
 			httpx.Error(writer, err)
 			return
@@ -71,7 +99,18 @@ func Mount(mux *http.ServeMux, d Deps) {
 				public = append(public, map[string]any{"id": event.ID, "title": event.Title, "description": event.Description, "durationMinutes": event.DurationMinutes})
 			}
 		}
-		httpx.JSON(writer, 200, map[string]any{"owner": map[string]string{"name": owner.Name, "handle": owner.Handle}, "events": public})
+		watermark := (tier == "free" || tier == "")
+		httpx.JSON(writer, 200, map[string]any{
+			"owner": map[string]string{
+				"id":     ownerID,
+				"name":   ownerName,
+				"handle": ownerHandle,
+				"avatar": avatarURL,
+				"tier":   tier,
+			},
+			"watermark": watermark,
+			"events":    public,
+		})
 	})
 	mux.HandleFunc("POST /v1/calendar/callback", func(writer http.ResponseWriter, request *http.Request) {
 		owner, err := httpx.Owner(request, authn.NewVerifier(d.JWTSecret))
