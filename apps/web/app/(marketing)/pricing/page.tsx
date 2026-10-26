@@ -82,16 +82,16 @@ export default async function PricingPage() {
           className="bg-grid pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse_at_top,black,transparent_65%)]"
         />
 
-        <div className="container relative py-20 md:py-24">
+        <div className="container relative py-16 sm:py-20 md:py-24">
           <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
             <Badge variant="outline" className="mb-6 gap-1.5 bg-card/60 py-1 pl-2 pr-3 backdrop-blur">
               <Sparkles className="size-3.5 text-brand" />
               <span className="font-normal text-muted-foreground">Pricing</span>
             </Badge>
-            <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
               A useful Free tier. A clear upgrade.
             </h1>
-            <p className="mt-5 text-balance text-lg text-muted-foreground">
+            <p className="mt-4 sm:mt-5 text-balance text-base sm:text-lg text-muted-foreground">
               ZeroAxiis connects forms, enquiries and approval-based meeting requests in one product. Free supports a real small-site workflow; Pro adds automation and capacity.
             </p>
           </div>
@@ -99,25 +99,28 @@ export default async function PricingPage() {
           {/* Dynamic Pricing Client */}
           <PricingClient initialCountryCode={countryCode} />
 
-          <p className="mt-12 text-center text-xs text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-10 sm:mt-12 text-center text-xs text-muted-foreground max-w-2xl mx-auto px-2">
             Yearly is paid upfront. Features and monthly usage limits remain the same for both billing intervals. Prices are per workspace, including the seats listed in the matrix.
           </p>
         </div>
       </section>
 
       {/* Comparison table */}
-      <section className="container py-20 md:py-24">
-        <div className="mb-10 flex flex-col items-center gap-4 text-center">
+      <section className="container py-16 sm:py-20 md:py-24">
+        <div className="mb-8 sm:mb-10 flex flex-col items-center gap-3 sm:gap-4 text-center">
           <Badge variant="outline" className="bg-card/60 px-3 py-1 font-normal text-muted-foreground">
             Feature matrix
           </Badge>
-          <h2 className="max-w-xl text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="max-w-xl text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
             Compare plans side by side
           </h2>
+          <p className="text-xs text-muted-foreground md:hidden">
+            Swipe table horizontally to compare all features &rarr;
+          </p>
         </div>
 
         <Card className="mx-auto max-w-5xl overflow-hidden p-0 overflow-x-auto">
-          <div className="min-w-[700px] grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] border-b border-border px-6 py-3.5 text-[11px] uppercase tracking-wide text-muted-foreground">
+          <div className="min-w-[650px] sm:min-w-[700px] grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] border-b border-border px-4 sm:px-6 py-3.5 text-[11px] uppercase tracking-wide text-muted-foreground">
             <span>Feature</span>
             <span className="text-center">Free</span>
             <span className="text-center">Pro</span>
@@ -128,7 +131,7 @@ export default async function PricingPage() {
           {COMPARE.map(([label, free, pro, business, enterprise]) => (
             <div
               key={label}
-              className="min-w-[700px] grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] items-center border-b border-border px-6 py-3.5 text-sm last:border-0 hover:bg-muted/30 transition-colors"
+              className="min-w-[650px] sm:min-w-[700px] grid grid-cols-[1.6fr_1fr_1fr_1fr_1fr] items-center border-b border-border px-4 sm:px-6 py-3.5 text-sm last:border-0 hover:bg-muted/30 transition-colors"
             >
               <span className="pr-4 text-muted-foreground">{label}</span>
               <span className="text-center">
@@ -149,16 +152,16 @@ export default async function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="container py-20 md:py-24">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <h2 className="max-w-sm text-3xl font-semibold tracking-tight md:text-4xl">
+      <section className="container py-16 sm:py-20 md:py-24">
+        <div className="grid gap-8 sm:gap-10 lg:grid-cols-2">
+          <h2 className="max-w-sm text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
             Frequently asked questions
           </h2>
-          <div className="flex flex-col items-start gap-5">
-            <p className="max-w-md text-muted-foreground">
+          <div className="flex flex-col items-start gap-4 sm:gap-5">
+            <p className="max-w-md text-sm sm:text-base text-muted-foreground">
               Have more questions? Feel free to reach out to our team or consult our detailed documentation for integration help.
             </p>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="w-full sm:w-auto">
               <a href="/docs/index.html">
                 Read the docs <ArrowUpRight className="size-4" />
               </a>
@@ -166,10 +169,10 @@ export default async function PricingPage() {
           </div>
         </div>
 
-        <div className="mt-14 grid gap-x-10 gap-y-8 border-t border-border pt-10 md:grid-cols-2">
+        <div className="mt-10 sm:mt-14 grid gap-x-10 gap-y-6 sm:gap-y-8 border-t border-border pt-8 sm:pt-10 md:grid-cols-2">
           {FAQS.map((f) => (
             <div key={f.q}>
-              <h3 className="font-medium tracking-tight">{f.q}</h3>
+              <h3 className="font-medium tracking-tight text-base">{f.q}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
             </div>
           ))}
@@ -177,18 +180,18 @@ export default async function PricingPage() {
       </section>
 
       {/* CTA */}
-      <section className="container pb-24">
-        <Card className="relative overflow-hidden p-12 text-center md:p-16">
+      <section className="container pb-20 sm:pb-24">
+        <Card className="relative overflow-hidden p-6 sm:p-12 md:p-16 text-center">
           <div aria-hidden className="bg-spotlight pointer-events-none absolute inset-0" />
-          <div className="relative flex flex-col items-center gap-5">
-            <h2 className="max-w-xl text-3xl font-semibold tracking-tight md:text-4xl">
+          <div className="relative flex flex-col items-center gap-4 sm:gap-5">
+            <h2 className="max-w-xl text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
               Start free. Upgrade when you need more.
             </h2>
-            <p className="max-w-md text-muted-foreground">
+            <p className="max-w-md text-sm sm:text-base text-muted-foreground">
               Experience the platform with our generous free tier, and easily move to a paid plan as you grow.
             </p>
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg">
+            <div className="mt-2 flex w-full max-w-xs sm:max-w-none flex-col sm:flex-row items-center justify-center gap-3">
+              <Button asChild size="lg" className="w-full sm:w-auto">
                 <Link href="/register">
                   Create your account <ArrowRight className="size-4" />
                 </Link>

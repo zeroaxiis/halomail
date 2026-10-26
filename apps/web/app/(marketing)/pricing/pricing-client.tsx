@@ -198,44 +198,44 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
   };
 
   return (
-    <div className="mt-14">
-      <div className="flex justify-center items-center mb-12">
+    <div className="mt-10 sm:mt-14">
+      <div className="flex justify-center items-center mb-8 sm:mb-12">
         <div className="flex items-center gap-1 rounded-full border border-border p-1 bg-card/60 backdrop-blur">
           <button
             onClick={() => setBillingCycle("monthly")}
-            className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${billingCycle === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            className={`rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium transition-colors ${billingCycle === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
           >
             Monthly
           </button>
           <button
             onClick={() => setBillingCycle("yearly")}
-            className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors ${billingCycle === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            className={`rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium transition-colors ${billingCycle === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
           >
             Yearly
           </button>
         </div>
       </div>
 
-      <div className="mx-auto mt-14 grid max-w-6xl gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mx-auto mt-8 sm:mt-14 grid max-w-6xl gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
         {/* Free Plan */}
-        <Card className="relative p-7 flex flex-col bg-card/40 backdrop-blur">
+        <Card className="relative p-5 sm:p-7 flex flex-col bg-card/40 backdrop-blur">
           <div className="flex items-center gap-2">
             <Server className="size-4 text-muted-foreground" />
             <span className="font-medium text-lg">Free</span>
           </div>
-          <div className="mt-4 flex flex-col min-h-[64px]">
+          <div className="mt-4 flex flex-col min-h-0 sm:min-h-[64px]">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-4xl font-semibold tracking-tight">{formatPrice(currency, 0)}</span>
+              <span className="text-3xl sm:text-4xl font-semibold tracking-tight">{formatPrice(currency, 0)}</span>
             </div>
           </div>
-          <p className="mt-3 min-h-[48px] text-sm text-muted-foreground">Personal sites. 1 website, 3 forms, 100 submissions and 10 meetings / month.</p>
+          <p className="mt-3 min-h-0 md:min-h-[48px] text-sm text-muted-foreground">Personal sites. 1 website, 3 forms, 100 submissions and 10 meetings / month.</p>
           <Button asChild className="mt-6 w-full" size="lg" variant="outline">
             <Link href="/register">Start Free</Link>
           </Button>
         </Card>
 
         {/* Pro Plan */}
-        <Card className="relative p-7 flex flex-col border-brand/40 shadow-xl bg-card">
+        <Card className="relative p-5 sm:p-7 flex flex-col border-brand/40 shadow-xl bg-card">
           <span className="absolute -top-3 left-1/2 -translate-x-1/2">
             <Badge variant="brand" className="whitespace-nowrap">Recommended</Badge>
           </span>
@@ -243,9 +243,9 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
             <Sparkles className="size-4 text-brand" />
             <span className="font-medium text-lg">Pro</span>
           </div>
-          <div className="mt-4 flex flex-col min-h-[64px] justify-center">
+          <div className="mt-4 flex flex-col min-h-0 sm:min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-4xl font-semibold tracking-tight">
+              <span className="text-3xl sm:text-4xl font-semibold tracking-tight">
                 {formatPrice(currency, PRICING.Pro[billingCycle][currency as keyof typeof PRICING.Pro.monthly])}
               </span>
               <span className="text-sm text-muted-foreground">
@@ -256,7 +256,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
               <span className="text-xs text-brand font-medium mt-1">Save {getSavings("Pro")}% with yearly</span>
             )}
           </div>
-          <p className="mt-3 min-h-[48px] text-sm text-muted-foreground">Freelancers and professionals. 1,000 submissions, 100 meetings, automation.</p>
+          <p className="mt-3 min-h-0 md:min-h-[48px] text-sm text-muted-foreground">Freelancers and professionals. 1,000 submissions, 100 meetings, automation.</p>
           <Button 
             className="mt-6 w-full" 
             size="lg" 
@@ -269,14 +269,14 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
         </Card>
 
         {/* Business Plan */}
-        <Card className="relative p-7 flex flex-col bg-card/40 backdrop-blur">
+        <Card className="relative p-5 sm:p-7 flex flex-col bg-card/40 backdrop-blur">
           <div className="flex items-center gap-2">
             <Server className="size-4 text-muted-foreground" />
             <span className="font-medium text-lg">Business</span>
           </div>
-          <div className="mt-4 flex flex-col min-h-[64px] justify-center">
+          <div className="mt-4 flex flex-col min-h-0 sm:min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-4xl font-semibold tracking-tight">
+              <span className="text-3xl sm:text-4xl font-semibold tracking-tight">
                 {formatPrice(currency, PRICING.Business[billingCycle][currency as keyof typeof PRICING.Business.monthly])}
               </span>
               <span className="text-sm text-muted-foreground">
@@ -287,7 +287,7 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
               <span className="text-xs text-brand font-medium mt-1">Save {getSavings("Business")}% with yearly</span>
             )}
           </div>
-          <p className="mt-3 min-h-[48px] text-sm text-muted-foreground">Growing teams and agencies. 3 users, 2,500 submissions, 250 meetings.</p>
+          <p className="mt-3 min-h-0 md:min-h-[48px] text-sm text-muted-foreground">Growing teams and agencies. 3 users, 2,500 submissions, 250 meetings.</p>
           <Button 
             className="mt-6 w-full" 
             size="lg" 
@@ -299,20 +299,18 @@ export function PricingClient({ initialCountryCode = "US" }: { initialCountryCod
           </Button>
         </Card>
 
-
-
         {/* Enterprise Plan */}
-        <Card className="relative p-7 flex flex-col bg-card/40 backdrop-blur">
+        <Card className="relative p-5 sm:p-7 flex flex-col bg-card/40 backdrop-blur">
           <div className="flex items-center gap-2">
             <Server className="size-4 text-muted-foreground" />
             <span className="font-medium text-lg">Enterprise</span>
           </div>
-          <div className="mt-4 flex flex-col min-h-[64px] justify-center">
+          <div className="mt-4 flex flex-col min-h-0 sm:min-h-[64px] justify-center">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-4xl font-semibold tracking-tight">Custom</span>
+              <span className="text-3xl sm:text-4xl font-semibold tracking-tight">Custom</span>
             </div>
           </div>
-          <p className="mt-3 min-h-[48px] text-sm text-muted-foreground">Larger organizations. Negotiated usage, security, retention and support.</p>
+          <p className="mt-3 min-h-0 md:min-h-[48px] text-sm text-muted-foreground">Larger organizations. Negotiated usage, security, retention and support.</p>
           <Button asChild className="mt-6 w-full" size="lg" variant="outline">
             <Link href="/contact-sales">Contact Sales</Link>
           </Button>
