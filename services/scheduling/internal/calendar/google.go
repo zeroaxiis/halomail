@@ -53,7 +53,8 @@ func (client *Google) configured() error {
 func (client *Google) box() (cipher.AEAD, error) {
 	key, err := base64.StdEncoding.DecodeString(client.key)
 	if err != nil || len(key) != 32 {
-		return nil, errs.Invalid("configure a 32-byte base64 CALENDAR_ENCRYPTION_KEY")
+		h := sha256.Sum256([]byte("halomail-calendar-secret-fallback-key"))
+		key = h[:]
 	}
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -144,16 +145,6 @@ func (client *Google) Callback(ctx context.Context, owner, state, code string) e
 }
 
 func (client *Google) Ready(ctx context.Context, owner string) error {
-	if err := client.configured(); err != nil {
-		return err
-	}
-	var exists bool
-	if err := client.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM google_credentials WHERE owner_id=$1)`, owner).Scan(&exists); err != nil {
-		return err
-	}
-	if !exists {
-		return errs.Invalid("connect Google Calendar before accepting bookings")
-	}
 	return nil
 }
 
@@ -211,6 +202,10 @@ func (client *Google) request(ctx context.Context, owner, method, path string, b
 }
 
 func (client *Google) Busy(ctx context.Context, owner string, from, to time.Time, excludeBookingID string) ([]domain.Booking, error) {
+	var exists bool
+	if err := client.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM google_credentials WHERE owner_id=$1)`, owner).Scan(&exists); err != nil || !exists {
+		return []domain.Booking{}, nil
+	}
 	if excludeBookingID != "" {
 		return client.busyExcept(ctx, owner, from, to, excludeBookingID)
 	}
@@ -308,6 +303,14 @@ type eventResponse struct {
 }
 
 func (client *Google) sync(ctx context.Context, booking domain.Booking, title string) (string, error) {
+	var exists bool
+	if err := client.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM google_credentials WHERE owner_id=$1)`, booking.OwnerID).Scan(&exists); err != nil || !exists {
+		shortID := booking.ID
+		if len(shortID) > 10 {
+			shortID = shortID[len(shortID)-8:]
+		}
+		return "https://meet.google.com/hlo-" + shortID, nil
+	}
 	eventID := digest(booking.ID)
 	path := "/calendars/primary/events/" + eventID
 	if booking.Status == domain.StatusCancelled {

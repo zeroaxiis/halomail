@@ -4,12 +4,12 @@
  * Usage:
  *   <script src="https://halomail.zeroaxiis.tech/embed.js" async></script>
  *
- *   <button data-halomail-book="drdead" data-theme="obsidian">
+ *   <button data-halomail-book="drdead">
  *     Schedule a Consultation
  *   </button>
  *
- * Or Programmatically:
- *   HaloMail.book("drdead", { theme: "obsidian" });
+ * Programmatic Trigger:
+ *   HaloMail.book("drdead", { key: "..." });
  */
 (function () {
   if (typeof window === "undefined") return;
@@ -19,6 +19,10 @@
   try {
     if (SCRIPT_SRC && SCRIPT_SRC.startsWith("http")) {
       BASE_URL = new URL(SCRIPT_SRC).origin;
+    } else if (typeof window !== "undefined" && window.location.origin) {
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        BASE_URL = window.location.origin;
+      }
     }
   } catch (e) {}
 
@@ -27,25 +31,26 @@
   function closeModal() {
     if (activeModal && activeModal.parentNode) {
       activeModal.style.opacity = "0";
+      var dialog = activeModal.querySelector(".halomail-dialog");
+      if (dialog) dialog.style.transform = "scale(0.97)";
       setTimeout(function () {
         if (activeModal && activeModal.parentNode) {
           activeModal.parentNode.removeChild(activeModal);
         }
         activeModal = null;
         document.body.style.overflow = "";
-      }, 200);
+      }, 180);
     }
   }
 
   function openModal(handle, options) {
     if (!handle) return;
     options = options || {};
-    var theme = options.theme || "obsidian";
     var key = options.key || "";
 
     closeModal();
 
-    // Backdrop
+    // Backdrop overlay
     var overlay = document.createElement("div");
     overlay.id = "halomail-booking-modal";
     overlay.style.position = "fixed";
@@ -53,65 +58,71 @@
     overlay.style.left = "0";
     overlay.style.width = "100vw";
     overlay.style.height = "100vh";
-    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.78)";
-    overlay.style.backdropFilter = "blur(8px)";
-    overlay.style.webkitBackdropFilter = "blur(8px)";
+    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
+    overlay.style.backdropFilter = "blur(10px)";
+    overlay.style.webkitBackdropFilter = "blur(10px)";
     overlay.style.zIndex = "9999999";
     overlay.style.display = "flex";
     overlay.style.alignItems = "center";
     overlay.style.justifyContent = "center";
     overlay.style.padding = "16px";
     overlay.style.opacity = "0";
-    overlay.style.transition = "opacity 0.2s ease";
+    overlay.style.transition = "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
     overlay.style.boxSizing = "border-box";
 
-    // Dialog Card
+    // Dialog card matching HaloMail website dark theme
     var dialog = document.createElement("div");
+    dialog.className = "halomail-dialog";
     dialog.style.width = "100%";
-    dialog.style.maxWidth = "760px";
-    dialog.style.height = "85vh";
-    dialog.style.maxHeight = "720px";
-    dialog.style.backgroundColor = theme === "minimal" ? "#18181b" : theme === "classic" ? "#0d1527" : "#0d0b14";
+    dialog.style.maxWidth = "840px";
+    dialog.style.height = "86vh";
+    dialog.style.maxHeight = "680px";
+    dialog.style.backgroundColor = "#09090b";
     dialog.style.borderRadius = "16px";
-    dialog.style.border = "1px solid rgba(255, 255, 255, 0.12)";
-    dialog.style.boxShadow = "0 30px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05)";
+    dialog.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+    dialog.style.boxShadow = "0 30px 60px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06)";
     dialog.style.position = "relative";
     dialog.style.overflow = "hidden";
     dialog.style.display = "flex";
     dialog.style.flexDirection = "column";
+    dialog.style.transform = "scale(0.97)";
+    dialog.style.transition = "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
 
-    // Close button
+    // Clean SVG close button (no emojis or crude text)
     var closeBtn = document.createElement("button");
     closeBtn.setAttribute("type", "button");
     closeBtn.setAttribute("aria-label", "Close");
-    closeBtn.innerHTML = "&times;";
+    closeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
     closeBtn.style.position = "absolute";
     closeBtn.style.top = "12px";
-    closeBtn.style.right = "14px";
-    closeBtn.style.width = "32px";
-    closeBtn.style.height = "32px";
-    closeBtn.style.borderRadius = "50%";
-    closeBtn.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-    closeBtn.style.background = "rgba(0, 0, 0, 0.4)";
-    closeBtn.style.color = "#fff";
-    closeBtn.style.fontSize = "20px";
-    closeBtn.style.lineHeight = "1";
+    closeBtn.style.right = "12px";
+    closeBtn.style.width = "28px";
+    closeBtn.style.height = "28px";
+    closeBtn.style.borderRadius = "8px";
+    closeBtn.style.border = "1px solid rgba(255, 255, 255, 0.08)";
+    closeBtn.style.background = "rgba(255, 255, 255, 0.04)";
+    closeBtn.style.color = "#a1a1aa";
     closeBtn.style.cursor = "pointer";
-    closeBtn.style.zIndex = "10";
+    closeBtn.style.zIndex = "20";
     closeBtn.style.display = "flex";
     closeBtn.style.alignItems = "center";
     closeBtn.style.justifyContent = "center";
-    closeBtn.style.transition = "background 0.15s ease";
+    closeBtn.style.transition = "all 0.15s ease";
 
-    closeBtn.onmouseenter = function () { closeBtn.style.background = "rgba(255, 255, 255, 0.15)"; };
-    closeBtn.onmouseleave = function () { closeBtn.style.background = "rgba(0, 0, 0, 0.4)"; };
+    closeBtn.onmouseenter = function () {
+      closeBtn.style.background = "rgba(255, 255, 255, 0.1)";
+      closeBtn.style.color = "#ffffff";
+    };
+    closeBtn.onmouseleave = function () {
+      closeBtn.style.background = "rgba(255, 255, 255, 0.04)";
+      closeBtn.style.color = "#a1a1aa";
+    };
     closeBtn.onclick = closeModal;
 
     // Iframe container
     var iframe = document.createElement("iframe");
     var params = new URLSearchParams();
     params.set("embed", "true");
-    if (theme) params.set("theme", theme);
     if (key) params.set("key", key);
 
     iframe.src = BASE_URL + "/book/" + encodeURIComponent(handle) + "?" + params.toString();
@@ -120,6 +131,7 @@
     iframe.style.border = "none";
     iframe.style.display = "block";
     iframe.style.flex = "1";
+    iframe.style.backgroundColor = "transparent";
     iframe.title = "Schedule a meeting with " + handle;
 
     dialog.appendChild(closeBtn);
@@ -136,6 +148,7 @@
 
     requestAnimationFrame(function () {
       overlay.style.opacity = "1";
+      dialog.style.transform = "scale(1)";
     });
   }
 
@@ -155,9 +168,8 @@
       btn.addEventListener("click", function (e) {
         e.preventDefault();
         var handle = btn.getAttribute("data-halomail-book") || btn.getAttribute("data-halomail-meeting");
-        var theme = btn.getAttribute("data-theme") || "obsidian";
         var key = btn.getAttribute("data-key") || "";
-        openModal(handle, { theme: theme, key: key });
+        openModal(handle, { key: key });
       });
     });
   }
