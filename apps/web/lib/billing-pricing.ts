@@ -9,8 +9,8 @@ export const PRICING = {
     yearly: { INR: 2999, USD: 35.0, EUR: 30.0, GBP: 25.0, CAD: 50.0, AUD: 50.0, SGD: 45.0, AED: 120.0 }
   },
   Business: {
-    monthly: { INR: 699, USD: 8.0, EUR: 7.0, GBP: 6.0, CAD: 11.5, AUD: 11.5, SGD: 10.5, AED: 28.0 },
-    yearly: { INR: 6999, USD: 80.0, EUR: 70.0, GBP: 60.0, CAD: 115.0, AUD: 115.0, SGD: 105.0, AED: 280.0 }
+    monthly: { INR: 599, USD: 7.0, EUR: 6.0, GBP: 5.0, CAD: 10.0, AUD: 10.0, SGD: 9.0, AED: 24.0 },
+    yearly: { INR: 5999, USD: 70.0, EUR: 60.0, GBP: 50.0, CAD: 100.0, AUD: 100.0, SGD: 90.0, AED: 240.0 }
   }
 };
 

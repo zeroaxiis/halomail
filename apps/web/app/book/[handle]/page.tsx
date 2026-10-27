@@ -30,6 +30,70 @@ interface HostOwner {
   tier?: string;
 }
 
+// Clean SVG Icons (replacing all emojis with precise 1.5px stroke geometry)
+function ClockIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
+function VideoIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="23 7 16 12 23 17 23 7" />
+      <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+    </svg>
+  );
+}
+
+function GlobeIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  );
+}
+
+function CheckIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function ChevronLeftIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+
+function CalendarIcon({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
 function Booking() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -37,7 +101,6 @@ function Booking() {
   const handle = (params?.handle as string) || "";
   const key = searchParams.get("key") || "";
   const isEmbed = searchParams.get("embed") === "true";
-  const themeParam = searchParams.get("theme") || "obsidian";
 
   const [info, setInfo] = useState<{
     owner: HostOwner;
@@ -185,55 +248,46 @@ function Booking() {
   const selectedEvent = info?.events.find((e) => e.id === eventID);
   const showWatermark = info?.watermark !== false;
 
-  // Theme configuration
-  const themeClasses: Record<string, string> = {
-    obsidian: "bg-[#0b0914] text-[#f4f1fa] border-purple-500/20",
-    classic: "bg-[#0a1120] text-[#f0f4f8] border-indigo-500/20",
-    neon: "bg-[#050e14] text-[#eefcfd] border-cyan-500/20",
-    minimal: "bg-[#18181b] text-[#fafafa] border-white/20",
-  };
-  const themeClass = themeClasses[themeParam] || themeClasses.obsidian;
-
   return (
     <div
-      className={`min-h-screen ${isEmbed ? "p-4" : "p-6 sm:p-12"} flex flex-col items-center justify-between transition-colors`}
+      className={`min-h-screen ${isEmbed ? "p-3 sm:p-5" : "p-6 sm:p-12"} flex flex-col items-center justify-between text-zinc-100 antialiased`}
       style={{
-        backgroundColor: isEmbed ? "transparent" : undefined,
+        backgroundColor: isEmbed ? "transparent" : "#09090b",
       }}
     >
       <div className={`w-full max-w-4xl mx-auto ${isEmbed ? "my-0" : "my-6"} space-y-6`}>
         {!isEmbed && (
-          <header className="flex items-center justify-between pb-4 border-b border-white/10">
+          <header className="flex items-center justify-between pb-4 border-b border-zinc-800">
             <Link href="/" className="inline-block">
               <Logo />
             </Link>
-            <span className="text-xs text-muted-foreground font-mono">
-              cal.com-style booking
+            <span className="text-xs text-zinc-500 font-mono">
+              halomail scheduling
             </span>
           </header>
         )}
 
         {/* Done / Confirmed View */}
         {done ? (
-          <Card className="p-8 sm:p-12 text-center space-y-6 bg-card/90 border-white/10 backdrop-blur-xl shadow-2xl rounded-2xl">
-            <div className="size-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-3xl flex items-center justify-center mx-auto">
-              ✓
+          <Card className="p-8 sm:p-12 text-center space-y-6 bg-[#0e0e11] border-zinc-800 shadow-2xl rounded-2xl">
+            <div className="size-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+              <CheckIcon className="size-5" />
             </div>
-            <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Meeting Confirmed!
+            <div className="space-y-1.5">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
+                Booking Confirmed
               </h1>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto">
+              <p className="text-zinc-400 text-sm max-w-md mx-auto">
                 Your consultation with{" "}
-                <strong className="text-foreground">{info?.owner.name || handle}</strong>{" "}
-                is officially scheduled.
+                <strong className="text-zinc-200">{info?.owner.name || handle}</strong>{" "}
+                has been scheduled.
               </p>
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-xl p-5 text-left max-w-md mx-auto text-sm space-y-3">
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-muted-foreground">Date &amp; Time:</span>
-                <span className="font-medium">
+            <div className="bg-[#141418] border border-zinc-800 rounded-xl p-5 text-left max-w-md mx-auto text-sm space-y-3">
+              <div className="flex justify-between py-1 border-b border-zinc-800/60">
+                <span className="text-zinc-400">Date &amp; Time</span>
+                <span className="font-medium text-zinc-200">
                   {confirmedBooking?.start
                     ? new Date(confirmedBooking.start).toLocaleString(undefined, {
                         dateStyle: "full",
@@ -242,26 +296,27 @@ function Booking() {
                     : ""}
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-muted-foreground">Attendee:</span>
-                <span className="font-medium">{email}</span>
+              <div className="flex justify-between py-1 border-b border-zinc-800/60">
+                <span className="text-zinc-400">Guest</span>
+                <span className="font-medium text-zinc-200">{email}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-muted-foreground">Conferencing:</span>
-                <span className="text-primary font-medium">Google Meet</span>
+              <div className="flex justify-between py-1 border-b border-zinc-800/60">
+                <span className="text-zinc-400">Conferencing</span>
+                <span className="text-indigo-400 font-medium">Google Meet</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-muted-foreground">Calendar:</span>
-                <span className="text-emerald-400 font-medium">Added to Google Calendar</span>
+                <span className="text-zinc-400">Calendar Event</span>
+                <span className="text-emerald-400 font-medium">Synced with Google Calendar</span>
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              A calendar invitation with the Google Meet link and full agenda has been sent to both your email and the host.
+            <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+              A calendar invite and conferencing link have been emailed to both attendee and host.
             </p>
 
             <Button
               variant="outline"
+              className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-200"
               onClick={() => {
                 setDone(false);
                 setPicked(null);
@@ -271,30 +326,31 @@ function Booking() {
             </Button>
           </Card>
         ) : (
-          /* Main Cal.com Booking Card */
-          <Card className={`overflow-hidden border rounded-2xl shadow-2xl backdrop-blur-xl ${themeClass}`}>
-            <div className="grid grid-cols-1 md:grid-cols-12 min-h-[520px]">
-              {/* Left Column: Host & Event Profile */}
-              <div className="md:col-span-5 p-6 sm:p-8 border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-between">
+          /* Main Cal.com Booking Card — Website Themed */
+          <Card className="overflow-hidden border border-zinc-800 bg-[#0e0e11] rounded-2xl shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-12 min-h-[500px]">
+              
+              {/* Left Column: Host Profile & Event Selection */}
+              <div className="md:col-span-5 p-6 sm:p-7 border-b md:border-b-0 md:border-r border-zinc-800 flex flex-col justify-between bg-[#0a0a0d]">
                 <div className="space-y-6">
                   {/* Host Header */}
-                  <div className="flex items-center gap-4">
-                    <div className="size-14 rounded-full bg-gradient-to-tr from-primary to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                  <div className="flex items-center gap-3.5">
+                    <div className="size-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-200 font-semibold text-sm shadow-inner overflow-hidden">
                       {info?.owner?.avatar ? (
                         <img
                           src={info.owner.avatar}
                           alt={info.owner.name}
-                          className="size-full rounded-full object-cover"
+                          className="size-full object-cover"
                         />
                       ) : (
                         (info?.owner.name || handle).slice(0, 2).toUpperCase()
                       )}
                     </div>
                     <div>
-                      <h2 className="font-semibold text-lg leading-tight">
+                      <h2 className="font-semibold text-base leading-snug text-white">
                         {info?.owner.name || handle}
                       </h2>
-                      <span className="text-xs text-muted-foreground font-mono">
+                      <span className="text-xs text-zinc-500 font-mono">
                         @{info?.owner.handle || handle}
                       </span>
                     </div>
@@ -302,141 +358,147 @@ function Booking() {
 
                   {/* Active Event Types */}
                   <div className="space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Event Types
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+                      Select Service
                     </span>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {info?.events?.map((ev) => (
                         <button
                           key={ev.id}
                           type="button"
                           onClick={() => setEventID(ev.id)}
-                          className={`w-full text-left p-3 rounded-xl border text-sm transition-all ${
+                          className={`w-full text-left p-3 rounded-lg border text-sm transition-all ${
                             eventID === ev.id
-                              ? "border-primary bg-primary/10 shadow-sm"
-                              : "border-white/5 hover:border-white/20 bg-white/[0.02]"
+                              ? "border-indigo-500/60 bg-indigo-500/10 text-white"
+                              : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/40 text-zinc-300"
                           }`}
                         >
-                          <div className="font-medium flex justify-between">
+                          <div className="font-medium flex justify-between items-center">
                             <span>{ev.title}</span>
-                            <span className="font-mono text-xs text-muted-foreground">
+                            <span className="font-mono text-xs text-zinc-400">
                               {ev.durationMinutes}m
                             </span>
                           </div>
                           {ev.description && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
                               {ev.description}
                             </p>
                           )}
                         </button>
                       ))}
                       {info && !info.events.length && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-zinc-500">
                           No active event types published by host.
                         </p>
                       )}
                     </div>
                   </div>
 
-                  {/* Selected Event Details */}
+                  {/* Event Details */}
                   {selectedEvent && (
-                    <div className="pt-4 border-t border-white/10 space-y-2 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <span>⏱</span>
+                    <div className="pt-4 border-t border-zinc-800 space-y-2.5 text-xs text-zinc-400">
+                      <div className="flex items-center gap-2.5">
+                        <ClockIcon className="size-4 text-zinc-500" />
                         <span>{selectedEvent.durationMinutes} Minutes Consultation</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span>📹</span>
+                      <div className="flex items-center gap-2.5">
+                        <VideoIcon className="size-4 text-zinc-500" />
                         <span>Google Meet Video Conferencing</span>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Timezone picker info */}
-                <div className="pt-6 border-t border-white/10 text-xs text-muted-foreground">
-                  <span>🌐 Timezone: </span>
-                  <strong className="text-foreground">{timezone}</strong>
+                {/* Timezone display */}
+                <div className="pt-5 border-t border-zinc-800 flex items-center gap-2 text-xs text-zinc-500">
+                  <GlobeIcon className="size-3.5 text-zinc-400" />
+                  <span>Timezone:</span>
+                  <span className="text-zinc-300 font-medium">{timezone}</span>
                 </div>
               </div>
 
-              {/* Right Column: Dynamic Scheduler / Custom Questions */}
-              <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+              {/* Right Column: Slot Picker / Booking Form */}
+              <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between bg-[#0e0e11]">
                 {error && (
-                  <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                  <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
                     {error}
                   </div>
                 )}
 
-                {/* Step 1: Slot Picker */}
+                {/* Step 1: Calendar Slot Picker */}
                 {!picked && (
-                  <div className="space-y-5 flex-1">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <h3 className="font-semibold text-base">Select Date &amp; Time</h3>
-                      <div className="flex gap-2">
+                  <div className="space-y-4 flex-1">
+                    <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="size-4 text-zinc-400" />
+                        <h3 className="font-semibold text-sm text-zinc-200">Select Date &amp; Time</h3>
+                      </div>
+                      <div className="flex gap-1.5">
                         <Button
                           variant="outline"
                           size="sm"
+                          className="h-8 px-2.5 border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300"
                           disabled={offset === 0 || loading}
                           onClick={() => setOffset((v) => Math.max(0, v - 7))}
                         >
-                          ‹ Prev Week
+                          <ChevronLeftIcon className="size-3.5" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
+                          className="h-8 px-2.5 border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300"
                           disabled={offset >= 56 || loading}
                           onClick={() => setOffset((v) => v + 7)}
                         >
-                          Next Week ›
+                          <ChevronRightIcon className="size-3.5" />
                         </Button>
                       </div>
                     </div>
 
                     {loading ? (
-                      <div className="py-20 text-center text-sm text-muted-foreground">
-                        Checking calendar availability…
+                      <div className="py-20 text-center text-xs text-zinc-500">
+                        Checking calendar availability...
                       </div>
                     ) : slots.length ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[360px] overflow-y-auto pr-1">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[340px] overflow-y-auto pr-1">
                         {slots.map((slot) => (
-                          <Button
+                          <button
                             key={slot.start}
-                            variant="outline"
-                            className="h-auto py-2.5 flex flex-col items-center border-white/10 hover:border-primary hover:bg-primary/10 transition-all"
+                            type="button"
+                            className="p-2.5 rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-indigo-600/15 hover:border-indigo-500/50 text-left transition-all group"
                             onClick={() => setPicked(slot)}
                           >
-                            <span className="text-[11px] text-muted-foreground">
+                            <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-400">
                               {new Date(slot.start).toLocaleDateString(undefined, {
                                 weekday: "short",
                                 month: "short",
                                 day: "numeric",
                               })}
                             </span>
-                            <span className="text-xs font-semibold mt-0.5">
+                            <span className="block text-xs font-semibold text-zinc-200 mt-0.5 group-hover:text-white">
                               {new Date(slot.start).toLocaleTimeString(undefined, {
                                 hour: "numeric",
                                 minute: "2-digit",
                               })}
                             </span>
-                          </Button>
+                          </button>
                         ))}
                       </div>
                     ) : (
-                      <div className="py-20 text-center text-sm text-muted-foreground">
-                        No available slots for this week. Try advancing to next week.
+                      <div className="py-20 text-center text-xs text-zinc-500">
+                        No available slots for this period. Try the next week.
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Step 2: Custom Questions Form */}
+                {/* Step 2: Custom Question Form */}
                 {picked && (
-                  <form onSubmit={book} className="space-y-4 flex-1">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                  <form onSubmit={book} className="space-y-3.5 flex-1">
+                    <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
                       <div>
-                        <h3 className="font-semibold text-base">Your Booking Details</h3>
-                        <p className="text-xs text-primary font-medium">
+                        <h3 className="font-semibold text-sm text-zinc-200">Your Booking Details</h3>
+                        <p className="text-xs text-indigo-400 mt-0.5">
                           {new Date(picked.start).toLocaleString(undefined, {
                             dateStyle: "full",
                             timeStyle: "short",
@@ -449,32 +511,35 @@ function Booking() {
                         size="sm"
                         disabled={busy}
                         onClick={() => setPicked(null)}
+                        className="text-xs text-zinc-400 hover:text-white"
                       >
-                        Change Time
+                        Change Slot
                       </Button>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <Label htmlFor="guest-name">Full Name *</Label>
+                        <Label htmlFor="guest-name" className="text-xs text-zinc-400">Full Name *</Label>
                         <Input
                           id="guest-name"
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Jane Doe"
+                          placeholder="Your name"
                           maxLength={200}
+                          className="bg-zinc-900/60 border-zinc-800 text-sm h-9 text-zinc-200 focus-visible:ring-indigo-500"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="guest-email">Email Address *</Label>
+                        <Label htmlFor="guest-email" className="text-xs text-zinc-400">Email Address *</Label>
                         <Input
                           id="guest-email"
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="jane@example.com"
+                          placeholder="name@example.com"
+                          className="bg-zinc-900/60 border-zinc-800 text-sm h-9 text-zinc-200 focus-visible:ring-indigo-500"
                         />
                       </div>
                     </div>
@@ -482,21 +547,22 @@ function Booking() {
                     {/* Custom Questions configured by host */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <Label htmlFor="company">Company / Organization</Label>
+                        <Label htmlFor="company" className="text-xs text-zinc-400">Company / Project</Label>
                         <Input
                           id="company"
                           value={company}
                           onChange={(e) => setCompany(e.target.value)}
-                          placeholder="Acme Inc."
+                          placeholder="Company name"
+                          className="bg-zinc-900/60 border-zinc-800 text-sm h-9 text-zinc-200 focus-visible:ring-indigo-500"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="budget">Project Budget</Label>
+                        <Label htmlFor="budget" className="text-xs text-zinc-400">Estimated Budget</Label>
                         <select
                           id="budget"
                           value={budget}
                           onChange={(e) => setBudget(e.target.value)}
-                          className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                          className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md px-3 py-1.5 text-sm h-9 text-zinc-200 focus:outline-none focus:border-indigo-500"
                         >
                           <option>$1,000 - $5,000</option>
                           <option>$5,000 - $15,000</option>
@@ -507,15 +573,15 @@ function Booking() {
                     </div>
 
                     <div>
-                      <Label htmlFor="notes">What would you like to discuss? *</Label>
+                      <Label htmlFor="notes" className="text-xs text-zinc-400">Discussion Topics &amp; Notes *</Label>
                       <textarea
                         id="notes"
                         required
                         rows={3}
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Please share any topics or context for our call..."
-                        className="w-full bg-background border border-input rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Please share any topics or context for our meeting..."
+                        className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 placeholder:text-zinc-600"
                         maxLength={5000}
                       />
                     </div>
@@ -523,25 +589,26 @@ function Booking() {
                     <Button
                       type="submit"
                       disabled={busy}
-                      className="w-full mt-2 font-semibold"
+                      className="w-full mt-1 h-9 font-medium bg-indigo-600 hover:bg-indigo-500 text-white"
                     >
-                      {busy ? "Scheduling Meeting…" : "Confirm Booking"}
+                      {busy ? "Confirming..." : "Confirm Booking"}
                     </Button>
                   </form>
                 )}
               </div>
             </div>
 
-            {/* Watermark Section (Shown on Free tier, completely hidden on Pro/Paid) */}
+            {/* Watermark Section (Shown ONLY on Free tier, completely hidden for Paid/Business tier) */}
             {showWatermark && (
-              <footer className="py-3 px-6 bg-black/30 border-t border-white/5 flex items-center justify-center text-xs text-muted-foreground">
+              <footer className="py-2.5 px-4 bg-[#09090c] border-t border-zinc-800/80 flex items-center justify-center text-[11px] text-zinc-500">
                 <a
                   href="https://halomail.zeroaxiis.tech"
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-primary transition-colors inline-flex items-center gap-1.5"
+                  className="hover:text-zinc-400 transition-colors inline-flex items-center gap-1"
                 >
-                  ⚡ Powered by <strong className="font-semibold text-foreground">HaloMail</strong>
+                  <span>Powered by</span>
+                  <strong className="font-semibold text-zinc-300">HaloMail</strong>
                 </a>
               </footer>
             )}
@@ -554,7 +621,7 @@ function Booking() {
 
 export default function BookingPage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center text-muted-foreground">Loading calendar…</div>}>
+    <Suspense fallback={<div className="p-12 text-center text-xs text-zinc-500">Loading calendar...</div>}>
       <Booking />
     </Suspense>
   );

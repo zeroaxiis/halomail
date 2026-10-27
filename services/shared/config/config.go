@@ -1,9 +1,9 @@
-// Package config loads service configuration from the environment (and an
-// optional .env file). The Config struct is a superset shared by every
-// service; each service reads only the sections it needs.
+
 package config
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strings"
@@ -115,6 +115,11 @@ func Load() (*Config, error) {
 	}
 	if cfg.Limits.Forms < 0 || cfg.Limits.Meetings < 0 {
 		return nil, fmt.Errorf("free limits cannot be negative")
+	}
+
+	if strings.TrimSpace(cfg.Auth.CalendarEncryptionKey) == "" {
+		h := sha256.Sum256([]byte(cfg.Auth.JWTSecret + ":calendar-encryption-key"))
+		cfg.Auth.CalendarEncryptionKey = base64.StdEncoding.EncodeToString(h[:])
 	}
 
 	cfg.Email.ResendAPIKey = strings.TrimSpace(strings.Trim(cfg.Email.ResendAPIKey, `"'`))

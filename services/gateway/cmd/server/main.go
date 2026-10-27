@@ -182,7 +182,16 @@ func withCORS(next http.Handler, allowedOrigin string) http.Handler {
 			allowedOrigins[strings.TrimRight(strictDomain, "/")] = true
 		}
 
-		if reqOrigin != "" {
+		isPublic := r.URL.Path == "/submit" || strings.HasPrefix(r.URL.Path, "/v1/meetings/") || strings.HasPrefix(r.URL.Path, "/halomail.scheduling.v1.BookingService/")
+
+		if isPublic {
+			if reqOrigin != "" && reqOrigin != "null" {
+				h.Set("Access-Control-Allow-Origin", reqOrigin)
+				h.Set("Vary", "Origin")
+			} else {
+				h.Set("Access-Control-Allow-Origin", "*")
+			}
+		} else if reqOrigin != "" {
 			if allowedOrigins[reqOrigin] || strings.HasSuffix(reqOrigin, ".zeroaxiis.tech") || strings.HasSuffix(reqOrigin, "zeroaxiis.tech") {
 				h.Set("Access-Control-Allow-Origin", reqOrigin)
 				h.Set("Vary", "Origin")
