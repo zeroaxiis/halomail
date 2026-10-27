@@ -128,6 +128,7 @@ func main() {
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, Redis: redisClient,
 		Rate: cfg.Rate, Logger: logger, Interceptors: interceptors,
 		IdentityURL: "http://127.0.0.1:" + fmt.Sprint(cfg.HTTP.Port), Limits: cfg.Limits,
+		Email: cfg.Email,
 	})
 	template.Mount(mux, template.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret, Interceptors: interceptors,

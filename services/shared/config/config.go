@@ -73,7 +73,11 @@ type Email struct {
 // UseResend reports whether a real Resend key is configured; otherwise the
 // notification service falls back to local SMTP (Mailpit).
 func (e Email) UseResend() bool {
-	return strings.TrimSpace(e.ResendAPIKey) != "" || strings.TrimSpace(os.Getenv("NTS_RESEND_API_KEY")) != ""
+	return strings.TrimSpace(e.ResendAPIKey) != "" ||
+		strings.TrimSpace(os.Getenv("NTS_RESEND_API_KEY")) != "" ||
+		strings.TrimSpace(os.Getenv("NOTIFY_RESEND_API_KEY")) != "" ||
+		strings.TrimSpace(os.Getenv("RESEND_POOL")) != "" ||
+		strings.TrimSpace(os.Getenv("RESEND_KEY_1")) != ""
 }
 
 type OAuth struct {
