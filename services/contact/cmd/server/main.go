@@ -82,10 +82,11 @@ func main() {
 		Burst: cfg.Rate.PublicBurst,
 	})
 
+	forwarder := app.NewResendForwarder(pool, cfg.Email.ResendAPIKey, cfg.Email.From)
 	svc := app.New(app.Repos{
 		Forms:    cpg.NewForms(pool),
 		Messages: cpg.NewMessages(pool, cfg.Limits),
-	}, limiter, nil, redisClient)
+	}, limiter, forwarder, redisClient)
 
 	identityURL := cfg.App.PublicAPIURL
 	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, identityURL)

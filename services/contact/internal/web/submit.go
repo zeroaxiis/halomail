@@ -36,7 +36,7 @@ func SubmitHandler(service *app.Service, pool *pgxpool.Pool) http.HandlerFunc {
 			httpx.Error(writer, err)
 			return
 		}
-		httpx.JSON(writer, 200, map[string]any{"success": true, "id": result.Message.ID, "message": "Submission received"})
+		httpx.JSON(writer, 200, map[string]any{"success": true, "message": "Form submitted successfully", "id": result.Message.ID})
 	}
 }
 

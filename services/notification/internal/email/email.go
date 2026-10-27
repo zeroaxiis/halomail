@@ -3,21 +3,18 @@
 package email
 
 import (
-	"bytes"
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io"
 	"mime"
 	"net"
-	"net/http"
 	"net/mail"
 	"net/smtp"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/zeroaxiis/halomail/services/shared/emailpool"
 	"github.com/zeroaxiis/halomail/services/shared/idgen"
 )
 
@@ -39,11 +36,9 @@ type Sender interface {
 
 // ---- Resend --------------------------------------------------------------
 
-// ResendSender delivers mail through the Resend HTTP API.
+// ResendSender delivers mail through the Resend HTTP API using a multi-account pool.
 type ResendSender struct {
-	apiKey      string
-	defaultFrom string
-	client      *http.Client
+	pool *emailpool.Pool
 }
 
 func cleanSender(s string) string {
@@ -52,119 +47,22 @@ func cleanSender(s string) string {
 	return strings.TrimSpace(s)
 }
 
-// NewResend returns a sender that uses defaultFrom when a message has no From.
+// NewResend returns a sender that uses a multi-account pool loaded from environment.
 func NewResend(apiKey, defaultFrom string) *ResendSender {
-	apiKey = cleanSender(apiKey)
-	if apiKey == "" {
-		apiKey = cleanSender(os.Getenv("RESEND_API_KEY"))
-	}
-	if apiKey == "" {
-		apiKey = cleanSender(os.Getenv("NTS_RESEND_API_KEY"))
-	}
-	defaultFrom = cleanSender(defaultFrom)
-	if defaultFrom == "" || strings.Contains(defaultFrom, "halomail.dev") {
-		defaultFrom = "HaloMail <no-reply@email.zeroaxiis.tech>"
-	}
-	return &ResendSender{apiKey: apiKey, defaultFrom: defaultFrom, client: &http.Client{Timeout: 15 * time.Second}}
+	return &ResendSender{pool: emailpool.NewFromEnv()}
 }
 
-// Send posts msg to Resend. msg.ID is sent as the idempotency key so a retry
-// does not deliver the same mail twice.
+// Send posts msg to Resend using round-robin and automatic failover across accounts.
 func (s *ResendSender) Send(ctx context.Context, msg Message) (string, string, error) {
-	from := firstNonEmpty(msg.From, s.defaultFrom)
-	from = cleanSender(from)
-	if from == "" || strings.Contains(from, "halomail.dev") {
-		from = "HaloMail <no-reply@email.zeroaxiis.tech>"
-	}
-
-	apiKey := s.apiKey
-	if apiKey == "" {
-		apiKey = cleanSender(os.Getenv("RESEND_API_KEY"))
-	}
-	if strings.Contains(strings.ToLower(from), "nts.zeroaxiis.tech") {
-		if ntsKey := cleanSender(os.Getenv("NTS_RESEND_API_KEY")); ntsKey != "" {
-			apiKey = ntsKey
-		}
-	}
-	if apiKey == "" {
-		apiKey = cleanSender(os.Getenv("NTS_RESEND_API_KEY"))
-	}
-
-	payload := map[string]any{"from": from, "to": msg.To, "subject": msg.Subject}
-	if msg.HTML != "" {
-		payload["html"] = msg.HTML
-	}
-	if msg.Text != "" {
-		payload["text"] = msg.Text
-	}
-	if msg.ReplyTo != "" {
-		payload["reply_to"] = msg.ReplyTo
-	}
-	body, _ := json.Marshal(payload)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(body))
-	if err != nil {
-		return "", "resend", err
-	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("Content-Type", "application/json")
-	if msg.ID != "" {
-		req.Header.Set("Idempotency-Key", msg.ID)
-	}
-
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return "", "resend", err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode >= 300 {
-		b, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
-		primaryErr := fmt.Errorf("resend: %s: %s", resp.Status, string(b))
-
-		// Automatic domain fallback: if email.zeroaxiis.tech failed, retry with nts.zeroaxiis.tech; vice versa.
-		var fallbackFrom, fallbackKey string
-		if strings.Contains(strings.ToLower(from), "nts.zeroaxiis.tech") {
-			fallbackFrom = "HaloMail <no-reply@email.zeroaxiis.tech>"
-			fallbackKey = cleanSender(os.Getenv("RESEND_API_KEY"))
-			if fallbackKey == "" {
-				fallbackKey = s.apiKey
-			}
-		} else {
-			fallbackFrom = "HaloMail <no-reply@nts.zeroaxiis.tech>"
-			fallbackKey = cleanSender(os.Getenv("NTS_RESEND_API_KEY"))
-		}
-
-		if fallbackKey != "" && fallbackFrom != from {
-			payload["from"] = fallbackFrom
-			fallbackBody, _ := json.Marshal(payload)
-			fbReq, fbErr := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(fallbackBody))
-			if fbErr == nil {
-				fbReq.Header.Set("Authorization", "Bearer "+fallbackKey)
-				fbReq.Header.Set("Content-Type", "application/json")
-				if msg.ID != "" {
-					fbReq.Header.Set("Idempotency-Key", msg.ID+"-fb")
-				}
-				fbResp, fbDoErr := s.client.Do(fbReq)
-				if fbDoErr == nil {
-					defer fbResp.Body.Close()
-					if fbResp.StatusCode < 300 {
-						var fbOut struct {
-							ID string `json:"id"`
-						}
-						_ = json.NewDecoder(fbResp.Body).Decode(&fbOut)
-						return fbOut.ID, "resend", nil
-					}
-				}
-			}
-		}
-
-		return "", "resend", primaryErr
-	}
-	var out struct {
-		ID string `json:"id"`
-	}
-	_ = json.NewDecoder(resp.Body).Decode(&out)
-	return out.ID, "resend", nil
+	return s.pool.Send(ctx, emailpool.Message{
+		ID:      msg.ID,
+		To:      msg.To,
+		From:    msg.From,
+		ReplyTo: msg.ReplyTo,
+		Subject: msg.Subject,
+		HTML:    msg.HTML,
+		Text:    msg.Text,
+	})
 }
 
 // ---- SMTP (Mailpit / any relay) -----------------------------------------

@@ -32,6 +32,7 @@ type Deps struct {
 	Interceptors []connect.Interceptor
 	IdentityURL  string
 	Limits       usage.Policy
+	Email        config.Email
 }
 
 func Mount(mux *http.ServeMux, d Deps) {
@@ -39,10 +40,11 @@ func Mount(mux *http.ServeMux, d Deps) {
 		RPS:   float64(d.Rate.PublicRPS),
 		Burst: d.Rate.PublicBurst,
 	})
+	forwarder := app.NewResendForwarder(d.Pool, d.Email.ResendAPIKey, d.Email.From)
 	svc := app.New(app.Repos{
 		Forms:    postgres.NewForms(d.Pool),
 		Messages: postgres.NewMessages(d.Pool, d.Limits),
-	}, limiter, nil, d.Redis)
+	}, limiter, forwarder, d.Redis)
 
 	identClient := identityv1connect.NewApiKeyServiceClient(http.DefaultClient, d.IdentityURL)
 	h := rpc.NewHandlers(svc, authn.NewVerifier(d.JWTSecret), identClient)
