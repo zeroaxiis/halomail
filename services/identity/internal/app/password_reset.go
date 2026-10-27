@@ -132,17 +132,36 @@ func renderPasswordResetEmail(name, resetLink string) string {
 	return fmt.Sprintf(`<!doctype html>
 <html>
 <head><meta charset="utf-8"><title>Reset your password</title></head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; padding: 40px 20px; color: #111827;">
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; padding: 40px 20px; color: #111827; margin: 0;">
   <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 32px;">
-    <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; color: #111827;">Reset your password</h2>
+    <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 12px; color: #111827;">Reset your password</h2>
     <p style="font-size: 15px; line-height: 1.5; color: #374151;">%s</p>
     <p style="font-size: 15px; line-height: 1.5; color: #374151;">We received a request to reset the password for your HaloMail account. Click the button below to choose a new password:</p>
     <div style="margin: 28px 0;">
       <a href="%s" style="background-color: #111827; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 14px; display: inline-block;">Reset Password</a>
     </div>
-    <p style="font-size: 13px; line-height: 1.5; color: #6b7280;">This link is valid for 1 hour. If you didn't request a password reset, you can safely ignore this email — your password will not change.</p>
-    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
-    <p style="font-size: 12px; color: #9ca3af; word-break: break-all;">Button not working? Copy and paste this URL into your browser:<br /><a href="%s" style="color: #4b5563;">%s</a></p>
+    <p style="font-size: 13px; line-height: 1.5; color: #6b7280; margin: 0 0 16px;">This link is valid for 1 hour. If you didn't request a password reset, you can safely ignore this email — your password will not change.</p>
+    <p style="font-size: 12px; color: #9ca3af; word-break: break-all; margin: 0;">Button not working? Copy and paste this URL into your browser:<br /><a href="%s" style="color: #4b5563;">%s</a></p>
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0 20px;" />
+    <div style="text-align: center;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; text-align: center;">
+        <tr>
+          <td align="center" style="padding-bottom: 6px;">
+            <img src="https://halomail.zeroaxiis.tech/brand/zeroaxiis.png" alt="ZeroAxiis" width="24" height="24" style="display: block; width: 24px; height: 24px; border: 0; margin: 0 auto;" />
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-size: 12px; color: #6b7280; line-height: 1.5;">
+            A product of <a href="https://zeroaxiis.tech" style="color: #111827; font-weight: 600; text-decoration: none;">ZeroAxiis</a>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-size: 11px; color: #9ca3af; font-style: italic; padding-top: 2px;">
+            Everything starts from zero.
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </body>
 </html>`, greeting, resetLink, resetLink, resetLink)
