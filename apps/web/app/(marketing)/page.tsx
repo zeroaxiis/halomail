@@ -370,7 +370,7 @@ function FeatureHead({
 
 function Dashboard() {
   return (
-    <section className="border-y border-border py-16 sm:py-20 md:py-28">
+    <section className="py-16 sm:py-20 md:py-28">
       <div className="container grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
         <div>
           <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
@@ -460,7 +460,7 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section className="border-y border-border py-16 sm:py-20 md:py-28">
+    <section className="py-16 sm:py-20 md:py-28">
       <div className="container">
         <SectionHead
           label="How it works"
@@ -614,7 +614,7 @@ const DETAIL = [
 
 function FeatureDetail() {
   return (
-    <section className="border-t border-border py-16 sm:py-20 md:py-28">
+    <section className="py-16 sm:py-20 md:py-28">
       <div className="container">
         <SectionHead
           label="The full surface"
@@ -667,7 +667,7 @@ const STATS = [
 
 function Stats() {
   return (
-    <section className="border-y border-border">
+    <section className="py-10 sm:py-14">
       <div className="container grid grid-cols-2 divide-y divide-border sm:divide-y-0 sm:divide-x lg:grid-cols-4">
         {STATS.map(([v, k], i) => (
           <div key={k} className={`px-4 sm:px-6 py-6 sm:py-10 text-center ${i % 2 === 1 ? "border-l border-border sm:border-l-0" : ""}`}>
