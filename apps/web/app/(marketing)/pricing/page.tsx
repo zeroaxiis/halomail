@@ -92,7 +92,7 @@ export default async function PricingPage() {
               A useful Free tier. A clear upgrade.
             </h1>
             <p className="mt-4 sm:mt-5 text-balance text-base sm:text-lg text-muted-foreground">
-              ZeroAxiis connects forms, enquiries and approval-based meeting requests in one product. Free supports a real small-site workflow; Pro adds automation and capacity.
+              HaloMail connects forms, enquiries and approval-based meeting requests in one product. Free supports a real small-site workflow; Pro adds automation and capacity.
             </p>
           </div>
 

@@ -14,9 +14,9 @@ const DAYS = [
 type Row = { id: string; n: string; m: string; fresh?: boolean; booking?: boolean };
 
 const INBOX: Row[] = [
-  { id: "seed-1", n: "Jane Visitor", m: "Saw your portfolio, can we talk?" },
-  { id: "seed-2", n: "Marc Dev", m: "Question about the API pricing" },
-  { id: "seed-3", n: "Priya S.", m: "Booking rescheduled to Thursday" },
+  { id: "seed-1", n: "Sarah Chen", m: "Love your site! Are you available for a client project next month?" },
+  { id: "seed-2", n: "Marcus Vance", m: "Confirmed: Intro Call · Tue 09:30 (Google Meet attached)" },
+  { id: "seed-3", n: "Elena Rostova", m: "Quick question about your consultation rates" },
 ];
 
 let rowId = 0;
@@ -53,8 +53,8 @@ export function HeroPreview() {
     setFeed((f) => [
       {
         id: `row-${rowId++}`,
-        n: "Grace Hopper",
-        m: `Intro Call confirmed · ${DAYS[day].day} ${DAYS[day].slots[i]}`,
+        n: "Sarah Chen",
+        m: `Intro Call confirmed · ${DAYS[day].day} ${DAYS[day].slots[i]} (Google Meet attached)`,
         fresh: true,
         booking: true,
       },
@@ -85,14 +85,14 @@ export function HeroPreview() {
             <span className="size-2.5 rounded-full bg-yellow-500/60" />
             <span className="size-2.5 rounded-full bg-emerald-500/60" />
             <span className="ml-2 sm:ml-3 font-mono text-[11px] text-muted-foreground truncate">
-              halomail.app/book/grace-hopper
+              halomail.app/book/alex
             </span>
           </div>
 
           <div className="grid gap-3 sm:gap-4 p-3 sm:p-4 text-left sm:grid-cols-2">
             <div className="rounded-lg border border-border p-3 sm:p-4">
               <p className="text-xs text-muted-foreground">Intro Call · 30 min</p>
-              <p className="mt-1 font-medium">Pick a time</p>
+              <p className="mt-1 font-medium">Select a time slot</p>
               <div className="mt-3 flex gap-1 sm:gap-1.5 overflow-x-auto pb-0.5">
                 {DAYS.map((d, i) => (
                   <button
@@ -207,7 +207,7 @@ export function HeroPreview() {
                 <input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Try it, say hello…"
+                  placeholder="Test the form: type a message…"
                   aria-label="Send a test message"
                   maxLength={80}
                   className="h-8 min-w-0 flex-1 rounded-md border border-border bg-background px-2.5 text-xs placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring"
