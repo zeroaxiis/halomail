@@ -4,12 +4,9 @@ Documentation for HaloMail.
 
 ## Now: raw static page
 
-Two self-contained, dependency-free pages:
+Unified, self-contained, dependency-free documentation:
 
-- [`index.html`](index.html) — the reference docs.
-- [`integrate.html`](integrate.html) — step-by-step guide to putting a HaloMail
-  contact form and booking page on your own website or portfolio. Every request
-  and response in it was executed against a live deployment.
+- [`index.html`](index.html) — the complete developer guide: quickstart, embed widgets, framework integration, ConnectRPC API reference, and signed webhooks.
 
 [`index.html`](index.html) is a **self-contained, dependency-free** docs page —
 real content, premium minimal styling, light/dark, Geist. Open it directly:

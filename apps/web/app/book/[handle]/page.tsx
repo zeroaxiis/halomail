@@ -326,7 +326,7 @@ function Booking() {
             </Button>
           </Card>
         ) : (
-          /* Main Cal.com Booking Card — Website Themed */
+          /* Main Booking Card — Website Themed */
           <Card className="overflow-hidden border border-zinc-800 bg-[#0e0e11] rounded-2xl shadow-2xl">
             <div className="grid grid-cols-1 md:grid-cols-12 min-h-[500px]">
               

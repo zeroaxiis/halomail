@@ -92,28 +92,26 @@ function Hero() {
       <div className="container relative flex flex-col items-center py-16 text-center sm:py-24 md:py-32">
         <h1 className="max-w-4xl animate-fade-up text-3xl font-semibold leading-[1.12] tracking-tight sm:text-5xl md:text-6xl">
           Scheduling and contact forms,
-          <br className="hidden md:block" /> behind one clean API.
+          <br className="hidden sm:block" /> behind one API.
         </h1>
 
-        <p className="mt-5 max-w-xl animate-fade-up text-balance text-base sm:text-lg text-muted-foreground px-2">
-          Give every user a public booking page and an embeddable contact form, backed by
-          typed ConnectRPC, a generated SDK, signed webhooks, and a dashboard you don&apos;t
-          have to build.
+        <p className="mt-5 max-w-2xl animate-fade-up text-sm sm:text-base text-muted-foreground">
+          Accept meeting bookings and form submissions, delivered straight to your inbox.
         </p>
 
-        <div className="mt-8 flex w-full max-w-xs sm:max-w-none animate-fade-up flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="mt-8 sm:mt-10 flex w-full max-w-xs sm:max-w-none animate-fade-up flex-col sm:flex-row items-center justify-center gap-3">
           <Button asChild size="lg" className="w-full sm:w-auto">
             <Link href="/register">
               Get started <ArrowRight className="size-4" />
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
-            <a href="/docs/integrate.html">Read the guide</a>
+            <a href="/docs/index.html">Read the docs</a>
           </Button>
         </div>
 
-        <p className="mt-5 text-xs sm:text-sm text-muted-foreground font-medium px-4">
-          Zero friction for the Free tier — no credit or debit card required. Keep your plastic in your wallet.
+        <p className="mt-4 text-xs sm:text-sm text-muted-foreground/80 font-medium">
+          Free tier available · No credit card required · Instant setup in minutes.
         </p>
 
         <HeroPreview />
@@ -129,33 +127,132 @@ function Hero() {
 /* Logo strip                                                                 */
 /* -------------------------------------------------------------------------- */
 
-const STACK = [
-  "PostgreSQL",
-  "Redis",
-  "Google Calendar",
-  "Google Meet",
-  "Resend",
-  "ConnectRPC",
-  "Docker",
-  "OpenTelemetry",
+const INTEGRATIONS = [
+  {
+    name: "React",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <ellipse cx="12" cy="12" rx="10" ry="4.5" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(60 12 12)" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(120 12 12)" />
+        <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    name: "Next.js",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.626 14.13L9.67 8.358V15.7H8.33V7.3h1.493l6.096 7.974V7.3h1.344v8.83h-1.637z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Vue",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2 3h3.5L12 14.5 18.5 3H22L12 20.5 2 3z" />
+        <path d="M6.5 3h3L12 7.8 14.5 3h3L12 12.5 6.5 3z" opacity="0.6" />
+      </svg>
+    ),
+  },
+  {
+    name: "Svelte",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.9 8.2c-.6-1.5-1.9-2.7-3.4-3.2-2.3-.8-4.8-.2-6.7 1.4l-2.6 2.2c-.8.7-1.4 1.6-1.6 2.6-.3 1.3 0 2.6.8 3.7.6 1 1.6 1.7 2.7 2.1l2.5.9c.7.3 1.3.7 1.8 1.2.6.7.9 1.6.8 2.5-.1 1-.7 1.9-1.6 2.4-1.3.7-2.9.7-4.2 0-1-.6-1.6-1.5-1.9-2.5H4c.3 1.7 1.2 3.2 2.6 4.1 1.6 1.1 3.6 1.5 5.5 1.1 1.9-.4 3.5-1.6 4.4-3.3.9-1.7.9-3.7 0-5.4-.5-.9-1.2-1.6-2.1-2.1l-2.7-1.1c-.6-.2-1.2-.6-1.7-1-.5-.6-.8-1.4-.7-2.2.1-.8.6-1.6 1.4-2.1 1.2-.7 2.7-.8 3.9-.2.8.4 1.4 1.2 1.7 2.1h3.6z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Astro",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8.5 18.5c-.3.4-.4.9-.3 1.4.1.7.6 1.3 1.3 1.4.6.1 1.2-.2 1.6-.7l.9-1.3c.4-.6 1.1-.9 1.8-.9h.4c.7 0 1.4.3 1.8.9l.9 1.3c.4.5 1 .8 1.6.7.7-.1 1.2-.7 1.3-1.4.1-.5 0-1-.3-1.4L13.8 3.6c-.4-.6-1-1-1.8-1s-1.4.4-1.8 1L4.5 13.9l4 4.6zm3.5-12.7 3.3 7.2H8.7L12 5.8z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Nuxt",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9.5 7.5 3 18.5h7l2-3.5 2 3.5h7L15 7.5z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Remix",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3.5 4h8.3c3.6 0 6.2 2.3 6.2 5.5 0 2.2-1.3 4.1-3.3 4.9L19 20h-4.3l-3.8-5.1H7.5V20H3.5V4zm4 7h4.1c1.4 0 2.4-.8 2.4-2s-1-2-2.4-2H7.5v4z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Tailwind CSS",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 6c-2.4 0-3.9 1.2-4.5 3.6 1-.8 2.1-1.1 3.3-.8 1 .2 1.7 1 2.5 1.7 1.3 1.3 2.7 2.7 5.7 2.7 2.4 0 3.9-1.2 4.5-3.6-1 .8-2.1 1.1-3.3.8-1-.2-1.7-1-2.5-1.7-1.3-1.3-2.7-2.7-5.7-2.7zM6 12c-2.4 0-3.9 1.2-4.5 3.6 1-.8 2.1-1.1 3.3-.8 1 .2 1.7 1 2.5 1.7 1.3 1.3 2.7 2.7 5.7 2.7 2.4 0 3.9-1.2 4.5-3.6-1 .8-2.1 1.1-3.3.8-1-.2-1.7-1-2.5-1.7-1.3-1.3-2.7-2.7-5.7-2.7z" />
+      </svg>
+    ),
+  },
+  {
+    name: "HTML5 / JS",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
+      </svg>
+    ),
+  },
+  {
+    name: "Framer",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 2h16v7h-8l8 7H4v-7h8L4 2z" />
+        <path d="M4 16h8v6l-8-6z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Webflow",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.8 7.3c-.6-.4-1.3-.6-2-.6-1.5 0-2.8 1-3.3 2.4l-.1.4-.1-.4C11.8 7.7 10.5 6.7 9 6.7c-.8 0-1.5.2-2.1.6L2 17.3h4.6l2.1-6.6c.2-.6.7-1 1.3-1s1.1.4 1.3 1l2.1 6.6H18l2.1-6.6c.2-.6.7-1 1.3-1s1.1.4 1.3 1l2.1 6.6H22L17.8 7.3z" />
+      </svg>
+    ),
+  },
+  {
+    name: "WordPress",
+    icon: (
+      <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.7-1.5l3.8-10.4 2.8 7.8 1.1-3.1.9 2.5a8.2 8.2 0 0 1-3.9 4.7zm-6.8-5.3L8.6 6.5A8.1 8.1 0 0 1 12 3.8a8.2 8.2 0 0 1 5.4 2l-2 5.5zm13-2.7a8.2 8.2 0 0 1-.7 3.3L15.4 9.6c.3-.5.4-1.1.4-1.7 0-.3 0-.6-.1-.9a8.1 8.1 0 0 1 2.5 4.9z" />
+      </svg>
+    ),
+  },
 ];
 
 function LogoStrip() {
   return (
-    <section className="border-b border-border py-16">
-      <SectionLabel>Plays well with</SectionLabel>
-      <h2 className="mt-5 text-center text-xl font-medium tracking-tight md:text-2xl">
-        Built on the tools you already run
+    <section className="border-b border-border py-14 sm:py-16 overflow-hidden">
+      <SectionLabel>Integrations</SectionLabel>
+      <h2 className="mt-4 text-center text-xl font-semibold tracking-tight sm:text-2xl">
+        Works with any framework or site builder
       </h2>
 
-      <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <div className="flex w-max animate-marquee">
-          {[...STACK, ...STACK].map((name, i) => (
+      <div className="group relative mt-10 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+        <div className="flex w-max animate-marquee items-center gap-12 sm:gap-16 group-hover:[animation-play-state:paused] pr-12 sm:pr-16">
+          {[...INTEGRATIONS, ...INTEGRATIONS].map((item, i) => (
             <div
-              key={`${name}-${i}`}
-              className="mr-3 flex h-14 min-w-[180px] items-center justify-center rounded-lg border border-border bg-card px-6 text-sm text-muted-foreground"
+              key={`${item.name}-${i}`}
+              className="flex items-center gap-3 text-muted-foreground/75 transition-colors duration-200 hover:text-foreground cursor-default select-none"
             >
-              {name}
+              <span className="shrink-0 transition-transform duration-200 hover:scale-110">
+                {item.icon}
+              </span>
+              <span className="text-base sm:text-lg font-medium tracking-tight whitespace-nowrap">
+                {item.name}
+              </span>
             </div>
           ))}
         </div>
@@ -173,8 +270,8 @@ function Features() {
     <section id="features" className="container scroll-mt-24 py-16 sm:py-20 md:py-28">
       <SectionHead
         label="Features"
-        title="Everything a booking link needs, and nothing it doesn't"
-        desc="Two products sharing one identity layer, one API, and one deployable binary."
+        title="Everything your customer interactions require, built for scale"
+        desc="A unified platform sharing one identity layer, high-throughput APIs, and enterprise-grade security."
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -308,13 +405,13 @@ function FormsTable() {
 
         <div className="order-1 lg:order-2">
           <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
-            Embed forms anywhere with an access key.
+            Embed forms anywhere with secure access keys.
           </h2>
           <p className="mt-4 sm:mt-5 max-w-md text-sm sm:text-base text-muted-foreground">
-            Just like Web3Forms, generate a unique access key for your website. When users submit the form, data is stored and email notifications are instantly routed to you.
+            Generate scoped access keys to drop custom contact forms directly into any site or app. Submissions are encrypted, stored, and routed to your team with instant spam filtering and deliverability guarantees.
           </p>
           <Button asChild variant="outline" size="lg" className="mt-7 sm:mt-8 w-full sm:w-auto">
-            <a href="/docs/integrate.html">
+            <a href="/docs/index.html#embed">
               See the embed guide <ArrowUpRight className="size-4" />
             </a>
           </Button>
@@ -468,7 +565,7 @@ const DETAIL = [
   {
     icon: <CalendarClock />,
     title: "Scheduling",
-    tagline: "A cal.com-style booking experience for every user.",
+    tagline: "Frictionless calendar booking experience built for individuals and teams.",
     points: [
       "Availability rules with per-date overrides",
       "Google Calendar sync & auto-generated Google Meet links",
@@ -478,7 +575,7 @@ const DETAIL = [
   {
     icon: <Inbox />,
     title: "Contact forms",
-    tagline: "Web3Forms-style access keys for your website.",
+    tagline: "Secure, zero-maintenance embeddable forms for any website.",
     points: [
       "Spam scoring plus rate limiting",
       "Stored, searchable submissions",
@@ -573,7 +670,7 @@ function Stats() {
 const FAQS = [
   {
     q: "What is HaloMail?",
-    a: "A platform that gives every user a public booking page and an embeddable contact form, behind one typed API.",
+    a: "HaloMail is a unified communication and scheduling platform that delivers embeddable contact forms and seamless booking pages, backed by high-performance APIs and centralized management.",
   },
   {
     q: "How do I start using HaloMail?",
@@ -632,10 +729,10 @@ function FinalCta() {
         <div className="relative flex flex-col items-center gap-4 sm:gap-5">
           <SectionLabel>Get started</SectionLabel>
           <h2 className="max-w-xl text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
-            Ship scheduling and contact in an afternoon.
+            Modernize your scheduling and contact flows today.
           </h2>
           <p className="max-w-md text-sm sm:text-base text-muted-foreground">
-            Run the whole platform seamlessly.
+            Deploy production-ready booking flows and secure forms in minutes.
           </p>
           <div className="mt-2 flex w-full max-w-xs sm:max-w-none flex-col sm:flex-row items-center justify-center gap-3">
             <Button asChild size="lg" className="w-full sm:w-auto">

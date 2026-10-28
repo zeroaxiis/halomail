@@ -32,7 +32,7 @@ export default function FormsPage() {
 				title="Forms"
 				action={
 					<a
-						href="/docs/integrate.html"
+						href="/docs/index.html#embed"
 						target="_blank"
 						rel="noreferrer"
 						className="workspace-text-link"

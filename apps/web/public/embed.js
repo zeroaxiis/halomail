@@ -1,5 +1,5 @@
 /**
- * HaloMail Meetings Embed — Cal.com Style Button & Modal Widget
+ * HaloMail Meetings Embed — Button & Modal Booking Widget
  *
  * Usage:
  *   <script src="https://halomail.zeroaxiis.tech/embed.js" async></script>

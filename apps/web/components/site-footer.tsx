@@ -24,7 +24,7 @@ export function SiteFooter() {
           title="Developers"
           links={[
             ["Docs", "/docs/index.html"],
-            ["Add to your site", "/docs/integrate.html"],
+            ["Add to your site", "/docs/index.html#embed"],
             ["API keys", "/dashboard/api-keys"],
             ["Status", "#"],
           ]}

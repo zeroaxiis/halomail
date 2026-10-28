@@ -3,25 +3,59 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>HaloMail — Documentation</title>
-<meta name="description" content="HaloMail — API-first scheduling and contact-form platform. Raw docs." />
+<title>HaloMail Documentation</title>
+<meta name="description" content="Complete documentation for HaloMail: embed contact forms, calendar booking, and ConnectRPC APIs." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0a0a0a; --panel: #0f0f10; --elev: #151517; --border: #232326;
-    --text: #ededed; --muted: #8a8a90; --accent: #7c83ff; --accent-fg: #fff;
-    --code-bg: #121214; --green: #34d399; --radius: 10px;
-    --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --bg: #09090b;
+    --panel: #111114;
+    --elev: #18181b;
+    --border: #27272a;
+    --border-subtle: #1f1f23;
+    --text: #f4f4f5;
+    --muted: #a1a1aa;
+    --muted-dim: #71717a;
+    --accent: #3b82f6;
+    --accent-subtle: rgba(59, 130, 246, 0.12);
+    --green: #10b981;
+    --green-bg: rgba(16, 185, 129, 0.1);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245, 158, 11, 0.1);
+    --code-bg: #0c0c0e;
+    --code-header: #141418;
+    --radius: 8px;
+    --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
   }
   [data-theme="light"] {
-    --bg: #ffffff; --panel: #fafafa; --elev: #fff; --border: #e6e6e8;
-    --text: #0a0a0a; --muted: #6b6b70; --accent: #5b61e0; --accent-fg: #fff;
-    --code-bg: #f5f5f6;
+    --bg: #ffffff;
+    --panel: #fafafa;
+    --elev: #f4f4f5;
+    --border: #e4e4e7;
+    --border-subtle: #f4f4f5;
+    --text: #09090b;
+    --muted: #71717a;
+    --muted-dim: #a1a1aa;
+    --accent: #2563eb;
+    --accent-subtle: rgba(37, 99, 235, 0.08);
+    --code-bg: #f8f8fa;
+    --code-header: #f1f1f4;
   }
-  * { box-sizing: border-box; }
+
+  /* Custom dark scrollbar for all browsers (avoids white Windows scrollbar) */
+  * {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
   html { scroll-behavior: smooth; scroll-padding-top: 80px; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
@@ -33,277 +67,708 @@
 
   /* Header */
   header {
-    position: sticky; top: 0; z-index: 20;
+    position: sticky; top: 0; z-index: 30;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 28px; background: color-mix(in srgb, var(--bg) 80%, transparent);
+    padding: 0 24px; height: 56px;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
     backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
   }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.02em; color: inherit; text-decoration: none; }
-  .dot { width: 18px; height: 18px; border-radius: 6px; background: linear-gradient(135deg, var(--accent), #b69bff); }
-  .nav { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 14px; }
+  .brand {
+    display: flex; align-items: center; gap: 9px;
+    font-weight: 600; letter-spacing: -0.02em; font-size: 15px; color: var(--text);
+  }
+  .brand svg { color: var(--text); flex-shrink: 0; }
+  .brand-sep { color: var(--muted-dim); font-weight: 400; margin: 0 2px; }
+  .brand-sub { color: var(--muted); font-weight: 500; font-size: 13.5px; }
+  .nav { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 13.5px; }
+  .nav a { transition: color 150ms ease; }
   .nav a:hover { color: var(--text); }
   .toggle {
     border: 1px solid var(--border); background: var(--elev); color: var(--text);
-    width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 15px;
+    width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
   }
 
-  /* Layout */
-  .layout { display: grid; grid-template-columns: 240px minmax(0,1fr); max-width: 1180px; margin: 0 auto; }
+  /* Layout — anchored left without dead space */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 56px);
+    width: 100%;
+  }
   aside {
-    position: sticky; top: 57px; align-self: start; height: calc(100vh - 57px);
-    overflow-y: auto; padding: 28px 18px; border-right: 1px solid var(--border);
+    position: sticky; top: 56px; align-self: start; height: calc(100vh - 56px);
+    width: 250px; flex-shrink: 0;
+    overflow-y: auto; padding: 24px 16px 40px 24px; border-right: 1px solid var(--border);
   }
-  aside .group { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 18px 8px 8px; }
-  /* Transparent border in the resting state so the hover border does not
-     shift the text by a pixel. */
-  aside a { display: block; padding: 6px 10px; border-radius: 7px; color: var(--muted);
-    font-size: 14px; border: 1px solid transparent; transition: background 120ms ease, border-color 120ms ease, color 120ms ease; }
-  aside a:hover, aside a:focus-visible {
-    background: var(--elev); border-color: var(--border); color: var(--text); outline: none;
+  aside .group {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted-dim); margin: 20px 8px 8px;
   }
-  /* Section currently on screen — set by the scrollspy below. Accent-tinted so
-     it stays distinct from the plain hover box, in both themes. */
+  aside .group:first-child { margin-top: 4px; }
+  aside a {
+    display: block; padding: 6px 10px; border-radius: 6px; color: var(--muted);
+    font-size: 13.5px; border: 1px solid transparent; transition: all 120ms ease;
+  }
+  aside a:hover { background: var(--elev); color: var(--text); }
   aside a.active {
-    background: color-mix(in srgb, var(--accent) 14%, var(--elev));
-    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-    color: var(--accent);
-    font-weight: 500;
-    box-shadow: inset 2px 0 0 var(--accent);
+    background: var(--accent-subtle); color: var(--accent);
+    font-weight: 500; border-color: color-mix(in srgb, var(--accent) 30%, transparent);
   }
-  aside a.active:hover { color: var(--accent); }
-  main { padding: 44px 48px 120px; min-width: 0; }
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 56px 120px 56px;
+    max-width: 960px;
+  }
 
   /* Hero */
-  .hero h1 { font-size: 42px; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 12px; }
-  .hero p.lead { font-size: 18px; color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
-  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-  .pill { border: 1px solid var(--border); background: var(--elev); color: var(--muted);
-    padding: 4px 11px; border-radius: 999px; font-size: 12.5px; }
+  .hero { border-bottom: 1px solid var(--border); padding-bottom: 32px; margin-bottom: 40px; }
+  .hero h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin: 0 0 10px; }
+  .hero p.lead { font-size: 16px; color: var(--muted); max-width: 65ch; margin: 0; }
 
-  section { padding-top: 40px; }
-  h2 { font-size: 24px; letter-spacing: -0.02em; margin: 0 0 6px; }
-  h3 { font-size: 16px; margin: 28px 0 6px; }
-  p, li { color: var(--text); }
+  /* Sections */
+  section { padding-top: 44px; border-bottom: 1px solid var(--border); padding-bottom: 44px; }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  h3 { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; margin: 26px 0 10px; }
+  p, li { color: var(--text); font-size: 14.5px; line-height: 1.65; }
   .muted { color: var(--muted); }
-  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0 0; }
 
-  pre {
-    position: relative; background: var(--code-bg); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 18px; overflow-x: auto; margin: 14px 0;
+  /* Badge Styles */
+  .step-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--elev); border: 1px solid var(--border);
+    color: var(--text); font-size: 12px; font-weight: 600; font-family: var(--mono);
   }
-  pre .cp { position: absolute; top: 8px; right: 8px; font-family: var(--font); font-size: 11px;
-    color: var(--muted); border: 1px solid var(--border); background: var(--elev);
-    border-radius: 6px; padding: 3px 8px; cursor: pointer; }
-  pre .cp:hover { color: var(--text); }
-  .tok-c { color: var(--muted); }       /* comment */
-  .tok-k { color: var(--accent); }       /* keyword/method */
-  .tok-s { color: var(--green); }        /* string */
+  .endpoint-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--elev); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 12px; margin: 16px 0;
+    font-family: var(--mono); font-size: 13px;
+  }
+  .method-post {
+    background: #2563eb; color: #ffffff;
+    font-weight: 600; font-size: 11px; padding: 2px 7px; border-radius: 4px;
+  }
+  .auth-tag {
+    margin-left: auto; font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .auth-tag.public { color: var(--green); border-color: var(--green-bg); background: var(--green-bg); }
 
-  table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; white-space: nowrap; }
-  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-  td code { background: var(--code-bg); padding: 1px 6px; border-radius: 5px; border: 1px solid var(--border); }
+  /* Code Block */
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin: 14px 0 20px;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--code-header); border-bottom: 1px solid var(--border);
+    padding: 8px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+  .code-header .cp {
+    font-family: var(--font); font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; background: var(--elev); border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer; transition: all 120ms ease;
+  }
+  .code-header .cp:hover { color: var(--text); border-color: var(--muted); }
+  pre {
+    margin: 0; padding: 14px 16px; overflow-x: auto;
+    background: transparent; border: none;
+  }
+  .tok-k { color: #60a5fa; font-weight: 500; }
+  .tok-s { color: #34d399; }
+  .tok-c { color: var(--muted-dim); font-style: italic; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin: 18px 0; }
-  .card { border: 1px solid var(--border); background: var(--panel); border-radius: var(--radius); padding: 18px; }
-  .card h4 { margin: 0 0 6px; font-size: 15px; }
-  .card p { margin: 0; color: var(--muted); font-size: 13.5px; }
-  .method { font-family: var(--mono); font-size: 11px; color: var(--accent-fg); background: var(--accent);
-    padding: 2px 7px; border-radius: 5px; }
-  .note { border-left: 2px solid var(--accent); background: var(--elev); padding: 12px 16px;
-    border-radius: 0 8px 8px 0; margin: 16px 0; color: var(--muted); font-size: 14px; }
-  footer { max-width: 1180px; margin: 0 auto; padding: 24px 48px 60px; color: var(--muted);
-    font-size: 13px; border-top: 1px solid var(--border); }
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    font-size: 13.5px; border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--elev); color: var(--muted); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+  tr:last-child td { border-bottom: none; }
+  td code {
+    background: var(--elev); padding: 2px 6px; border-radius: 4px;
+    border: 1px solid var(--border); font-size: 12px; color: var(--text);
+  }
+  .type-tag { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .req { color: #f87171; font-weight: 500; font-size: 11.5px; }
+  .opt { color: var(--muted-dim); font-size: 11.5px; }
+
+  /* Notes & Callouts */
+  .callout {
+    border: 1px solid var(--border); background: var(--panel);
+    border-left: 3px solid var(--accent); padding: 14px 16px;
+    border-radius: 0 var(--radius) var(--radius) 0; margin: 18px 0;
+    font-size: 13.5px; color: var(--text);
+  }
+  .callout.info { border-left-color: var(--accent); }
+  .callout.success { border-left-color: var(--green); }
+  .callout.warn { border-left-color: var(--amber); }
+
+  /* Footer */
+  footer {
+    margin-top: 60px; padding-top: 24px;
+    color: var(--muted-dim); font-size: 13px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
 
   @media (max-width: 860px) {
     aside { display: none; }
-    .layout { grid-template-columns: 1fr; }
-    main { padding: 32px 22px 90px; }
-    .hero h1 { font-size: 32px; }
-  }
-
-  @media (max-width: 600px) {
-    header { padding: 12px 16px; }
-    .nav { gap: 14px; font-size: 13px; }
-    main { padding: 24px 16px 80px; }
-    .hero h1 { font-size: 28px; }
-    .hero p.lead { font-size: 16px; }
-    footer { padding: 24px 16px 40px; }
+    .layout { display: block; }
+    main { padding: 32px 20px 80px; }
+    .hero h1 { font-size: 26px; }
+    .nav { gap: 12px; font-size: 12.5px; }
   }
 </style>
 </head>
 <body>
 <header>
-  <a class="brand" href="/" title="Back to HaloMail home"><span class="dot"></span> HaloMail <span class="muted" style="font-weight:400">docs</span></a>
+  <a class="brand" href="/" title="HaloMail">
+    <svg viewBox="6 0 52 54" fill="none" role="img" aria-label="HaloMail" width="22" height="22" style="flex-shrink:0;">
+      <title>HaloMail</title>
+      <ellipse cx="32" cy="9" rx="17" ry="5.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" />
+      <rect x="9" y="19.5" width="46" height="31" rx="5" stroke="currentColor" stroke-width="3" fill="none" />
+      <path d="M10 21 L32 36 L54 21" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </svg>
+    <span>HaloMail</span>
+    <span class="brand-sep">/</span>
+    <span class="brand-sub">Docs</span>
+  </a>
   <nav class="nav">
-    <a href="integrate.html">Add to your site</a>
-    <a href="#api">API</a>
+    <a href="#quickstart">Quickstart</a>
+    <a href="#widget-embed">Forms</a>
+    <a href="#booking-widget">Scheduling</a>
+    <a href="#api-reference">API Reference</a>
+    <a href="#webhooks">Webhooks</a>
     <button class="toggle" id="themeBtn" title="Toggle theme">◐</button>
   </nav>
 </header>
 
 <div class="layout">
   <aside>
-    <div class="group">Start</div>
-    <a href="#intro">Introduction</a>
-    <a href="#auth">Authentication</a>
-    <a href="integrate.html">Add to your site &rarr;</a>
-    <div class="group">Concepts</div>
-    <a href="#services">Services</a>
-    <a href="#scheduling">Scheduling</a>
-    <a href="#contact">Contact forms</a>
-    <a href="#themes">Email themes</a>
-    <div class="group">Reference</div>
-    <a href="#api">Calling the API</a>
-    <a href="#endpoints">Endpoints</a>
-    <a href="#webhooks">Webhooks</a>
-    <a href="#errors">Errors</a>
+    <div class="group">Getting Started</div>
+    <a href="#overview">Overview</a>
+    <a href="#quickstart">Quickstart (2 Lines)</a>
+    <a href="#access-keys">Access Keys</a>
+
+    <div class="group">Contact Forms</div>
+    <a href="#widget-embed">Drop-in Widget</a>
+    <a href="#html-form">Plain HTML Form</a>
+    <a href="#react-nextjs">React &amp; Next.js</a>
+    <a href="#spam-protection">Anti-Spam (Honeypot)</a>
+    <a href="#redirects">Custom Redirects</a>
+
+    <div class="group">Scheduling &amp; Meetings</div>
+    <a href="#booking-widget">Modal Booking Widget</a>
+    <a href="#hosted-links">Hosted Booking Link</a>
+
+    <div class="group">API Reference</div>
+    <a href="#api-reference">Protocol &amp; Auth</a>
+    <a href="#api-submit">Submit Message</a>
+    <a href="#api-list-messages">List Messages</a>
+    <a href="#api-list-slots">List Available Slots</a>
+    <a href="#api-create-booking">Create Booking</a>
+    <a href="#api-reschedule">Reschedule &amp; Cancel</a>
+
+    <div class="group">Webhooks &amp; Reliability</div>
+    <a href="#webhooks">Webhooks &amp; HMAC</a>
+    <a href="#errors">Error Codes</a>
   </aside>
 
   <main>
     <div class="hero">
-      <div class="pills">
-        <span class="pill">API-first</span><span class="pill">ConnectRPC</span>
-        <span class="pill">Go + Next.js</span>
-      </div>
-      <h1>HaloMail Documentation</h1>
-      <p class="lead">A platform for meeting scheduling and portfolio
-      contact forms — one typed API, a generated SDK, webhooks, and a polished dashboard.</p>
-      <p class="muted" style="font-size:13px">Raw docs page — the seed of HaloMail's own docs engine. Real content, no external framework.</p>
+      <h1>Documentation &amp; API Reference</h1>
+      <p class="lead">
+        Integrate contact forms, embed calendar scheduling, and interact directly with HaloMail ConnectRPC endpoints.
+      </p>
     </div>
 
-    <section id="intro">
-      <h2>Introduction</h2>
-      <p>HaloMail gives every user a <strong>public booking page</strong> and an
-      <strong>embeddable contact form</strong>, behind a clean
-      <a href="https://connectrpc.com" target="_blank" rel="noopener" style="color:var(--accent)">ConnectRPC</a>
-      API that speaks gRPC, gRPC-Web, and plain JSON from a single definition. The
-      dashboard, the SDK, and your own integrations all share one contract.</p>
-      <div class="grid">
-        <div class="card"><h4>Scheduling</h4><p>Booking pages, availability, Google Calendar sync & auto-generated Google Meet links, confirmations, reschedule/cancel.</p></div>
-        <div class="card"><h4>Contact forms</h4><p>Embeddable widget, REST + SDK, spam protection, rate limiting, storage, forwarding.</p></div>
-        <div class="card"><h4>Email designer</h4><p>Themes — Minimal, Apple, Notion, Glass, Terminal — plus custom HTML and live preview.</p></div>
-        <div class="card"><h4>Developer</h4><p>API keys, signed webhooks, generated SDK, OpenAPI, audit logs.</p></div>
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>
+        HaloMail provides two core capabilities backed by one unified infrastructure:
+      </p>
+      <ul>
+        <li><strong>Contact Forms:</strong> Drop a lightweight widget into your site or post JSON directly from your backend. Messages are spam-scored, encrypted, saved in your dashboard, and instantly forwarded to your inbox.</li>
+        <li><strong>Meeting Scheduling:</strong> Connect Google Calendar to automatically calculate availability across timezones, provision Google Meet links, and handle confirmations, rescheduling, and cancellations.</li>
+      </ul>
+    </section>
+
+    <!-- QUICKSTART & EMBED -->
+    <div id="embed" style="scroll-margin-top: 80px;"></div>
+    <section id="quickstart">
+      <h2><span class="step-badge">1</span>Quickstart: 2-Line Form Embed</h2>
+      <p>
+        The fastest way to receive messages. Include the script tag and attach <code>data-halomail</code> with your access key to any form:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header"><span>index.html</span><button class="cp">copy</button></div>
+        <pre><code>&lt;!-- 1. Load the lightweight widget --&gt;
+&lt;script src="https://api.halomail.app/widget.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- 2. Your form with access key --&gt;
+&lt;form data-halomail="hl_key_your_access_key"&gt;
+  &lt;input type="text" name="name" placeholder="Your Name" required /&gt;
+  &lt;input type="email" name="email" placeholder="Your Email" required /&gt;
+  &lt;textarea name="message" placeholder="Your Message" required&gt;&lt;/textarea&gt;
+  &lt;button type="submit"&gt;Send Message&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+
+      <div class="callout success">
+        <strong>Automatic Field Handling:</strong> Standard inputs (<code>name</code>, <code>email</code>, <code>message</code>) are mapped automatically. Any additional input fields are preserved and stored in custom payload data.
       </div>
     </section>
 
-    <section id="auth">
-      <h2>Authentication</h2>
-      <p>Two credential types, both via the <code>Authorization</code> header:</p>
-      <table>
-        <tr><th>Caller</th><th>Header</th><th>Obtained from</th></tr>
-        <tr><td>Dashboard / user</td><td><code>Bearer &lt;jwt&gt;</code></td><td><code>AuthService/Login</code></td></tr>
-        <tr><td>Developer / server</td><td><code>ApiKey hl_live_…</code></td><td>Dashboard → API Keys</td></tr>
-      </table>
-      <p>The gateway verifies the credential, then injects the caller's
-      <code>user_id</code>, <code>org_id</code>, and <code>scopes</code> into the request.</p>
-    </section>
-
-    <section id="services">
-      <h2>Services</h2>
-      <p>The backend is a set of modular Go microservices behind one gateway.</p>
-      <table>
-        <tr><th>Service</th><th>Owns</th></tr>
-        <tr><td><code>gateway</code></td><td>Public edge: auth, rate limiting, REST/OpenAPI, aggregation</td></tr>
-        <tr><td><code>identity</code></td><td>Users, orgs, auth/JWT, API keys, audit log</td></tr>
-        <tr><td><code>scheduling</code></td><td>Event types, availability, bookings, calendar sync</td></tr>
-        <tr><td><code>contact</code></td><td>Forms, messages, spam protection, forwarding</td></tr>
-        <tr><td><code>template</code></td><td>Email themes, render, preview</td></tr>
-        <tr><td><code>notification</code></td><td>Email delivery, webhook dispatch</td></tr>
-      </table>
-    </section>
-
-    <section id="scheduling">
-      <h2>Scheduling</h2>
-      <p>Availability is weekly rules in the owner's timezone, minus date overrides,
-      existing bookings (plus buffers), and busy time from connected calendars —
-      sliced into the event type's duration and projected into the invitee's timezone.</p>
-      <h3>List open slots <span class="muted">(public)</span></h3>
-      <pre><code><span class="tok-k">POST</span> /halomail.scheduling.v1.BookingService/ListSlots
-<span class="tok-c"># body</span>
-{ <span class="tok-s">"event_type_id"</span>: <span class="tok-s">"evt_…"</span>,
-  <span class="tok-s">"from_date"</span>: <span class="tok-s">"2026-06-15"</span>,
-  <span class="tok-s">"to_date"</span>: <span class="tok-s">"2026-06-20"</span>,
-  <span class="tok-s">"invitee_timezone"</span>: <span class="tok-s">"Europe/Berlin"</span> }</code></pre>
-    </section>
-
-    <section id="contact">
-      <h2>Contact forms</h2>
-      <p>Drop the widget on any site; submissions are rate-limited, spam-scored,
-      stored, forwarded to your inbox, and pushed to webhooks.</p>
-      <pre><code><span class="tok-c">&lt;!-- embed --&gt;</span>
-<span class="tok-k">&lt;script</span> src=<span class="tok-s">"https://&lt;api-host&gt;/widget.js"</span>
-        data-form=<span class="tok-s">"contact"</span> defer<span class="tok-k">&gt;&lt;/script&gt;</span></code></pre>
-    </section>
-
-    <section id="themes">
-      <h2>Email themes</h2>
-      <div class="grid">
-        <div class="card"><h4>Minimal</h4><p>Clean, system font, whitespace.</p></div>
-        <div class="card"><h4>Apple</h4><p>SF-style, soft shadows, rounded.</p></div>
-        <div class="card"><h4>Notion</h4><p>Document-like, neutral dividers.</p></div>
-        <div class="card"><h4>Glass</h4><p>Translucent panels, gradients.</p></div>
-        <div class="card"><h4>Terminal</h4><p>Monospace, dark, developer.</p></div>
-        <div class="card"><h4>Custom</h4><p>Your own HTML with <code>{{variables}}</code>.</p></div>
+    <!-- ACCESS KEYS -->
+    <section id="access-keys">
+      <h2><span class="step-badge">2</span>Access Keys</h2>
+      <p>
+        Access keys allow client-side websites to submit forms without exposing your private server API keys:
+      </p>
+      <ol>
+        <li>Open your <strong>HaloMail Dashboard</strong> &rarr; <strong>Forms</strong>.</li>
+        <li>Create or select a form to copy its <strong>Access Key</strong> (e.g. <code>hl_key_9f82a17c</code>).</li>
+      </ol>
+      <div class="callout info">
+        Access keys are strictly scoped to submission. They cannot read past messages or modify form configurations.
       </div>
     </section>
 
-    <section id="api">
-      <h2>Calling the API</h2>
-      <p>ConnectRPC speaks plain JSON over HTTP, so any HTTP client works — no gRPC tooling required.</p>
-      <pre><code><span class="tok-c"># Log in and get a session</span>
-curl https://&lt;api-host&gt;/halomail.identity.v1.AuthService/Login \
-  -H <span class="tok-s">'Content-Type: application/json'</span> \
-  -d <span class="tok-s">'{"email":"me@example.com","password":"••••••"}'</span></code></pre>
-      <pre><code><span class="tok-c"># Use the access token</span>
-curl https://&lt;api-host&gt;/halomail.identity.v1.UserService/GetCurrentUser \
-  -H <span class="tok-s">'Authorization: Bearer &lt;access_token&gt;'</span> \
-  -H <span class="tok-s">'Content-Type: application/json'</span> -d <span class="tok-s">'{}'</span></code></pre>
+    <!-- WIDGET EMBED -->
+    <section id="widget-embed">
+      <h2><span class="step-badge">3</span>Widget DOM Events</h2>
+      <p>
+        The widget emits standard DOM events, allowing you to update your UI or display custom notifications:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header"><span>JavaScript</span><button class="cp">copy</button></div>
+        <pre><code>const form = document.querySelector('form[data-halomail]');
+
+form.addEventListener('halomail:sent', (e) => {
+  console.log('Submission received:', e.detail);
+  alert('Thank you! Your message has been delivered.');
+});
+
+form.addEventListener('halomail:error', (e) => {
+  console.error('Submission failed:', e.detail);
+  alert('Unable to send. Please check your connection and try again.');
+});</code></pre>
+      </div>
     </section>
 
-    <section id="endpoints">
-      <h2>Endpoints</h2>
-      <p>All procedures are <code><span class="method">POST</span> /halomail.&lt;service&gt;.v1.&lt;Service&gt;/&lt;Method&gt;</code>.</p>
+    <!-- HTML FORM -->
+    <section id="html-form">
+      <h2><span class="step-badge">4</span>Plain HTML Form (No JavaScript)</h2>
+      <p>
+        If your website runs with JavaScript disabled, post directly to the endpoint using HTML form attributes:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header"><span>HTML</span><button class="cp">copy</button></div>
+        <pre><code>&lt;form action="https://api.halomail.app/halomail.contact.v1.MessageService/SubmitMessage" method="POST"&gt;
+  &lt;input type="hidden" name="access_key" value="hl_key_your_access_key" /&gt;
+  &lt;input type="text" name="sender_name" placeholder="Your Name" required /&gt;
+  &lt;input type="email" name="sender_email" placeholder="Your Email" required /&gt;
+  &lt;textarea name="data[message]" placeholder="Your Message" required&gt;&lt;/textarea&gt;
+  &lt;button type="submit"&gt;Send Message&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- REACT & NEXT.JS -->
+    <section id="react-nextjs">
+      <h2><span class="step-badge">5</span>React &amp; Next.js</h2>
+      <p>
+        Build a bespoke contact form with native React state management and Tailwind CSS:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header"><span>ContactForm.tsx</span><button class="cp">copy</button></div>
+        <pre><code>"use client";
+
+import { useState } from "react";
+
+export function ContactForm() {
+  const [status, setStatus] = useState&lt;"idle" | "sending" | "success" | "error"&gt;("idle");
+
+  async function handleSubmit(e: React.FormEvent&lt;HTMLFormElement&gt;) {
+    e.preventDefault();
+    setStatus("sending");
+
+    const data = new FormData(e.currentTarget);
+
+    try {
+      const res = await fetch("https://api.halomail.app/halomail.contact.v1.MessageService/SubmitMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: "hl_key_your_access_key",
+          sender_name: data.get("name"),
+          sender_email: data.get("email"),
+          data: { message: data.get("message") },
+          honeypot: data.get("_hl_hp") || "",
+        }),
+      });
+
+      if (!res.ok) throw new Error("Submission rejected");
+      setStatus("success");
+      e.currentTarget.reset();
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md"&gt;
+      &lt;input name="name" placeholder="Your Name" required className="border p-2 rounded" /&gt;
+      &lt;input name="email" type="email" placeholder="Your Email" required className="border p-2 rounded" /&gt;
+      &lt;textarea name="message" placeholder="Message" required className="border p-2 rounded" /&gt;
+
+      {/* Honeypot field */}
+      &lt;input name="_hl_hp" tabIndex={-1} style={{ display: "none" }} autoComplete="off" /&gt;
+
+      &lt;button type="submit" disabled={status === "sending"}&gt;
+        {status === "sending" ? "Sending..." : "Send Message"}
+      &lt;/button&gt;
+
+      {status === "success" && &lt;p className="text-emerald-500"&gt;Message delivered successfully!&lt;/p&gt;}
+      {status === "error" && &lt;p className="text-red-500"&gt;Failed to send message. Please try again.&lt;/p&gt;}
+    &lt;/form&gt;
+  );
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- SPAM PROTECTION -->
+    <section id="spam-protection">
+      <h2><span class="step-badge">6</span>Honeypot Anti-Spam Defense</h2>
+      <p>
+        Protect your forms from automated spam bots without adding intrusive CAPTCHAs by adding an off-screen input named <code>_hl_hp</code>:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header"><span>HTML Honeypot</span><button class="cp">copy</button></div>
+        <pre><code>&lt;!-- Humans never see or fill this field; bots fill it automatically --&gt;
+&lt;input type="text" name="_hl_hp" style="position: absolute; left: -9999px;" tabIndex="-1" autoComplete="off" /&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- REDIRECTS -->
+    <section id="redirects">
+      <h2><span class="step-badge">7</span>Custom Thank-You Redirects</h2>
+      <p>
+        Redirect visitors to a custom confirmation page after submitting by specifying <code>data-redirect</code>:
+      </p>
+      <div class="code-block">
+        <div class="code-header"><span>HTML</span><button class="cp">copy</button></div>
+        <pre><code>&lt;form data-halomail="hl_key_your_access_key" data-redirect="https://yoursite.com/thanks"&gt;
+  &lt;!-- Fields --&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- BOOKING WIDGET -->
+    <section id="booking-widget">
+      <h2><span class="step-badge">8</span>Modal Booking Widget</h2>
+      <p>
+        Attach a clean scheduling modal to any button with our meetings script:
+      </p>
+
+      <div class="code-block">
+        <div class="code-header"><span>HTML</span><button class="cp">copy</button></div>
+        <pre><code>&lt;!-- 1. Include the booking script --&gt;
+&lt;script src="https://api.halomail.app/embed.js" async&gt;&lt;/script&gt;
+
+&lt;!-- 2. Trigger button with your handle --&gt;
+&lt;button data-halomail-book="your-handle"&gt;
+  Book a Consultation
+&lt;/button&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- HOSTED LINKS -->
+    <section id="hosted-links">
+      <h2><span class="step-badge">9</span>Hosted Booking Links</h2>
+      <p>
+        Every user has a dedicated public scheduling URL:
+      </p>
+      <div class="callout info">
+        <code>https://halomail.app/book/{your-handle}</code>
+      </div>
+    </section>
+
+    <!-- API REFERENCE -->
+    <section id="api-reference">
+      <h2>API Reference &amp; Protocol</h2>
+      <p>
+        HaloMail speaks standard <strong>ConnectRPC</strong> with JSON serialization over HTTP/1.1 and HTTP/2.
+      </p>
+
+      <h3>Authentication Headers</h3>
       <table>
-        <tr><th>Procedure</th><th>Purpose</th><th>Auth</th></tr>
-        <tr><td><code>identity.v1.AuthService/Register</code></td><td>Create account + session</td><td>none</td></tr>
-        <tr><td><code>identity.v1.AuthService/Login</code></td><td>Email + password → session</td><td>none</td></tr>
-        <tr><td><code>identity.v1.ApiKeyService/CreateApiKey</code></td><td>Issue an API key</td><td>Bearer</td></tr>
-        <tr><td><code>scheduling.v1.BookingService/ListSlots</code></td><td>Open slots for an event type</td><td>none</td></tr>
-        <tr><td><code>scheduling.v1.BookingService/CreateBooking</code></td><td>Book a slot</td><td>none</td></tr>
-        <tr><td><code>contact.v1.MessageService/SubmitMessage</code></td><td>Submit a contact form</td><td>none</td></tr>
-        <tr><td><code>template.v1.TemplateService/RenderPreview</code></td><td>Render an email theme</td><td>Bearer/ApiKey</td></tr>
-        <tr><td><code>notification.v1.WebhookService/CreateWebhook</code></td><td>Subscribe to events</td><td>Bearer/ApiKey</td></tr>
+        <thead>
+          <tr><th>Scope</th><th>Header</th><th>Usage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Public</td><td><em>None</em></td><td>Forms submissions, listing open slots, booking meetings.</td></tr>
+          <tr><td>Server</td><td><code>Authorization: ApiKey hl_live_...</code></td><td>Backend-to-backend requests using API keys.</td></tr>
+          <tr><td>User</td><td><code>Authorization: Bearer &lt;jwt&gt;</code></td><td>User session tokens from dashboard login.</td></tr>
+        </tbody>
       </table>
     </section>
 
+    <!-- API: SUBMIT MESSAGE -->
+    <section id="api-submit">
+      <h2>Submit Message API</h2>
+      <div class="endpoint-badge">
+        <span class="method-post">POST</span>
+        <span>/halomail.contact.v1.MessageService/SubmitMessage</span>
+        <span class="auth-tag public">Public</span>
+      </div>
+
+      <h3>Parameters</h3>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Status</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>access_key</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Form access key.</td></tr>
+          <tr><td><code>sender_name</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Sender full name.</td></tr>
+          <tr><td><code>sender_email</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Sender email address.</td></tr>
+          <tr><td><code>data</code></td><td><span class="type-tag">object</span></td><td><span class="opt">Optional</span></td><td>Custom key-value form fields.</td></tr>
+          <tr><td><code>honeypot</code></td><td><span class="type-tag">string</span></td><td><span class="opt">Optional</span></td><td>Anti-spam field (must be empty).</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Response (200 OK)</h3>
+      <div class="code-block">
+        <div class="code-header"><span>JSON</span><button class="cp">copy</button></div>
+        <pre><code>{
+  "id": "msg_01h8x9p2q5a7b1c4",
+  "accepted": true,
+  "redirect_url": ""
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- API: LIST MESSAGES -->
+    <section id="api-list-messages">
+      <h2>List Messages API</h2>
+      <div class="endpoint-badge">
+        <span class="method-post">POST</span>
+        <span>/halomail.contact.v1.MessageService/ListMessages</span>
+        <span class="auth-tag">ApiKey or Bearer</span>
+      </div>
+
+      <h3>Request Body</h3>
+      <div class="code-block">
+        <div class="code-header"><span>JSON</span><button class="cp">copy</button></div>
+        <pre><code>{
+  "unread_only": false,
+  "page": { "page_size": 25 }
+}</code></pre>
+      </div>
+
+      <h3>Response (200 OK)</h3>
+      <div class="code-block">
+        <div class="code-header"><span>JSON</span><button class="cp">copy</button></div>
+        <pre><code>{
+  "messages": [
+    {
+      "id": "msg_01h8x9p2q5a7b1c4",
+      "form_id": "form_01h7a4e9b2c3",
+      "sender_name": "Jane Visitor",
+      "sender_email": "jane@example.com",
+      "data": { "message": "Can we schedule a call?" },
+      "spam_score": 0.02,
+      "is_spam": false,
+      "read": true,
+      "created_at": "2026-06-15T14:32:00Z"
+    }
+  ],
+  "page": { "next_page_token": "" }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- API: LIST SLOTS -->
+    <section id="api-list-slots">
+      <h2>List Available Slots API</h2>
+      <div class="endpoint-badge">
+        <span class="method-post">POST</span>
+        <span>/halomail.scheduling.v1.BookingService/ListSlots</span>
+        <span class="auth-tag public">Public</span>
+      </div>
+
+      <h3>Parameters</h3>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Status</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>event_type_id</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Unique event type ID.</td></tr>
+          <tr><td><code>from_date</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Start date (<code>YYYY-MM-DD</code>).</td></tr>
+          <tr><td><code>to_date</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>End date (<code>YYYY-MM-DD</code>).</td></tr>
+          <tr><td><code>invitee_timezone</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Invitee IANA timezone name.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Response (200 OK)</h3>
+      <div class="code-block">
+        <div class="code-header"><span>JSON</span><button class="cp">copy</button></div>
+        <pre><code>{
+  "slots": [
+    {
+      "start": "2026-06-15T13:00:00Z",
+      "end": "2026-06-15T13:30:00Z"
+    },
+    {
+      "start": "2026-06-15T14:30:00Z",
+      "end": "2026-06-15T15:00:00Z"
+    }
+  ]
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- API: CREATE BOOKING -->
+    <section id="api-create-booking">
+      <h2>Create Booking API</h2>
+      <div class="endpoint-badge">
+        <span class="method-post">POST</span>
+        <span>/halomail.scheduling.v1.BookingService/CreateBooking</span>
+        <span class="auth-tag public">Public</span>
+      </div>
+
+      <h3>Parameters</h3>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Status</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>event_type_id</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Event type identifier.</td></tr>
+          <tr><td><code>invitee_name</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Full name of attendee.</td></tr>
+          <tr><td><code>invitee_email</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Email for meeting invite.</td></tr>
+          <tr><td><code>invitee_timezone</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>Attendee IANA timezone.</td></tr>
+          <tr><td><code>start</code></td><td><span class="type-tag">string</span></td><td><span class="req">Required</span></td><td>ISO 8601 UTC slot start time.</td></tr>
+          <tr><td><code>notes</code></td><td><span class="type-tag">string</span></td><td><span class="opt">Optional</span></td><td>Meeting topic or context.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Response (200 OK)</h3>
+      <div class="code-block">
+        <div class="code-header"><span>JSON</span><button class="cp">copy</button></div>
+        <pre><code>{
+  "booking": {
+    "id": "bkg_01ha4e2c91b8",
+    "event_type_id": "evt_30min_intro",
+    "invitee_name": "Alex Smith",
+    "invitee_email": "alex@example.com",
+    "invitee_timezone": "America/New_York",
+    "start": "2026-06-15T13:00:00Z",
+    "end": "2026-06-15T13:30:00Z",
+    "status": "BOOKING_STATUS_CONFIRMED",
+    "location": "https://meet.google.com/xyz-abcd-efg",
+    "reschedule_token": "tok_resched_89a1b2c3",
+    "cancel_token": "tok_cancel_45d6e7f8"
+  }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- API: RESCHEDULE & CANCEL -->
+    <section id="api-reschedule">
+      <h2>Reschedule &amp; Cancel API</h2>
+      <p>Invitees can modify or cancel appointments using opaque tokens delivered in their confirmation emails.</p>
+
+      <h3>Reschedule Booking</h3>
+      <div class="endpoint-badge">
+        <span class="method-post">POST</span>
+        <span>/halomail.scheduling.v1.BookingService/RescheduleBooking</span>
+        <span class="auth-tag public">Public (Token)</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span>cURL</span><button class="cp">copy</button></div>
+        <pre><code>curl -X POST https://api.halomail.app/halomail.scheduling.v1.BookingService/RescheduleBooking \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reschedule_token": "tok_resched_89a1b2c3",
+    "new_start": "2026-06-16T15:00:00Z"
+  }'</code></pre>
+      </div>
+
+      <h3>Cancel Booking</h3>
+      <div class="endpoint-badge">
+        <span class="method-post">POST</span>
+        <span>/halomail.scheduling.v1.BookingService/CancelBooking</span>
+        <span class="auth-tag public">Public (Token)</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span>cURL</span><button class="cp">copy</button></div>
+        <pre><code>curl -X POST https://api.halomail.app/halomail.scheduling.v1.BookingService/CancelBooking \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cancel_token": "tok_cancel_45d6e7f8",
+    "reason": "Scheduling conflict"
+  }'</code></pre>
+      </div>
+    </section>
+
+    <!-- WEBHOOKS -->
     <section id="webhooks">
-      <h2>Webhooks</h2>
-      <p>Subscribe to <code>booking.created</code>, <code>booking.cancelled</code>,
-      <code>booking.rescheduled</code>, and <code>message.received</code>. Each delivery is
-      signed with <code>HMAC-SHA256</code> in an <code>X-HaloMail-Signature</code> header; verify it before trusting the payload.</p>
+      <h2>Webhooks &amp; HMAC Verification</h2>
+      <p>
+        Deliver real-time HTTP POST alerts for events: <code>booking.created</code>, <code>booking.cancelled</code>, <code>booking.rescheduled</code>, and <code>message.received</code>.
+      </p>
+
+      <h3>Verifying Signatures</h3>
+      <div class="code-block">
+        <div class="code-header"><span>Node.js / Express</span><button class="cp">copy</button></div>
+        <pre><code>import crypto from "node:crypto";
+
+function verifyWebhook(payloadRaw, signatureHeader, secret) {
+  const hmac = crypto.createHmac("sha256", secret);
+  const digest = "sha256=" + hmac.update(payloadRaw).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(digest), Buffer.from(signatureHeader));
+}</code></pre>
+      </div>
     </section>
 
+    <!-- ERRORS -->
     <section id="errors">
-      <h2>Errors</h2>
-      <p>Errors use Connect status codes mapped from the domain:</p>
+      <h2>Error Codes</h2>
       <table>
-        <tr><th>Domain</th><th>Connect code</th><th>HTTP</th></tr>
-        <tr><td>invalid input</td><td><code>invalid_argument</code></td><td>400</td></tr>
-        <tr><td>not found</td><td><code>not_found</code></td><td>404</td></tr>
-        <tr><td>conflict</td><td><code>already_exists</code></td><td>409</td></tr>
-        <tr><td>unauthorized</td><td><code>unauthenticated</code></td><td>401</td></tr>
-        <tr><td>rate limited</td><td><code>resource_exhausted</code></td><td>429</td></tr>
+        <thead>
+          <tr><th>Connect Code</th><th>HTTP Status</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>invalid_argument</code></td><td>400 Bad Request</td><td>Missing required parameter or failed validation.</td></tr>
+          <tr><td><code>unauthenticated</code></td><td>401 Unauthorized</td><td>Missing or expired authentication token.</td></tr>
+          <tr><td><code>permission_denied</code></td><td>403 Forbidden</td><td>API key lacks necessary permissions.</td></tr>
+          <tr><td><code>not_found</code></td><td>404 Not Found</td><td>The requested resource does not exist.</td></tr>
+          <tr><td><code>already_exists</code></td><td>409 Conflict</td><td>The selected meeting slot is no longer free.</td></tr>
+          <tr><td><code>resource_exhausted</code></td><td>429 Too Many Requests</td><td>Rate limit exceeded.</td></tr>
+        </tbody>
       </table>
     </section>
-
+    <footer>
+      <span>© 2026 HaloMail. All rights reserved.</span>
+      <span><a href="/register" style="text-decoration:underline">Create an Account →</a></span>
+    </footer>
   </main>
 </div>
 
-<footer>© 2026 HaloMail</footer>
-
 <script>
-  // Theme toggle with persistence.
+  // Theme toggle with persistence
   const root = document.documentElement;
   const saved = localStorage.getItem("hl-theme");
   if (saved) root.setAttribute("data-theme", saved);
@@ -312,22 +777,20 @@ curl https://&lt;api-host&gt;/halomail.identity.v1.UserService/GetCurrentUser \
     root.setAttribute("data-theme", next);
     localStorage.setItem("hl-theme", next);
   });
-  // Scrollspy: box the sidebar link whose section is currently on screen.
+
+  // Scrollspy navigation
   const spyLinks = [...document.querySelectorAll('aside a[href^="#"]')];
   const spyTargets = spyLinks
     .map((a) => ({ link: a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
     .filter((t) => t.el);
 
   if (spyTargets.length) {
-    // Matches html { scroll-padding-top } so the highlight flips exactly when a
-    // heading settles under the sticky header.
-    const OFFSET = 90;
+    const OFFSET = 100;
     let queued = false;
 
     const sync = () => {
       queued = false;
-      const atBottom =
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
       let current = spyTargets[0];
       if (atBottom) {
         current = spyTargets[spyTargets.length - 1];
@@ -350,15 +813,16 @@ curl https://&lt;api-host&gt;/halomail.identity.v1.UserService/GetCurrentUser \
     sync();
   }
 
-  // Copy buttons on code blocks.
-  document.querySelectorAll("pre").forEach((pre) => {
-    const b = document.createElement("button");
-    b.className = "cp"; b.textContent = "copy";
-    b.addEventListener("click", () => {
-      navigator.clipboard.writeText(pre.innerText.replace(/\\ncopy$/, "").trim());
-      b.textContent = "copied"; setTimeout(() => (b.textContent = "copy"), 1200);
+  // Copy buttons on code blocks
+  document.querySelectorAll(".code-block").forEach((block) => {
+    const btn = block.querySelector(".cp");
+    const code = block.querySelector("pre code");
+    if (!btn || !code) return;
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(code.innerText.trim());
+      btn.textContent = "copied!";
+      setTimeout(() => (btn.textContent = "copy"), 1200);
     });
-    pre.appendChild(b);
   });
 </script>
 </body>

@@ -11,7 +11,7 @@ import (
 )
 
 // ResendForwarder dispatches incoming form submissions to the target email
-// immediately upon receipt, mirroring Web3Forms real-time delivery with
+// immediately upon receipt, providing high-reliability real-time delivery with
 // multi-account pooling, round-robin, and automatic failover.
 type ResendForwarder struct {
 	pool      *pgxpool.Pool
