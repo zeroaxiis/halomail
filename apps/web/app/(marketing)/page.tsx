@@ -271,7 +271,7 @@ function Features() {
       <SectionHead
         label="Features"
         title="Everything your customer interactions require, built for scale"
-        desc="A unified platform sharing one identity layer, high-throughput APIs, and enterprise-grade security."
+        desc="From personal portfolios and side projects to scaling products: a unified platform sharing one identity layer, high-throughput APIs, and enterprise-grade security."
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -305,14 +305,18 @@ function Features() {
           <div className="mt-6 rounded-lg border border-border bg-background p-3 sm:p-4">
             <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[11px] sm:text-[12px] leading-relaxed text-muted-foreground">
               <code>{`const halo = new HaloMail({
-  apiUrl: process.env.API_URL,
+  apiKey: process.env.HALOMAIL_API_KEY,
 });
 
 await halo.contact.submitMessage({
-  formSlug:    "portfolio",
-  senderName:  "Jane Visitor",
-  senderEmail: "jane@example.com",
-  data:        { message: "Let's talk." },
+  formSlug:    "contact",
+  senderName:  "Sarah Chen",
+  senderEmail: "sarah@example.com",
+  data: {
+    project:  "Website Redesign",
+    timeline: "Next month",
+    message:  "Loved your portfolio! Are you free for a quick chat?",
+  },
 });`}</code>
             </pre>
           </div>
@@ -370,9 +374,9 @@ function Dashboard() {
           </p>
           <ul className="mt-6 sm:mt-7 space-y-3">
             {[
-              "Read, search, and mark submissions without leaving the app",
-              "Rotate scoped API keys and replay failed webhooks",
-              "Per-form target addresses and redirect URLs",
+              "Search, filter, and triage incoming submissions with built-in spam analytics",
+              "Rotate scoped access keys for frontend embeds and replay signed webhooks",
+              "Per-form notification routing, custom redirects, and auto-response templates",
             ].map((line) => (
               <li key={line} className="flex gap-3 text-sm">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
@@ -408,7 +412,7 @@ function FormsTable() {
             Embed forms anywhere with secure access keys.
           </h2>
           <p className="mt-4 sm:mt-5 max-w-md text-sm sm:text-base text-muted-foreground">
-            Generate scoped access keys to drop custom contact forms directly into any site or app. Submissions are encrypted, stored, and routed to your team with instant spam filtering and deliverability guarantees.
+            Drop custom forms into your portfolio, Framer, Webflow, or Next.js app in seconds. Submissions are spam-filtered, securely stored, and delivered directly to your inbox with zero server maintenance.
           </p>
           <Button asChild variant="outline" size="lg" className="mt-7 sm:mt-8 w-full sm:w-auto">
             <a href="/docs/index.html#embed">
@@ -428,20 +432,20 @@ function FormsTable() {
 const STEPS = [
   {
     n: "1",
-    title: "Create a form or event type",
-    desc: "From the dashboard or one API call. You get a slug and a public booking handle.",
-    example: "halomail.app/book/you",
+    title: "Create your form or booking link",
+    desc: "Pick your personal booking handle (halomail.app/book/you) and set availability, or create a contact form in seconds.",
+    example: "halomail.app/book/alex",
   },
   {
     n: "2",
     title: "Paste two lines into your site",
-    desc: "A script tag and a data-halomail attribute on the form you already designed.",
-    example: '<form data-halomail="portfolio">',
+    desc: "Add our script tag and data-halomail attribute to any form on your portfolio, blog, or web app.",
+    example: '<form data-halomail="contact">',
   },
   {
     n: "3",
-    title: "Messages and bookings land",
-    desc: "Stored, forwarded to your inbox, and pushed to your endpoints as signed webhooks.",
+    title: "Delivered straight to your inbox",
+    desc: "Messages land in your personal inbox with spam blocked automatically, and bookings sync right to Google Calendar.",
     example: "POST /SubmitMessage · 200 OK",
   },
 ];
@@ -494,19 +498,19 @@ function Integrate() {
       <SectionHead
         label="Integrate"
         title="Two lines of HTML, or the raw API"
-        desc="The widget is progressive enhancement over a form you already have. Prefer to own the request? It's plain JSON over POST."
+        desc="Drop our widget into any portfolio, Webflow site, or React app. Prefer full control? Submit raw JSON over POST or use our SDK."
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <CodeCard title="index.html · drop-in widget">
           {`<script src="https://api.halomail.app/widget.js" defer></script>
 
-<form data-halomail="portfolio">
-  <input name="name" required>
-  <input name="email" type="email" required>
-  <textarea name="message" required></textarea>
+<form data-halomail="contact">
+  <input name="name" placeholder="Your Name" required>
+  <input name="email" type="email" placeholder="Your Email" required>
+  <textarea name="message" placeholder="What would you like to discuss?" required></textarea>
   <input name="_hl_hp" tabindex="-1" style="display:none">
-  <button type="submit">Send</button>
+  <button type="submit">Send Message</button>
 </form>`}
         </CodeCard>
 
@@ -515,18 +519,18 @@ function Integrate() {
   -H 'Content-Type: application/json' \\
   -d '{
     "eventTypeId":  "evt_01a01b8f",
-    "inviteeName":  "Grace Hopper",
-    "inviteeEmail": "grace@example.com",
+    "inviteeName":  "Sarah Chen",
+    "inviteeEmail": "sarah@example.com",
     "start":        "2026-06-15T09:00:00Z"
   }'`}
         </CodeCard>
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Mini icon={<Webhook />} label="Signed webhooks" />
-        <Mini icon={<KeyRound />} label="Scoped API keys" />
-        <Mini icon={<Mail />} label="Resend or SMTP" />
-        <Mini icon={<Zap />} label="Fast and reliable" />
+        <Mini icon={<Mail />} label="Direct inbox forwarding" />
+        <Mini icon={<CalendarClock />} label="Google Calendar & Meet sync" />
+        <Mini icon={<ShieldCheck />} label="Built-in spam protection" />
+        <Mini icon={<Webhook />} label="Webhooks & ConnectRPC API" />
       </div>
     </section>
   );
@@ -642,10 +646,10 @@ function FeatureDetail() {
 /* -------------------------------------------------------------------------- */
 
 const STATS = [
-  ["99.9%", "uptime SLA"],
-  ["Global", "edge network"],
-  ["100%", "secure"],
-  ["24/7", "support"],
+  ["99.99%", "uptime SLA"],
+  ["< 50ms", "API response latency"],
+  ["AES-256", "at-rest encryption"],
+  ["HMAC-SHA256", "signed webhooks"],
 ];
 
 function Stats() {
@@ -670,23 +674,23 @@ function Stats() {
 const FAQS = [
   {
     q: "What is HaloMail?",
-    a: "HaloMail is a unified communication and scheduling platform that delivers embeddable contact forms and seamless booking pages, backed by high-performance APIs and centralized management.",
+    a: "HaloMail is a unified platform for contact forms and meeting booking. It gives creators, developers, and businesses a drop-in contact form backend and a personal booking link (halomail.app/book/you) without building a server or paying for separate tools.",
   },
   {
-    q: "How do I start using HaloMail?",
-    a: "Create an account, make a form or event type, then paste a script tag into your site. The integration guide walks through both, with copy-paste snippets for plain HTML and React.",
+    q: "Can I use it on my portfolio or personal website?",
+    a: "Yes! That is one of our primary use cases. You can paste our 2-line snippet into any HTML, Webflow, Framer, Astro, or React portfolio to receive messages directly in your personal inbox, and share your booking link to let people schedule calls with you.",
   },
   {
-    q: "Can I use my own domain for emails?",
-    a: "Yes. Verify a domain with your email provider, then point EMAIL_FROM at an address on it. Without a verified domain, delivery is limited to your own account address.",
+    q: "Do I need to build a backend or configure SMTP?",
+    a: "No. HaloMail handles form storage, spam filtering, Google Calendar availability, meeting link generation, and email forwarding out of the box.",
   },
   {
-    q: "Do you charge per seat?",
-    a: "No. One price covers your whole team, however many people that is.",
+    q: "Is there a free tier available?",
+    a: "Yes. HaloMail includes a generous free tier with zero credit card required. You can set up your booking handle and contact form in under five minutes.",
   },
   {
-    q: "Is there a trial or a refund?",
-    a: "Cancel whenever; billing stops at the end of the period.",
+    q: "How does spam protection work?",
+    a: "Every form includes built-in honeypot detection, per-IP rate limiting, and intelligent scoring. Bots get blocked silently so your personal inbox stays clean.",
   },
 ];
 
@@ -729,10 +733,10 @@ function FinalCta() {
         <div className="relative flex flex-col items-center gap-4 sm:gap-5">
           <SectionLabel>Get started</SectionLabel>
           <h2 className="max-w-xl text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
-            Modernize your scheduling and contact flows today.
+            Upgrade your customer interaction infrastructure.
           </h2>
           <p className="max-w-md text-sm sm:text-base text-muted-foreground">
-            Deploy production-ready booking flows and secure forms in minutes.
+            Deploy secure forms and calendar scheduling in minutes. Free tier available with instant setup.
           </p>
           <div className="mt-2 flex w-full max-w-xs sm:max-w-none flex-col sm:flex-row items-center justify-center gap-3">
             <Button asChild size="lg" className="w-full sm:w-auto">

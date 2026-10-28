@@ -14,9 +14,9 @@ const DAYS = [
 const MAX = 8;
 
 const BOOKINGS = [
-  { title: "Intro Call", when: "Tue 09:00", day: 1 },
-  { title: "Design Review", when: "Wed 14:30", day: 2 },
-  { title: "Pairing", when: "Thu 11:00", day: 3 },
+  { title: "Product Demo · Sarah Chen", when: "Tue 09:00", day: 1 },
+  { title: "Architecture Review · Acme Corp", when: "Wed 14:30", day: 2 },
+  { title: "Enterprise Onboarding · ScaleCo", when: "Thu 11:00", day: 3 },
 ];
 
 const DEFAULT_DAY = 3;
