@@ -23,7 +23,7 @@ export function SiteHeader() {
           </Link>
           <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
             <Link href="/pricing" className="transition-colors hover:text-foreground">Pricing</Link>
-            <a href="/docs/integrate.html" className="transition-colors hover:text-foreground">
+            <a href="/docs/index.html" className="transition-colors hover:text-foreground">
               Docs
             </a>
           </nav>
@@ -69,7 +69,7 @@ export function SiteHeader() {
               Pricing
             </Link>
             <a
-              href="/docs/integrate.html"
+              href="/docs/index.html"
               onClick={() => setMobileOpen(false)}
               className="py-1 text-muted-foreground transition-colors hover:text-foreground"
             >

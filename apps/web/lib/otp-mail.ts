@@ -19,52 +19,39 @@ export function renderLoginEmail(code: string, sample = false, preview = false) 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
   <title>${subject}</title>
-  <style>
-    @media screen and (max-width: 600px) {
-      .email-shell { padding: 16px 8px !important; }
-      .email-header { padding: 28px 26px 0 !important; }
-      .email-content { padding: 36px 26px 32px !important; }
-      .email-heading { font-size: 34px !important; }
-      .code-content { padding: 22px !important; }
-      .email-code { font-size: 40px !important; letter-spacing: 5px !important; }
-      .email-footer { padding: 24px 26px !important; }
-    }
-  </style>
 </head>
-<body style="margin:0;padding:0;background:#eeede9;color:#1a1c20;font-family:Helvetica,Arial,sans-serif;">
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; padding: 40px 20px; color: #111827; margin: 0;">
   <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;opacity:0;">${sample ? "A preview of your HaloMail sign-in email." : "Your HaloMail sign-in code is ready. It expires in 10 minutes."}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#eeede9" style="background:#eeede9;">
-    <tr><td class="email-shell" align="center" style="padding:48px 16px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f5f1e8" style="max-width:560px;background:#f5f1e8;border:1px solid #dcd8ce;">
-        <tr><td class="email-header" style="padding:36px 42px 0;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td valign="middle"><img src="${logoSrc}" alt="ZeroAxiis" width="52" height="52" style="display:block;width:52px;height:52px;border:0;" /></td>
-              <td align="right" valign="middle" style="font-family:Helvetica,Arial,sans-serif;font-size:17px;font-weight:600;color:#1a1c20;">HaloMail</td>
-            </tr>
-            <tr><td colspan="2" style="height:28px;border-bottom:1px solid #d4cfc4;font-size:1px;line-height:1px;">&nbsp;</td></tr>
-          </table>
-        </td></tr>
-        <tr><td class="email-content" style="padding:42px 42px 36px;">
-          <p style="margin:0 0 14px;color:#656157;font-size:13px;line-height:1.5;">Account access</p>
-          <h1 class="email-heading" style="margin:0 0 18px;color:#1a1c20;font-family:Helvetica,Arial,sans-serif;font-size:42px;font-weight:700;line-height:1.08;letter-spacing:-1.4px;">Your sign-in code.</h1>
-          <p style="margin:0 0 30px;color:#55534e;font-size:16px;line-height:1.6;">${intro}</p>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#e9e4da" style="background:#e9e4da;">
-            <tr><td class="code-content" style="padding:26px 30px;">
-              <p style="margin:0 0 10px;color:#656157;font-size:12px;line-height:1.5;">Verification code</p>
-              <p class="email-code" style="margin:0;color:#1a1c20;font-family:Helvetica,Arial,sans-serif;font-size:50px;font-weight:600;line-height:1.15;letter-spacing:7px;font-variant-numeric:tabular-nums;">${code}</p>
-            </td></tr>
-            <tr><td bgcolor="#ffcc00" style="height:3px;background:#ffcc00;font-size:1px;line-height:1px;">&nbsp;</td></tr>
-          </table>
-          <p style="margin:20px 0 0;color:#656157;font-size:13px;line-height:1.65;">${note}</p>
-        </td></tr>
-        <tr><td class="email-footer" style="padding:24px 42px;border-top:1px solid #d4cfc4;color:#777268;font-size:12px;line-height:1.65;">If you didn't request this email, you can ignore it.</td></tr>
+  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 32px;">
+    <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 12px; color: #111827;">Your sign-in code</h2>
+    <p style="font-size: 15px; line-height: 1.5; color: #374151; margin: 0 0 20px;">${intro}</p>
+    <div style="background-color: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px 24px; text-align: center; margin: 24px 0;">
+      <span style="font-size: 38px; font-weight: 700; letter-spacing: 8px; color: #111827; display: block; line-height: 1;">${code}</span>
+    </div>
+    <p style="font-size: 13px; line-height: 1.5; color: #6b7280; margin: 0 0 20px;">${note}</p>
+    <p style="font-size: 13px; line-height: 1.5; color: #9ca3af; margin: 0;">If you didn't request this email, you can safely ignore it.</p>
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 28px 0 24px;" />
+    <div style="text-align: center;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; text-align: center;">
+        <tr>
+          <td align="center" style="padding-bottom: 8px;">
+            <img src="${logoSrc}" alt="ZeroAxiis" width="30" height="30" style="display: block; width: 30px; height: 30px; border: 0; margin: 0 auto;" />
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-size: 13px; font-weight: 500; color: #374151; line-height: 1.5;">
+            A product of <a href="https://zeroaxiis.tech" style="color: #111827; font-weight: 600; text-decoration: none;">ZeroAxiis</a>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-size: 11px; color: #9ca3af; font-style: italic; padding-top: 3px;">
+            Everything starts from zero.
+          </td>
+        </tr>
       </table>
-      <p style="margin:20px 0 0;color:#706d65;font-family:Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;">HaloMail by <a href="https://zeroaxiis.tech" style="color:#48463f;text-decoration:underline;">ZeroAxiis</a></p>
-    </td></tr>
-  </table>
+    </div>
+  </div>
 </body>
 </html>`;
   return { subject, text, html };

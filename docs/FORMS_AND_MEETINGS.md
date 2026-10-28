@@ -70,7 +70,7 @@ also accepts the new Forms key in `data-halomail`.
    email updates. Opening a cancellation link alone does not cancel a booking.
 
 Google Calendar and Google Meet are the implemented provider. Outlook is not
-implemented in this flow. This is not full cal.com parity: routing forms,
+implemented in this flow. Advanced features such as dynamic routing forms,
 custom booking questions, teams, billing and a reschedule UI are not included.
 The existing reschedule RPC checks calendar availability and queues an update.
 

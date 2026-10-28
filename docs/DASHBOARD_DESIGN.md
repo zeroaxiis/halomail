@@ -16,7 +16,7 @@ unchanged.
 
 Screenshots and workflow documentation were reviewed directly:
 
-- [Cal.com bookings](https://cal.com/blog/a-complete-walkthrough-of-cal-com-s-booking-dashboard-its-key-features):
+- Standard booking interfaces:
   date-led booking records and compact actions.
 - [Fillout responses](https://www.fillout.com/help/view-responses):
   aligned columns, readable response records, and expandable details.

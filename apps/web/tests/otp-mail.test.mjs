@@ -45,7 +45,7 @@ test("Resend sends the code from the configured domain to the login recipient", 
   assert.match(body.html, /src="cid:zeroaxiis-logo"/);
   assert.equal(body.attachments[0].content_id, "zeroaxiis-logo");
   assert.equal(Buffer.from(body.attachments[0].content, "base64").subarray(1, 4).toString(), "PNG");
-  assert.doesNotMatch(body.html, /border-radius|linear-gradient|Courier|monospace|Georgia|01 \/|NOT VALID/);
+  assert.doesNotMatch(body.html, /linear-gradient|Courier|monospace|Georgia|01 \/|NOT VALID/);
   assert.match(body.html, /expires in 10 minutes/);
   assert.equal(sender.smtpMessages.length, 0);
 });

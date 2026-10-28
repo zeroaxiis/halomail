@@ -7,11 +7,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: {
-    default: "HaloMail — Scheduling + contact forms, one API",
+    default: "HaloMail — Scheduling and contact forms, behind one API",
     template: "%s · HaloMail",
   },
   description:
-    "API-first platform for meeting scheduling and portfolio contact forms. Minimal, premium, developer-focused.",
+    "Production-grade platform for meeting scheduling and embeddable contact forms. Type-safe, reliable, and developer-focused.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
