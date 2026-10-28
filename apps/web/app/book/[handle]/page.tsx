@@ -250,18 +250,18 @@ function Booking() {
 
   return (
     <div
-      className={`min-h-screen ${isEmbed ? "p-3 sm:p-5" : "p-6 sm:p-12"} flex flex-col items-center justify-between text-zinc-100 antialiased`}
+      className={`min-h-screen ${isEmbed ? "p-3 sm:p-5" : "p-6 sm:p-12"} flex flex-col items-center justify-between text-foreground antialiased`}
       style={{
-        backgroundColor: isEmbed ? "transparent" : "#09090b",
+        backgroundColor: isEmbed ? "transparent" : "hsl(var(--background))",
       }}
     >
       <div className={`w-full max-w-4xl mx-auto ${isEmbed ? "my-0" : "my-6"} space-y-6`}>
         {!isEmbed && (
-          <header className="flex items-center justify-between pb-4 border-b border-zinc-800">
+          <header className="flex items-center justify-between pb-4 border-b border-border">
             <Link href="/" className="inline-block">
               <Logo />
             </Link>
-            <span className="text-xs text-zinc-500 font-mono">
+            <span className="text-xs text-muted-foreground font-mono">
               halomail scheduling
             </span>
           </header>
@@ -269,25 +269,25 @@ function Booking() {
 
         {/* Done / Confirmed View */}
         {done ? (
-          <Card className="p-8 sm:p-12 text-center space-y-6 bg-[#0e0e11] border-zinc-800 shadow-2xl rounded-2xl">
+          <Card className="p-8 sm:p-12 text-center space-y-6 bg-card border-border shadow-2xl rounded-2xl">
             <div className="size-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
               <CheckIcon className="size-5" />
             </div>
             <div className="space-y-1.5">
-              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
                 Booking Confirmed
               </h1>
-              <p className="text-zinc-400 text-sm max-w-md mx-auto">
+              <p className="text-muted-foreground text-sm max-w-md mx-auto">
                 Your consultation with{" "}
-                <strong className="text-zinc-200">{info?.owner.name || handle}</strong>{" "}
+                <strong className="text-foreground">{info?.owner.name || handle}</strong>{" "}
                 has been scheduled.
               </p>
             </div>
 
-            <div className="bg-[#141418] border border-zinc-800 rounded-xl p-5 text-left max-w-md mx-auto text-sm space-y-3">
-              <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                <span className="text-zinc-400">Date &amp; Time</span>
-                <span className="font-medium text-zinc-200">
+            <div className="bg-secondary/40 border border-border rounded-xl p-5 text-left max-w-md mx-auto text-sm space-y-3">
+              <div className="flex justify-between py-1 border-b border-border/60">
+                <span className="text-muted-foreground">Date &amp; Time</span>
+                <span className="font-medium text-foreground">
                   {confirmedBooking?.start
                     ? new Date(confirmedBooking.start).toLocaleString(undefined, {
                         dateStyle: "full",
@@ -296,27 +296,27 @@ function Booking() {
                     : ""}
                 </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                <span className="text-zinc-400">Guest</span>
-                <span className="font-medium text-zinc-200">{email}</span>
+              <div className="flex justify-between py-1 border-b border-border/60">
+                <span className="text-muted-foreground">Guest</span>
+                <span className="font-medium text-foreground">{email}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-zinc-800/60">
-                <span className="text-zinc-400">Conferencing</span>
-                <span className="text-indigo-400 font-medium">Google Meet</span>
+              <div className="flex justify-between py-1 border-b border-border/60">
+                <span className="text-muted-foreground">Conferencing</span>
+                <span className="text-brand font-medium">Google Meet</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-zinc-400">Calendar Event</span>
+                <span className="text-muted-foreground">Calendar Event</span>
                 <span className="text-emerald-400 font-medium">Synced with Google Calendar</span>
               </div>
             </div>
 
-            <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               A calendar invite and conferencing link have been emailed to both attendee and host.
             </p>
 
             <Button
               variant="outline"
-              className="border-zinc-700 bg-transparent hover:bg-zinc-800 text-zinc-200"
+              className="border-border bg-transparent hover:bg-secondary/60 text-foreground"
               onClick={() => {
                 setDone(false);
                 setPicked(null);
@@ -327,15 +327,15 @@ function Booking() {
           </Card>
         ) : (
           /* Main Booking Card — Website Themed */
-          <Card className="overflow-hidden border border-zinc-800 bg-[#0e0e11] rounded-2xl shadow-2xl">
+          <Card className="overflow-hidden border border-border bg-card rounded-2xl shadow-2xl">
             <div className="grid grid-cols-1 md:grid-cols-12 min-h-[500px]">
               
               {/* Left Column: Host Profile & Event Selection */}
-              <div className="md:col-span-5 p-6 sm:p-7 border-b md:border-b-0 md:border-r border-zinc-800 flex flex-col justify-between bg-[#0a0a0d]">
+              <div className="md:col-span-5 p-6 sm:p-7 border-b md:border-b-0 md:border-r border-border flex flex-col justify-between bg-card/60">
                 <div className="space-y-6">
                   {/* Host Header */}
                   <div className="flex items-center gap-3.5">
-                    <div className="size-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-200 font-semibold text-sm shadow-inner overflow-hidden">
+                    <div className="size-12 rounded-full bg-secondary border border-border flex items-center justify-center text-foreground font-semibold text-sm shadow-inner overflow-hidden">
                       {info?.owner?.avatar ? (
                         <img
                           src={info.owner.avatar}
@@ -347,10 +347,10 @@ function Booking() {
                       )}
                     </div>
                     <div>
-                      <h2 className="font-semibold text-base leading-snug text-white">
+                      <h2 className="font-semibold text-base leading-snug text-foreground">
                         {info?.owner.name || handle}
                       </h2>
-                      <span className="text-xs text-zinc-500 font-mono">
+                      <span className="text-xs text-muted-foreground font-mono">
                         @{info?.owner.handle || handle}
                       </span>
                     </div>
@@ -358,7 +358,7 @@ function Booking() {
 
                   {/* Active Event Types */}
                   <div className="space-y-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                       Select Service
                     </span>
                     <div className="space-y-1.5">
@@ -369,25 +369,25 @@ function Booking() {
                           onClick={() => setEventID(ev.id)}
                           className={`w-full text-left p-3 rounded-lg border text-sm transition-all ${
                             eventID === ev.id
-                              ? "border-indigo-500/60 bg-indigo-500/10 text-white"
-                              : "border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/40 text-zinc-300"
+                              ? "border-brand/60 bg-brand/10 text-foreground"
+                              : "border-border/80 hover:border-border bg-secondary/40 text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           <div className="font-medium flex justify-between items-center">
                             <span>{ev.title}</span>
-                            <span className="font-mono text-xs text-zinc-400">
+                            <span className="font-mono text-xs text-muted-foreground">
                               {ev.durationMinutes}m
                             </span>
                           </div>
                           {ev.description && (
-                            <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                               {ev.description}
                             </p>
                           )}
                         </button>
                       ))}
                       {info && !info.events.length && (
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-xs text-muted-foreground">
                           No active event types published by host.
                         </p>
                       )}
@@ -396,13 +396,13 @@ function Booking() {
 
                   {/* Event Details */}
                   {selectedEvent && (
-                    <div className="pt-4 border-t border-zinc-800 space-y-2.5 text-xs text-zinc-400">
+                    <div className="pt-4 border-t border-border space-y-2.5 text-xs text-muted-foreground">
                       <div className="flex items-center gap-2.5">
-                        <ClockIcon className="size-4 text-zinc-500" />
+                        <ClockIcon className="size-4 text-muted-foreground" />
                         <span>{selectedEvent.durationMinutes} Minutes Consultation</span>
                       </div>
                       <div className="flex items-center gap-2.5">
-                        <VideoIcon className="size-4 text-zinc-500" />
+                        <VideoIcon className="size-4 text-muted-foreground" />
                         <span>Google Meet Video Conferencing</span>
                       </div>
                     </div>
@@ -410,15 +410,15 @@ function Booking() {
                 </div>
 
                 {/* Timezone display */}
-                <div className="pt-5 border-t border-zinc-800 flex items-center gap-2 text-xs text-zinc-500">
-                  <GlobeIcon className="size-3.5 text-zinc-400" />
+                <div className="pt-5 border-t border-border flex items-center gap-2 text-xs text-muted-foreground">
+                  <GlobeIcon className="size-3.5 text-muted-foreground" />
                   <span>Timezone:</span>
-                  <span className="text-zinc-300 font-medium">{timezone}</span>
+                  <span className="text-foreground font-medium">{timezone}</span>
                 </div>
               </div>
 
               {/* Right Column: Slot Picker / Booking Form */}
-              <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between bg-[#0e0e11]">
+              <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between bg-card">
                 {error && (
                   <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
                     {error}
@@ -428,16 +428,16 @@ function Booking() {
                 {/* Step 1: Calendar Slot Picker */}
                 {!picked && (
                   <div className="space-y-4 flex-1">
-                    <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+                    <div className="flex items-center justify-between pb-3 border-b border-border">
                       <div className="flex items-center gap-2">
-                        <CalendarIcon className="size-4 text-zinc-400" />
-                        <h3 className="font-semibold text-sm text-zinc-200">Select Date &amp; Time</h3>
+                        <CalendarIcon className="size-4 text-muted-foreground" />
+                        <h3 className="font-semibold text-sm text-foreground">Select Date &amp; Time</h3>
                       </div>
                       <div className="flex gap-1.5">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 px-2.5 border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300"
+                          className="h-8 px-2.5 border-border bg-secondary/40 hover:bg-secondary/70 text-foreground"
                           disabled={offset === 0 || loading}
                           onClick={() => setOffset((v) => Math.max(0, v - 7))}
                         >
@@ -446,7 +446,7 @@ function Booking() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-8 px-2.5 border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300"
+                          className="h-8 px-2.5 border-border bg-secondary/40 hover:bg-secondary/70 text-foreground"
                           disabled={offset >= 56 || loading}
                           onClick={() => setOffset((v) => v + 7)}
                         >
@@ -456,7 +456,7 @@ function Booking() {
                     </div>
 
                     {loading ? (
-                      <div className="py-20 text-center text-xs text-zinc-500">
+                      <div className="py-20 text-center text-xs text-muted-foreground">
                         Checking calendar availability...
                       </div>
                     ) : slots.length ? (
@@ -465,17 +465,17 @@ function Booking() {
                           <button
                             key={slot.start}
                             type="button"
-                            className="p-2.5 rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-indigo-600/15 hover:border-indigo-500/50 text-left transition-all group"
+                            className="p-2.5 rounded-lg border border-border bg-secondary/30 hover:bg-brand/10 hover:border-brand/40 text-left transition-all group"
                             onClick={() => setPicked(slot)}
                           >
-                            <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-400">
+                            <span className="block text-[11px] text-muted-foreground group-hover:text-foreground">
                               {new Date(slot.start).toLocaleDateString(undefined, {
                                 weekday: "short",
                                 month: "short",
                                 day: "numeric",
                               })}
                             </span>
-                            <span className="block text-xs font-semibold text-zinc-200 mt-0.5 group-hover:text-white">
+                            <span className="block text-xs font-semibold text-foreground mt-0.5">
                               {new Date(slot.start).toLocaleTimeString(undefined, {
                                 hour: "numeric",
                                 minute: "2-digit",
@@ -485,7 +485,7 @@ function Booking() {
                         ))}
                       </div>
                     ) : (
-                      <div className="py-20 text-center text-xs text-zinc-500">
+                      <div className="py-20 text-center text-xs text-muted-foreground">
                         No available slots for this period. Try the next week.
                       </div>
                     )}
@@ -495,10 +495,10 @@ function Booking() {
                 {/* Step 2: Custom Question Form */}
                 {picked && (
                   <form onSubmit={book} className="space-y-3.5 flex-1">
-                    <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+                    <div className="flex items-center justify-between pb-3 border-b border-border">
                       <div>
-                        <h3 className="font-semibold text-sm text-zinc-200">Your Booking Details</h3>
-                        <p className="text-xs text-indigo-400 mt-0.5">
+                        <h3 className="font-semibold text-sm text-foreground">Your Booking Details</h3>
+                        <p className="text-xs text-brand mt-0.5">
                           {new Date(picked.start).toLocaleString(undefined, {
                             dateStyle: "full",
                             timeStyle: "short",
@@ -511,7 +511,7 @@ function Booking() {
                         size="sm"
                         disabled={busy}
                         onClick={() => setPicked(null)}
-                        className="text-xs text-zinc-400 hover:text-white"
+                        className="text-xs text-muted-foreground hover:text-foreground"
                       >
                         Change Slot
                       </Button>
@@ -519,7 +519,7 @@ function Booking() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <Label htmlFor="guest-name" className="text-xs text-zinc-400">Full Name *</Label>
+                        <Label htmlFor="guest-name" className="text-xs text-muted-foreground">Full Name *</Label>
                         <Input
                           id="guest-name"
                           required
@@ -527,11 +527,11 @@ function Booking() {
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Your name"
                           maxLength={200}
-                          className="bg-zinc-900/60 border-zinc-800 text-sm h-9 text-zinc-200 focus-visible:ring-indigo-500"
+                          className="bg-secondary/40 border-border text-sm h-9 text-foreground focus-visible:ring-ring"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="guest-email" className="text-xs text-zinc-400">Email Address *</Label>
+                        <Label htmlFor="guest-email" className="text-xs text-muted-foreground">Email Address *</Label>
                         <Input
                           id="guest-email"
                           type="email"
@@ -539,7 +539,7 @@ function Booking() {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="name@example.com"
-                          className="bg-zinc-900/60 border-zinc-800 text-sm h-9 text-zinc-200 focus-visible:ring-indigo-500"
+                          className="bg-secondary/40 border-border text-sm h-9 text-foreground focus-visible:ring-ring"
                         />
                       </div>
                     </div>
@@ -547,22 +547,22 @@ function Booking() {
                     {/* Custom Questions configured by host */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <Label htmlFor="company" className="text-xs text-zinc-400">Company / Project</Label>
+                        <Label htmlFor="company" className="text-xs text-muted-foreground">Company / Project</Label>
                         <Input
                           id="company"
                           value={company}
                           onChange={(e) => setCompany(e.target.value)}
                           placeholder="Company name"
-                          className="bg-zinc-900/60 border-zinc-800 text-sm h-9 text-zinc-200 focus-visible:ring-indigo-500"
+                          className="bg-secondary/40 border-border text-sm h-9 text-foreground focus-visible:ring-ring"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="budget" className="text-xs text-zinc-400">Estimated Budget</Label>
+                        <Label htmlFor="budget" className="text-xs text-muted-foreground">Estimated Budget</Label>
                         <select
                           id="budget"
                           value={budget}
                           onChange={(e) => setBudget(e.target.value)}
-                          className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md px-3 py-1.5 text-sm h-9 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                          className="w-full bg-secondary/40 border border-border rounded-md px-3 py-1.5 text-sm h-9 text-foreground focus:outline-none focus:border-brand"
                         >
                           <option>$1,000 - $5,000</option>
                           <option>$5,000 - $15,000</option>
@@ -573,7 +573,7 @@ function Booking() {
                     </div>
 
                     <div>
-                      <Label htmlFor="notes" className="text-xs text-zinc-400">Discussion Topics &amp; Notes *</Label>
+                      <Label htmlFor="notes" className="text-xs text-muted-foreground">Discussion Topics &amp; Notes *</Label>
                       <textarea
                         id="notes"
                         required
@@ -581,7 +581,7 @@ function Booking() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="Please share any topics or context for our meeting..."
-                        className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 placeholder:text-zinc-600"
+                        className="w-full bg-secondary/40 border border-border rounded-md p-2.5 text-xs text-foreground focus:outline-none focus:border-brand placeholder:text-muted-foreground/60"
                         maxLength={5000}
                       />
                     </div>
@@ -589,7 +589,7 @@ function Booking() {
                     <Button
                       type="submit"
                       disabled={busy}
-                      className="w-full mt-1 h-9 font-medium bg-indigo-600 hover:bg-indigo-500 text-white"
+                      className="w-full mt-1 h-9 font-medium bg-primary text-primary-foreground hover:opacity-90"
                     >
                       {busy ? "Confirming..." : "Confirm Booking"}
                     </Button>
@@ -600,15 +600,15 @@ function Booking() {
 
             {/* Watermark Section (Shown ONLY on Free tier, completely hidden for Paid/Business tier) */}
             {showWatermark && (
-              <footer className="py-2.5 px-4 bg-[#09090c] border-t border-zinc-800/80 flex items-center justify-center text-[11px] text-zinc-500">
+              <footer className="py-2.5 px-4 bg-card border-t border-border/80 flex items-center justify-center text-[11px] text-muted-foreground">
                 <a
                   href="https://halomail.zeroaxiis.tech"
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-zinc-400 transition-colors inline-flex items-center gap-1"
+                  className="hover:text-foreground transition-colors inline-flex items-center gap-1"
                 >
                   <span>Powered by</span>
-                  <strong className="font-semibold text-zinc-300">HaloMail</strong>
+                  <strong className="font-semibold text-foreground">HaloMail</strong>
                 </a>
               </footer>
             )}

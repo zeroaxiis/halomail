@@ -49,10 +49,8 @@ export default function LandingPage() {
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-center">
-      <span className="rounded-full border border-border bg-card/60 px-4 py-1.5 backdrop-blur">
-        <span className="section-label text-sm font-medium uppercase tracking-[0.25em]">
-          {children}
-        </span>
+      <span className="inline-flex items-center rounded-full border border-border/80 bg-secondary/50 px-3.5 py-1 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        {children}
       </span>
     </div>
   );
@@ -65,13 +63,19 @@ function SectionHead({
 }: {
   label: string;
   title: React.ReactNode;
-  desc?: string;
+  desc?: React.ReactNode;
 }) {
   return (
-    <div className="mb-10 sm:mb-12 flex flex-col items-center gap-3 sm:gap-4 text-center px-2">
+    <div className="mb-10 sm:mb-14 flex flex-col items-center gap-3.5 sm:gap-4 text-center px-2">
       <SectionLabel>{label}</SectionLabel>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
-      {desc ? <p className="max-w-xl text-balance text-sm sm:text-base text-muted-foreground">{desc}</p> : null}
+      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl text-foreground">
+        {title}
+      </h2>
+      {desc ? (
+        <p className="max-w-2xl text-sm sm:text-base text-muted-foreground leading-relaxed">
+          {desc}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -265,20 +269,32 @@ function LogoStrip() {
 /* Features — bento                                                           */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
 function Features() {
   return (
     <section id="features" className="container scroll-mt-24 py-16 sm:py-20 md:py-28">
       <SectionHead
         label="Features"
-        title="Everything your customer interactions require, built for scale"
-        desc="From personal portfolios and side projects to scaling products: a unified platform sharing one identity layer, high-throughput APIs, and enterprise-grade security."
+        title={
+          <>
+            Everything your customer interactions require,
+            <br className="hidden sm:inline" />
+            {" "}built for scale.
+          </>
+        }
+        desc={
+          <>
+            A unified platform sharing one identity layer and high-throughput APIs,
+            <br className="hidden sm:inline" />
+            {" "}built for personal portfolios, side projects, and scale.
+          </>
+        }
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Scheduling — wide */}
         <Card className="bg-card relative overflow-hidden p-4 sm:p-6 lg:col-span-2">
           <FeatureHead
-            icon={<CalendarClock />}
             title="Scheduling that respects timezones"
             desc="Weekly availability rules, date overrides, Google Calendar sync, and auto-generated Google Meet links. Slots are computed server-side so two people never book the same minute."
           />
@@ -288,9 +304,8 @@ function Features() {
         {/* Spam */}
         <Card className="bg-card p-4 sm:p-6">
           <FeatureHead
-            icon={<ShieldCheck />}
             title="Spam-proof by default"
-            desc="Honeypot fields, per-IP rate limiting, and a spam score on every submission."
+            desc="Honeypot fields, per-IP rate limiting, and an intelligent spam score on every submission."
           />
           <SpamDemo />
         </Card>
@@ -298,7 +313,6 @@ function Features() {
         {/* Developer */}
         <Card className="bg-card overflow-hidden p-4 sm:p-6">
           <FeatureHead
-            icon={<Code2 />}
             title="Typed end to end"
             desc="Protobuf definitions generate both the Go server and the TypeScript SDK, so a renamed field breaks the build instead of production."
           />
@@ -309,7 +323,7 @@ function Features() {
 });
 
 await halo.contact.submitMessage({
-  formSlug:    "contact",
+  accessKey:   "hl_live_a81f09c2",
   senderName:  "Sarah Chen",
   senderEmail: "sarah@example.com",
   data: {
@@ -325,7 +339,6 @@ await halo.contact.submitMessage({
         {/* Email designer — wide so the theme previews get room */}
         <Card className="bg-card p-4 sm:p-6 lg:col-span-2">
           <FeatureHead
-            icon={<Palette />}
             title="Emails that don't look templated"
             desc="Five built-in themes plus custom HTML, with live preview before you send."
           />
@@ -337,21 +350,16 @@ await halo.contact.submitMessage({
 }
 
 function FeatureHead({
-  icon,
   title,
   desc,
 }: {
-  icon: React.ReactNode;
   title: string;
   desc: string;
 }) {
   return (
     <div>
-      <div className="mb-4 inline-flex size-9 items-center justify-center rounded-lg border border-border bg-secondary [&_svg]:size-4">
-        {icon}
-      </div>
-      <h3 className="text-lg font-medium tracking-tight">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+      <h3 className="text-lg font-semibold tracking-tight text-foreground">{title}</h3>
+      <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{desc}</p>
     </div>
   );
 }
@@ -362,7 +370,7 @@ function FeatureHead({
 
 function Dashboard() {
   return (
-    <section className="border-y border-border bg-card/30 py-16 sm:py-20 md:py-28">
+    <section className="border-y border-border py-16 sm:py-20 md:py-28">
       <div className="container grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
         <div>
           <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
@@ -452,7 +460,7 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section className="border-y border-border bg-card/30 py-16 sm:py-20 md:py-28">
+    <section className="border-y border-border py-16 sm:py-20 md:py-28">
       <div className="container">
         <SectionHead
           label="How it works"
@@ -527,9 +535,9 @@ function Integrate() {
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Mini icon={<Mail />} label="Direct inbox forwarding" />
-        <Mini icon={<CalendarClock />} label="Google Calendar & Meet sync" />
-        <Mini icon={<ShieldCheck />} label="Built-in spam protection" />
+        <Mini icon={<Mail className="size-4 text-muted-foreground" />} label="Direct inbox forwarding" />
+        <Mini icon={<CalendarClock className="size-4 text-muted-foreground" />} label="Google Calendar & Meet sync" />
+        <Mini icon={<ShieldCheck className="size-4 text-muted-foreground" />} label="Built-in spam protection" />
         <Mini icon={<Webhook />} label="Webhooks & ConnectRPC API" />
       </div>
     </section>
@@ -567,7 +575,6 @@ function Mini({ icon, label }: { icon: React.ReactNode; label: string }) {
 
 const DETAIL = [
   {
-    icon: <CalendarClock />,
     title: "Scheduling",
     tagline: "Frictionless calendar booking experience built for individuals and teams.",
     points: [
@@ -577,7 +584,6 @@ const DETAIL = [
     ],
   },
   {
-    icon: <Inbox />,
     title: "Contact forms",
     tagline: "Secure, zero-maintenance embeddable forms for any website.",
     points: [
@@ -587,7 +593,6 @@ const DETAIL = [
     ],
   },
   {
-    icon: <Palette />,
     title: "Email designer",
     tagline: "Notification emails that match your brand.",
     points: [
@@ -597,7 +602,6 @@ const DETAIL = [
     ],
   },
   {
-    icon: <Code2 />,
     title: "Developer surface",
     tagline: "Everything is an API before it's a screen.",
     points: [
@@ -610,25 +614,34 @@ const DETAIL = [
 
 function FeatureDetail() {
   return (
-    <section className="border-t border-border bg-card/30 py-16 sm:py-20 md:py-28">
+    <section className="border-t border-border py-16 sm:py-20 md:py-28">
       <div className="container">
         <SectionHead
           label="The full surface"
-          title="Everything you need, nothing you don't"
-          desc="One typed API powers the dashboard, the SDK, and your own integrations."
+          title={
+            <>
+              Everything you need,
+              <br className="hidden sm:inline" />
+              {" "}nothing you don't.
+            </>
+          }
+          desc={
+            <>
+              One typed API powering your forms, calendar booking,
+              <br className="hidden sm:inline" />
+              {" "}and custom website integrations.
+            </>
+          }
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {DETAIL.map((s) => (
             <Card key={s.title} className="bg-card p-4 sm:p-6">
-              <div className="mb-4 inline-flex size-9 items-center justify-center rounded-lg border border-border bg-secondary [&_svg]:size-4">
-                {s.icon}
-              </div>
-              <h3 className="font-medium tracking-tight">{s.title}</h3>
+              <h3 className="font-semibold tracking-tight text-foreground">{s.title}</h3>
               <p className="mt-1.5 text-sm text-muted-foreground">{s.tagline}</p>
               <ul className="mt-4 space-y-2 border-t border-border pt-4 text-[13px] text-muted-foreground">
                 {s.points.map((p) => (
                   <li key={p} className="flex gap-2">
-                    <span className="mt-[7px] size-1 shrink-0 rounded-full bg-brand" />
+                    <span className="mt-[7px] size-1 shrink-0 rounded-full bg-brand/70" />
                     {p}
                   </li>
                 ))}
