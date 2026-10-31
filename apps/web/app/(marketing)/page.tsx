@@ -412,19 +412,19 @@ function Dashboard() {
 function FormsTable() {
   return (
     <section className="container py-16 sm:py-20 md:py-28">
-      <div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2">
+      <div className="grid items-center gap-8 sm:gap-14 lg:grid-cols-2">
         <FormsTableCard />
 
         <div className="order-1 lg:order-2">
-          <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="max-w-md text-2xl sm:text-3xl font-semibold tracking-tight md:text-4xl text-foreground">
             Embed forms anywhere with secure access keys.
           </h2>
-          <p className="mt-4 sm:mt-5 max-w-md text-sm sm:text-base text-muted-foreground">
-            Drop custom forms into your portfolio, Framer, Webflow, or Next.js app in seconds. Submissions are spam-filtered, securely stored, and delivered directly to your inbox with zero server maintenance.
+          <p className="mt-4 sm:mt-5 max-w-md text-sm sm:text-base text-muted-foreground leading-relaxed">
+            Drop custom HTML forms into your portfolio, Framer, Webflow, or React app in seconds. Submissions are verified, spam-checked, and delivered straight to your email without maintaining a backend.
           </p>
           <Button asChild variant="outline" size="lg" className="mt-7 sm:mt-8 w-full sm:w-auto">
             <a href="/docs/index.html#embed">
-              See the embed guide <ArrowUpRight className="size-4" />
+              Read embed documentation <ArrowUpRight className="size-4" />
             </a>
           </Button>
         </div>
