@@ -85,8 +85,10 @@ export default function MeetingsPage() {
 		setTimezone(localTimezone());
 		const result = new URLSearchParams(window.location.search).get("calendar");
 		if (result === "connected") setNotice("Google Calendar connected.");
-		if (result === "failed")
-			setError("Calendar connection failed or expired. Please connect again.");
+		if (result === "failed") {
+			const reason = new URLSearchParams(window.location.search).get("error");
+			setError(reason ? `Calendar connection failed: ${reason}` : "Calendar connection failed or expired. Please connect again.");
+		}
 	}, []);
 	useEffect(() => {
 		if (availability.data?.availability) {
