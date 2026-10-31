@@ -40,11 +40,11 @@ type Google struct {
 
 func New(pool *pgxpool.Pool, settings config.OAuth, key, webURL string) *Google {
 	redirectURL := strings.TrimSpace(settings.RedirectURL)
-	if redirectURL == "" || strings.Contains(redirectURL, "/v1/oauth/google/callback") {
-		cleanWeb := strings.TrimRight(strings.TrimSpace(webURL), "/")
-		if cleanWeb == "" {
-			cleanWeb = "http://localhost:3000"
-		}
+	cleanWeb := strings.TrimRight(strings.TrimSpace(webURL), "/")
+	if cleanWeb == "" {
+		cleanWeb = "http://localhost:3000"
+	}
+	if redirectURL == "" || strings.Contains(redirectURL, "/v1/oauth/google/callback") || (strings.HasPrefix(cleanWeb, "https://") && strings.Contains(redirectURL, "localhost")) {
 		redirectURL = cleanWeb + "/api/calendar/callback"
 	}
 	return &Google{
