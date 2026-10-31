@@ -11,8 +11,7 @@ const THEMES: { name: string; body: React.ReactNode }[] = [
       <div className="flex h-full flex-col bg-white p-3.5 text-zinc-900">
         <p className="text-[12px] font-semibold">Thanks for reaching out</p>
         <p className="mt-2 text-[9.5px] leading-relaxed text-zinc-500">
-          Hi Jane, got your message about the portfolio. I&apos;ll reply within a day, or grab
-          a slot below.
+          Hi Sarah, thanks for visiting my website. I got your message and will reply shortly, or grab a time on my calendar below.
         </p>
         <div className="mt-auto w-max rounded-sm bg-zinc-900 px-2.5 py-1.5 text-[9px] font-medium text-white">
           Book a call
@@ -21,15 +20,15 @@ const THEMES: { name: string; body: React.ReactNode }[] = [
     ),
   },
   {
-    name: "Apple",
+    name: "Executive",
     body: (
       <div className="flex h-full items-center justify-center bg-zinc-100 p-3">
         <div className="w-full max-w-[128px] rounded-2xl bg-white p-3 text-center shadow-sm">
           <div className="mx-auto flex size-7 items-center justify-center rounded-full bg-zinc-100 text-[12px]">
-            👋
+            📅
           </div>
-          <p className="mt-1.5 text-[10px] font-semibold text-zinc-900">You&apos;re booked</p>
-          <p className="mt-0.5 text-[8.5px] text-zinc-400">Tue, 09:00 · Intro Call</p>
+          <p className="mt-1.5 text-[10px] font-semibold text-zinc-900">Meeting confirmed</p>
+          <p className="mt-0.5 text-[8.5px] text-zinc-400">Tue, 09:00 · Discovery Call</p>
           <div className="mx-auto mt-2.5 w-max rounded-full bg-blue-500 px-2.5 py-1 text-[8.5px] font-medium text-white">
             Add to Calendar
           </div>
@@ -38,13 +37,13 @@ const THEMES: { name: string; body: React.ReactNode }[] = [
     ),
   },
   {
-    name: "Notion",
+    name: "Editorial",
     body: (
       <div className="h-full bg-white p-3.5 text-zinc-800">
         <div className="text-[14px]">✉️</div>
-        <p className="mt-1.5 text-[11px] font-semibold">New message · portfolio</p>
+        <p className="mt-1.5 text-[11px] font-semibold">New message · portfolio-contact</p>
         <p className="mt-1.5 text-[9.5px] leading-relaxed text-zinc-500">
-          Jane Visitor wrote: &quot;Saw your portfolio, can we talk?&quot;
+          Sarah Chen: &quot;Loved your design portfolio, can we chat about a project?&quot;
         </p>
         <div className="mt-2.5 space-y-1.5 text-[9px] text-zinc-600">
           <div className="flex items-center gap-1.5">
@@ -55,7 +54,7 @@ const THEMES: { name: string; body: React.ReactNode }[] = [
           </div>
           <div className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-sm border border-zinc-300" />
-            <span>Reply within 24h</span>
+            <span>Reply to sender</span>
           </div>
         </div>
       </div>
@@ -67,22 +66,22 @@ const THEMES: { name: string; body: React.ReactNode }[] = [
       <div className="flex h-full items-center justify-center bg-gradient-to-br from-zinc-200 via-zinc-300 to-zinc-400 p-3">
         <div className="w-full max-w-[128px] rounded-xl border border-white/60 bg-white/50 p-3 text-zinc-900 shadow-sm backdrop-blur-md">
           <p className="text-[10px] font-semibold">Meeting confirmed</p>
-          <p className="mt-1 text-[8.5px] text-zinc-600">Wed 14:30 · Design Review</p>
+          <p className="mt-1 text-[8.5px] text-zinc-600">Wed 14:30 · Architecture Review</p>
           <div className="mt-2.5 w-max rounded-md border border-white/70 bg-white/70 px-2.5 py-1 text-[8.5px] font-medium text-zinc-800">
-            Join call
+            Join Google Meet
           </div>
         </div>
       </div>
     ),
   },
   {
-    name: "Terminal",
+    name: "Developer",
     body: (
       <div className="h-full whitespace-nowrap bg-zinc-950 p-3 font-mono text-[9px] leading-relaxed text-emerald-400">
-        <p>$ halomail send</p>
-        <p className="text-emerald-300/70">from: jane@example.com</p>
-        <p className="text-emerald-300/70">subject: let&apos;s talk</p>
-        <p className="mt-1.5 text-emerald-200">delivered · 200 OK</p>
+        <p>$ halomail dispatch</p>
+        <p className="text-emerald-300/70">event: contact.submit</p>
+        <p className="text-emerald-300/70">from: sarah@acme-corp.com</p>
+        <p className="mt-1.5 text-emerald-200">delivered · 200 OK · signed</p>
         <p className="mt-1">▮</p>
       </div>
     ),

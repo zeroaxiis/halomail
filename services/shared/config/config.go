@@ -142,5 +142,12 @@ func Load() (*Config, error) {
 			cfg.App.PublicAPIURL = "https://halomailapi.zeroaxiis.tech"
 		}
 	}
+	if strings.TrimSpace(cfg.Google.RedirectURL) == "" || strings.Contains(cfg.Google.RedirectURL, "/v1/oauth/google/callback") {
+		cleanWeb := strings.TrimRight(strings.TrimSpace(cfg.App.PublicWebURL), "/")
+		if cleanWeb == "" {
+			cleanWeb = "http://localhost:3000"
+		}
+		cfg.Google.RedirectURL = cleanWeb + "/api/calendar/callback"
+	}
 	return cfg, nil
 }

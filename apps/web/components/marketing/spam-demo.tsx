@@ -6,13 +6,13 @@ import { Badge } from "@/components/ui/badge";
 type Entry = { email: string; score: number; reason: string };
 
 const POOL: Entry[] = [
-  { email: "jane@example.com", score: 0.02, reason: "Honeypot untouched · normal typing cadence" },
+  { email: "sarah@acme-corp.com", score: 0.02, reason: "Honeypot untouched · verified corporate domain" },
   { email: "winner@lottery.biz", score: 0.97, reason: "Honeypot filled · burst of 14 requests from one IP" },
-  { email: "marc@studio.dev", score: 0.05, reason: "Known sender · passed all heuristics" },
+  { email: "marc@enterprise.dev", score: 0.04, reason: "Known sender · passed all heuristics" },
   { email: "free-crypto@pump.io", score: 0.99, reason: "Link-stuffed body · disposable domain" },
   { email: "recruiter@bigco.com", score: 0.11, reason: "First-time sender · clean content" },
   { email: "seo-guru@backlinks.cc", score: 0.93, reason: "Keyword spam · failed rate limit" },
-  { email: "priya@design.studio", score: 0.03, reason: "Honeypot untouched · verified domain" },
+  { email: "elena@scale-tech.io", score: 0.03, reason: "Honeypot untouched · normal typing cadence" },
 ];
 
 const VISIBLE = 3;

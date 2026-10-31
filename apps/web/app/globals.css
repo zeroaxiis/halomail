@@ -109,19 +109,9 @@
   );
 }
 
-/* Section labels — text lit from the center, fading toward both ends. */
+/* Section labels — clean, solid muted label styling. */
 .section-label {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--foreground) / 0.45) 0%,
-    hsl(var(--foreground)) 40%,
-    hsl(var(--foreground)) 60%,
-    hsl(var(--foreground) / 0.45) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 10px hsl(var(--brand) / 0.45));
+  color: hsl(var(--muted-foreground));
 }
 
 /* Card sheen — a diagonal highlight so dark panels read as glass, not flat. */

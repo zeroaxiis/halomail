@@ -7,11 +7,11 @@ import { Card } from "@/components/ui/card";
 type Row = { slug: string; messages: number; spam: number; lastMin: number };
 
 const ROWS: Row[] = [
-  { slug: "portfolio", messages: 142, spam: 0.4, lastMin: 2 },
-  { slug: "hire-me", messages: 38, spam: 1.1, lastMin: 60 },
-  { slug: "support", messages: 512, spam: 3.8, lastMin: 4 },
-  { slug: "newsletter", messages: 96, spam: 0.9, lastMin: 22 },
-  { slug: "feedback", messages: 27, spam: 0.0, lastMin: 180 },
+  { slug: "portfolio-contact", messages: 142, spam: 0.1, lastMin: 2 },
+  { slug: "client-inquiry", messages: 84, spam: 0.2, lastMin: 14 },
+  { slug: "book-meeting", messages: 56, spam: 0.0, lastMin: 32 },
+  { slug: "newsletter", messages: 320, spam: 0.4, lastMin: 5 },
+  { slug: "product-feedback", messages: 48, spam: 0.0, lastMin: 80 },
 ];
 
 const COLUMNS: { key: SortKey; label: string; align: string }[] = [
