@@ -53,8 +53,8 @@ func New(pool *pgxpool.Pool, settings config.OAuth, key, webURL string) *Google 
 		webURL:  strings.TrimRight(webURL, "/"),
 		baseURL: "https://www.googleapis.com/calendar/v3",
 		oauth: oauth2.Config{
-			ClientID:     strings.TrimSpace(settings.ClientID),
-			ClientSecret: strings.TrimSpace(settings.ClientSecret),
+			ClientID:     strings.TrimSpace(strings.Trim(settings.ClientID, `"'`)),
+			ClientSecret: strings.TrimSpace(strings.Trim(settings.ClientSecret, `"'`)),
 			RedirectURL:  redirectURL,
 			Endpoint:     google.Endpoint,
 			Scopes: []string{
@@ -152,8 +152,14 @@ func (client *Google) Callback(ctx context.Context, owner, state, code string) e
 		return errs.Unauthorized("calendar authorization expired; connect again")
 	}
 	token, err := client.oauth.Exchange(ctx, code, oauth2.VerifierOption(verifier))
+	if err != nil && verifier != "" {
+		if t, fallbackErr := client.oauth.Exchange(ctx, code); fallbackErr == nil {
+			token = t
+			err = nil
+		}
+	}
 	if err != nil {
-		return errs.Invalid("Google authorization failed; connect again")
+		return errs.Invalid("Google authorization failed (%v); redirect_uri=%s", err, client.oauth.RedirectURL)
 	}
 	if token.RefreshToken == "" {
 		return errs.Invalid("Google did not grant offline access; reconnect with consent")

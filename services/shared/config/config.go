@@ -150,7 +150,10 @@ func Load() (*Config, error) {
 			cleanWeb = "http://localhost:3000"
 		}
 	}
-	if strings.TrimSpace(cfg.Google.RedirectURL) == "" || strings.Contains(cfg.Google.RedirectURL, "/v1/oauth/google/callback") || (cfg.App.IsProd() && strings.Contains(cfg.Google.RedirectURL, "localhost")) {
+	cfg.Google.ClientID = strings.TrimSpace(strings.Trim(cfg.Google.ClientID, `"'`))
+	cfg.Google.ClientSecret = strings.TrimSpace(strings.Trim(cfg.Google.ClientSecret, `"'`))
+	cfg.Google.RedirectURL = strings.TrimSpace(strings.Trim(cfg.Google.RedirectURL, `"'`))
+	if cfg.Google.RedirectURL == "" || strings.Contains(cfg.Google.RedirectURL, "/v1/oauth/google/callback") || (cfg.App.IsProd() && strings.Contains(cfg.Google.RedirectURL, "localhost")) {
 		cfg.Google.RedirectURL = cleanWeb + "/api/calendar/callback"
 	}
 	return cfg, nil
