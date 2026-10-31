@@ -39,7 +39,30 @@ type Google struct {
 }
 
 func New(pool *pgxpool.Pool, settings config.OAuth, key, webURL string) *Google {
-	return &Google{pool: pool, key: key, webURL: strings.TrimRight(webURL, "/"), baseURL: "https://www.googleapis.com/calendar/v3", oauth: oauth2.Config{ClientID: settings.ClientID, ClientSecret: settings.ClientSecret, RedirectURL: settings.RedirectURL, Endpoint: google.Endpoint, Scopes: []string{"https://www.googleapis.com/auth/calendar.events", "https://www.googleapis.com/auth/calendar.readonly"}}}
+	redirectURL := strings.TrimSpace(settings.RedirectURL)
+	if redirectURL == "" || strings.Contains(redirectURL, "/v1/oauth/google/callback") {
+		cleanWeb := strings.TrimRight(strings.TrimSpace(webURL), "/")
+		if cleanWeb == "" {
+			cleanWeb = "http://localhost:3000"
+		}
+		redirectURL = cleanWeb + "/api/calendar/callback"
+	}
+	return &Google{
+		pool:    pool,
+		key:     key,
+		webURL:  strings.TrimRight(webURL, "/"),
+		baseURL: "https://www.googleapis.com/calendar/v3",
+		oauth: oauth2.Config{
+			ClientID:     strings.TrimSpace(settings.ClientID),
+			ClientSecret: strings.TrimSpace(settings.ClientSecret),
+			RedirectURL:  redirectURL,
+			Endpoint:     google.Endpoint,
+			Scopes: []string{
+				"https://www.googleapis.com/auth/calendar.events",
+				"https://www.googleapis.com/auth/calendar.readonly",
+			},
+		},
+	}
 }
 
 func (client *Google) configured() error {
