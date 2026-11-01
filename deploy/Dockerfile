@@ -36,6 +36,8 @@ RUN cd /src/services/shared && CGO_ENABLED=0 GOOS=linux go build -trimpath -ldfl
 
 # ---- runtime ----
 FROM postgres:${POSTGRES_VERSION}-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /out/app /app
 COPY --from=build /out/backup /backup
 EXPOSE 8080
