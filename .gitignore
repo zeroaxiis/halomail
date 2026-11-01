@@ -3,6 +3,8 @@
 *.exe
 *.test
 *.out
+tmp_*
+tmp_bin
 go.work.sum
 vendor/
 
