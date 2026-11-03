@@ -31,6 +31,8 @@ type Deps struct {
 	Interceptors          []connect.Interceptor
 	Limits                usage.Policy
 	WebURL                string
+	AdminWebhookURL       string
+	AdminWebhookSecret    string
 }
 
 // Mount registers the identity ConnectRPC handlers on mux.
@@ -46,7 +48,9 @@ func Mount(mux *http.ServeMux, d Deps) {
 		JWTSecret:    d.JWTSecret,
 		RefreshTTL:   d.SessionTTL,
 		APIKeyPrefix: d.APIKeyPrefix,
-		WebURL:       d.WebURL,
+		WebURL:             d.WebURL,
+		AdminWebhookURL:    d.AdminWebhookURL,
+		AdminWebhookSecret: d.AdminWebhookSecret,
 	}, d.Redis)
 	h := rpc.NewHandlers(svc)
 	h.MountOTP(mux, d.OTPDeliverySecret)

@@ -12,6 +12,7 @@ import (
 	"github.com/zeroaxiis/halomail/services/identity/internal/crypto"
 	"github.com/zeroaxiis/halomail/services/identity/internal/domain"
 	"github.com/zeroaxiis/halomail/services/shared/errs"
+	"github.com/zeroaxiis/halomail/services/shared/adminwebhook"
 	"github.com/zeroaxiis/halomail/services/shared/idgen"
 	"github.com/redis/go-redis/v9"
 )
@@ -25,7 +26,9 @@ type Config struct {
 	JWTSecret    string
 	RefreshTTL   time.Duration
 	APIKeyPrefix string
-	WebURL       string
+	WebURL             string
+	AdminWebhookURL    string
+	AdminWebhookSecret string
 }
 
 // Service implements the identity use cases over a set of repositories.
@@ -37,6 +40,7 @@ type Service struct {
 	team           TeamRepo
 	passwordResets PasswordResetRepo
 	tokens         crypto.TokenIssuer
+	adminWebhook   *adminwebhook.Dispatcher
 	cfg            Config
 	redis          *redis.Client
 	now            func() time.Time
@@ -57,6 +61,7 @@ func New(r Repos, cfg Config, redisClient *redis.Client) *Service {
 		team:           r.Team,
 		passwordResets: r.PasswordResets,
 		tokens:         crypto.NewTokenIssuer(cfg.JWTSecret),
+		adminWebhook:   adminwebhook.New(cfg.AdminWebhookURL, cfg.AdminWebhookSecret),
 		cfg:            cfg,
 		redis:          redisClient,
 		now:            time.Now,
@@ -132,6 +137,17 @@ func (s *Service) Register(ctx context.Context, email, password, name string) (*
 	}
 
 	s.record(ctx, org.ID, user.ID, "user.registered", "user", user.ID)
+	if s.adminWebhook != nil {
+		s.adminWebhook.Dispatch("user.registered", map[string]any{
+			"userId":    user.ID,
+			"orgId":     org.ID,
+			"email":     user.Email,
+			"name":      user.Name,
+			"provider":  "email",
+			"role":      user.Role,
+			"createdAt": user.CreatedAt.Format(time.RFC3339),
+		})
+	}
 	return &AuthResult{User: user}, nil
 }
 
@@ -229,6 +245,17 @@ func (s *Service) GoogleLogin(ctx context.Context, email, name, avatarURL, googl
 		return nil, err
 	}
 	s.record(ctx, org.ID, user.ID, "user.registered_google", "user", user.ID)
+	if s.adminWebhook != nil {
+		s.adminWebhook.Dispatch("user.registered", map[string]any{
+			"userId":    user.ID,
+			"orgId":     org.ID,
+			"email":     user.Email,
+			"name":      user.Name,
+			"provider":  "google",
+			"role":      user.Role,
+			"createdAt": user.CreatedAt.Format(time.RFC3339),
+		})
+	}
 	return &AuthResult{User: user, Session: session}, nil
 }
 
@@ -627,6 +654,20 @@ func (s *Service) ProcessPayment(ctx context.Context, userID, orgID, orderID, pa
 	}
 	if err := s.users.ApplyPayment(ctx, user.OrgID, orderID, paymentID, tier, paidAt, cycleEnd); err != nil {
 		return nil, err
+	}
+	s.record(ctx, user.OrgID, user.ID, "billing.payment_succeeded", "org", user.OrgID)
+	if s.adminWebhook != nil {
+		s.adminWebhook.Dispatch("payment.succeeded", map[string]any{
+			"userId":    user.ID,
+			"orgId":     user.OrgID,
+			"userEmail": user.Email,
+			"userName":  user.Name,
+			"orderId":   orderID,
+			"paymentId": paymentID,
+			"tier":      tier,
+			"paidAt":    paidAt.Format(time.RFC3339),
+			"cycleEnd":  cycleEnd.Format(time.RFC3339),
+		})
 	}
 	return user, nil
 }

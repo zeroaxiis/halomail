@@ -1,6 +1,6 @@
 # Contributing to HaloMail
 
-Thanks for your interest in contributing! HaloMail is MIT-licensed and built to
+Thanks for your interest in contributing! HaloMail is proprietary software by ZeroAxiis and is open to
 be modular and approachable. This guide covers setup, conventions, and how to
 add new functionality.
 
