@@ -26,6 +26,12 @@ type Config struct {
 	OTel      OTel
 	Rate      Rate
 	Limits    usage.Policy
+	Admin     Admin
+}
+
+type Admin struct {
+	WebhookURL    string `env:"ADMIN_WEBHOOK_URL"`
+	WebhookSecret string `env:"ADMIN_WEBHOOK_SECRET"`
 }
 
 type App struct {

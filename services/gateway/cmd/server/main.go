@@ -118,6 +118,7 @@ func main() {
 		Pool:                  pool, JWTSecret: cfg.Auth.JWTSecret, SessionTTL: cfg.Auth.SessionTTL,
 		APIKeyPrefix: cfg.Auth.APIKeyPrefix, Redis: redisClient, Interceptors: interceptors,
 		Limits: cfg.Limits, WebURL: cfg.App.PublicWebURL,
+		AdminWebhookURL: cfg.Admin.WebhookURL, AdminWebhookSecret: cfg.Admin.WebhookSecret,
 	})
 	scheduling.Mount(mux, scheduling.Deps{
 		Pool: pool, JWTSecret: cfg.Auth.JWTSecret,

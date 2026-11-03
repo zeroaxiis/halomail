@@ -91,6 +91,8 @@ func main() {
 		Interceptors:          interceptors,
 		Limits:                cfg.Limits,
 		WebURL:                cfg.App.PublicWebURL,
+		AdminWebhookURL:       cfg.Admin.WebhookURL,
+		AdminWebhookSecret:    cfg.Admin.WebhookSecret,
 	})
 
 	if err := server.Run(ctx, cfg.HTTP.Addr(), mux, logger); err != nil {

@@ -8,9 +8,15 @@ Minimal. Premium. Developer-focused.
 
 [Architecture](docs/ARCHITECTURE.md) · [Development](docs/DEVELOPMENT.md) · [Deployment](docs/DEPLOYMENT.md) · [Contributing](CONTRIBUTING.md) · [Backend services](services/README.md)
 
-![status](https://img.shields.io/badge/status-alpha-orange) ![go](https://img.shields.io/badge/Go-1.24-00ADD8) ![next](https://img.shields.io/badge/Next.js-15-black)
+![status](https://img.shields.io/badge/status-alpha-orange) ![go](https://img.shields.io/badge/Go-1.24-00ADD8) ![next](https://img.shields.io/badge/Next.js-15-black) ![contributions](https://img.shields.io/badge/contributions-welcome-brightgreen) ![license](https://img.shields.io/badge/license-Proprietary%20%7C%20Open%20Contributions-blue)
 
 </div>
+
+---
+
+> [!NOTE]
+> **Source-Available & Open for Community Contributions:**  
+> HaloMail is proprietary software developed and owned by **ZeroAxiis** (`zeroaxiis`). While the core codebase, commercial distribution, and branding are private and proprietary, we actively welcome and encourage open-source community contributions! Developers are warmly invited to report bugs, submit pull requests, improve documentation, and collaborate on features. See [Contributing](#contributing) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
@@ -76,9 +82,6 @@ deploy/       Dockerfiles, infra configs
 | **goose**  | latest  | database migrations                 | `go install github.com/pressly/goose/v3/cmd/goose@latest` |
 | **task**   | latest  | task runner (optional, convenient)  | `go install github.com/go-task/task/v3/cmd/task@latest`   |
 
-> ⚠️ **Go is not yet installed on this machine.** Install it before running the
-> backend. Everything else (web, docs) runs without Go.
-
 ## Quickstart (local)
 
 ```bash
@@ -114,8 +117,6 @@ Local UIs while developing:
 
 Full per-service instructions: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
-
-
 ## Documentation map
 
 | Doc | Purpose |
@@ -130,9 +131,19 @@ Full per-service instructions: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
 
 ## Contributing
 
-HaloMail is built to be contributed to. Start with
-[CONTRIBUTING.md](CONTRIBUTING.md) and look for `good first issue` labels.
+HaloMail is built in the open for community participation and contributions. Even though HaloMail is proprietary to **ZeroAxiis**, we believe in open collaboration with developers worldwide.
 
-## License
+You can contribute by:
+- Reporting bugs, suggestions, and submitting feedback via Issues.
+- Submitting Pull Requests for bug fixes, performance improvements, and new capabilities.
+- Expanding documentation, guides, and example implementations.
 
-© HaloMail.
+Start with **[CONTRIBUTING.md](CONTRIBUTING.md)** and check out open issues marked `good first issue`. All contributors must follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License & Ownership
+
+Copyright © 2026 **ZeroAxiis**. All rights reserved.
+
+HaloMail is proprietary software. The source code is made accessible for inspection and community contributions. Unauthorized commercial redistribution, resale, sublicensing, or proprietary forks without explicit written permission from ZeroAxiis is strictly prohibited.
+
+For inquiries, contact `contact@zeroaxiis.tech` or `legal@zeroaxiis.tech`.
