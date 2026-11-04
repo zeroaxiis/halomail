@@ -16,5 +16,21 @@ func (s *Service) ProcessRefunds(ctx context.Context, userID, orgID, orderID, pa
 		return nil, domain.RefundResult{}, errs.Forbidden("refund account mismatch")
 	}
 	result, err := s.users.ApplyRefunds(ctx, user.OrgID, orderID, paymentID, currency, paymentAmount, refunds)
-	return user, result, err
+	if err != nil {
+		return nil, result, err
+	}
+	if s.adminWebhook != nil {
+		s.adminWebhook.Dispatch("payment.refunded", map[string]any{
+			"userId":        user.ID,
+			"orgId":         user.OrgID,
+			"userEmail":     user.Email,
+			"orderId":       orderID,
+			"paymentId":     paymentID,
+			"currency":      currency,
+			"paymentAmount": paymentAmount,
+			"fullyRefunded": result.FullyRefunded,
+			"downgraded":    result.Downgraded,
+		})
+	}
+	return user, result, nil
 }
