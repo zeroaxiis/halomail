@@ -105,7 +105,7 @@ func (h *Handlers) MountBilling(mux *http.ServeMux, webhookSecret string) {
 		}
 		paidAt := time.Unix(payment.CreatedAt, 0).UTC()
 		cycleEnd := billingCycleEnd(paidAt, months)
-		user, err := h.app.ProcessPayment(r.Context(), notes.UserID, notes.OrgID, order.ID, payment.ID, notes.Tier, paidAt, cycleEnd)
+		user, err := h.app.ProcessPayment(r.Context(), notes.UserID, notes.OrgID, order.ID, payment.ID, notes.Tier, paidAt, cycleEnd, payment.Amount, payment.Currency, notes.BillingCycle)
 		if err != nil {
 			httpx.Error(w, err)
 			return

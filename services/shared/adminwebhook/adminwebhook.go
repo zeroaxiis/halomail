@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -80,8 +81,15 @@ func (d *Dispatcher) Dispatch(event string, data any) {
 		}
 
 		resp, err := d.client.Do(req)
-		if err == nil {
-			_ = resp.Body.Close()
+		if err != nil {
+			slog.Default().Warn("admin webhook delivery failed", "url", d.url, "event", event, "err", err.Error())
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode >= 400 {
+			slog.Default().Warn("admin webhook non-2xx response", "url", d.url, "event", event, "status", resp.StatusCode)
+		} else {
+			slog.Default().Debug("admin webhook delivered", "url", d.url, "event", event, "status", resp.StatusCode)
 		}
 	}()
 }

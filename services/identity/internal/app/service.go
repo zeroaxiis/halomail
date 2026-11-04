@@ -422,7 +422,20 @@ func (s *Service) ProcessSubscription(ctx context.Context, orgID, customerID, su
 	if status == "cancelled" || status == "halted" || status == "refunded" {
 		tier = "free" // Downgrade on cancellation or refund
 	}
-	return s.users.UpdateOrgBilling(ctx, orgID, customerID, subID, tier, cycleEnd)
+	if err := s.users.UpdateOrgBilling(ctx, orgID, customerID, subID, tier, cycleEnd); err != nil {
+		return err
+	}
+	if s.adminWebhook != nil {
+		s.adminWebhook.Dispatch("subscription.updated", map[string]any{
+			"orgId":          orgID,
+			"customerId":     customerID,
+			"subscriptionId": subID,
+			"tier":           tier,
+			"status":         status,
+			"cycleEnd":       cycleEnd.Format(time.RFC3339),
+		})
+	}
+	return nil
 }
 
 // ---- API keys ------------------------------------------------------------
@@ -644,7 +657,7 @@ func emptyJSON(s string) string {
 	return s
 }
 
-func (s *Service) ProcessPayment(ctx context.Context, userID, orgID, orderID, paymentID, tier string, paidAt, cycleEnd time.Time) (*domain.User, error) {
+func (s *Service) ProcessPayment(ctx context.Context, userID, orgID, orderID, paymentID, tier string, paidAt, cycleEnd time.Time, amount int64, currency, billingCycle string) (*domain.User, error) {
 	user, err := s.users.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -658,15 +671,18 @@ func (s *Service) ProcessPayment(ctx context.Context, userID, orgID, orderID, pa
 	s.record(ctx, user.OrgID, user.ID, "billing.payment_succeeded", "org", user.OrgID)
 	if s.adminWebhook != nil {
 		s.adminWebhook.Dispatch("payment.succeeded", map[string]any{
-			"userId":    user.ID,
-			"orgId":     user.OrgID,
-			"userEmail": user.Email,
-			"userName":  user.Name,
-			"orderId":   orderID,
-			"paymentId": paymentID,
-			"tier":      tier,
-			"paidAt":    paidAt.Format(time.RFC3339),
-			"cycleEnd":  cycleEnd.Format(time.RFC3339),
+			"userId":       user.ID,
+			"orgId":        user.OrgID,
+			"userEmail":    user.Email,
+			"userName":     user.Name,
+			"orderId":      orderID,
+			"paymentId":    paymentID,
+			"tier":         tier,
+			"amount":       amount,
+			"currency":     currency,
+			"billingCycle": billingCycle,
+			"paidAt":       paidAt.Format(time.RFC3339),
+			"cycleEnd":     cycleEnd.Format(time.RFC3339),
 		})
 	}
 	return user, nil
@@ -1027,6 +1043,16 @@ func (s *Service) AcceptInvitation(ctx context.Context, token string, currentUse
 	}
 
 	s.record(ctx, inv.OrgID, user.ID, "team.invitation.accepted", "invitation", inv.ID)
+	if s.adminWebhook != nil {
+		s.adminWebhook.Dispatch("user.joined_team", map[string]any{
+			"userId":   user.ID,
+			"orgId":    inv.OrgID,
+			"email":    user.Email,
+			"name":     user.Name,
+			"role":     user.Role,
+			"joinedAt": time.Now().UTC().Format(time.RFC3339),
+		})
+	}
 	return user, session, nil
 }
 
