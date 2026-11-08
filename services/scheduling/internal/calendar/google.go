@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html"
 	"io"
 	"log/slog"
 	"net/http"
@@ -334,40 +333,10 @@ type eventResponse struct {
 }
 
 func (client *Google) sync(ctx context.Context, booking domain.Booking, title string) (string, error) {
-	var exists bool
-	if err := client.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM google_credentials WHERE owner_id=$1)`, booking.OwnerID).Scan(&exists); err != nil || !exists {
-		shortID := booking.ID
-		if len(shortID) > 10 {
-			shortID = shortID[len(shortID)-8:]
-		}
-		return "https://meet.google.com/hlo-" + shortID, nil
-	}
-	eventID := digest(booking.ID)
-	path := "/calendars/primary/events/" + eventID
-	if booking.Status == domain.StatusCancelled {
-		status, err := client.request(ctx, booking.OwnerID, "DELETE", path+"?sendUpdates=all", nil, nil)
-		if status == 404 || status == 410 {
-			return "", nil
-		}
-		return "", err
-	}
-	body := map[string]any{"summary": title, "description": html.EscapeString(booking.Notes), "start": map[string]string{"dateTime": booking.Start.Format(time.RFC3339)}, "end": map[string]string{"dateTime": booking.End.Format(time.RFC3339)}, "attendees": []map[string]string{{"email": booking.InviteeEmail, "displayName": booking.InviteeName}}, "guestsCanInviteOthers": false, "guestsCanSeeOtherGuests": false}
-	var existing eventResponse
-	status, err := client.request(ctx, booking.OwnerID, "GET", path, nil, &existing)
-	if status == 404 {
-		body["id"] = eventID
-		body["conferenceData"] = map[string]any{"createRequest": map[string]any{"requestId": eventID, "conferenceSolutionKey": map[string]string{"type": "hangoutsMeet"}}}
-		_, err = client.request(ctx, booking.OwnerID, "POST", "/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all", body, &existing)
-	} else if err == nil && !sameTime(existing, booking) {
-		_, err = client.request(ctx, booking.OwnerID, "PATCH", path+"?conferenceDataVersion=1&sendUpdates=all", body, &existing)
-	}
-	if err != nil {
-		return "", err
-	}
-	if existing.HangoutLink == "" {
-		return "", errs.Internal("Google Meet link is not ready; check calendar conferencing support")
-	}
-	return existing.HangoutLink, nil
+	// Google Calendar & Google Meet sync are temporarily disabled pending app verification.
+	// Returning an empty link allows bookings to complete immediately, send confirmation emails,
+	// and register in the dashboard without attaching broken or unverified Google Meet links.
+	return "", nil
 }
 
 func sameTime(event eventResponse, booking domain.Booking) bool {
@@ -421,7 +390,18 @@ func (client *Google) tick(ctx context.Context) error {
 		}
 		return syncErr
 	}
-	fields := map[string]string{"Event": title, "Starts (UTC)": booking.Start.UTC().Format(time.RFC1123), "Ends (UTC)": booking.End.UTC().Format(time.RFC1123), "Guest": booking.InviteeName, "Guest email": booking.InviteeEmail, "Meeting link": link, "Answers": booking.Notes, "Status": booking.Status}
+	fields := map[string]string{
+		"Event":        title,
+		"Starts (UTC)": booking.Start.UTC().Format(time.RFC1123),
+		"Ends (UTC)":   booking.End.UTC().Format(time.RFC1123),
+		"Guest":        booking.InviteeName,
+		"Guest email":  booking.InviteeEmail,
+		"Answers":      booking.Notes,
+		"Status":       booking.Status,
+	}
+	if link != "" {
+		fields["Meeting link"] = link
+	}
 	subject := "Meeting confirmed: " + title
 	if booking.Status == domain.StatusCancelled {
 		subject = "Meeting cancelled: " + title

@@ -275,9 +275,7 @@ export default function MeetingsPage() {
 										</span>
 									</div>
 									<div>
-										{booking.location?.startsWith(
-											"https://meet.google.com/",
-										) ? (
+										{booking.location?.startsWith("http") && (
 											<Button variant="outline" size="sm" asChild>
 												<a
 													href={booking.location}
@@ -287,12 +285,6 @@ export default function MeetingsPage() {
 													Join meeting
 												</a>
 											</Button>
-										) : (
-											booking.status !== "BOOKING_STATUS_CANCELLED" && (
-												<p className="max-w-[125px] text-[10px] leading-5 text-muted-foreground">
-													Calendar confirmation pending
-												</p>
-											)
 										)}
 									</div>
 								</article>
@@ -318,30 +310,29 @@ export default function MeetingsPage() {
 						<section className="workspace-settings-section">
 							<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
 								<h3 className="text-sm font-medium">Google Calendar</h3>
-								<span className="workspace-status">
-									{connections.loading
-										? "Checking…"
-										: connections.error
-											? "Unavailable"
-											: connections.data?.connections?.length
-												? "Connected"
-												: "Not connected"}
+								<span className="workspace-status text-amber-500 border-amber-500/20 bg-amber-500/10">
+									Temporarily disabled
 								</span>
 							</div>
-							<p className="mb-5 text-xs text-muted-foreground">
-								{connections.data?.connections?.[0]?.email ||
-									"Connect your calendar to check for conflicts."}
+							<p className="mb-4 text-xs text-muted-foreground">
+								Google Calendar connection is temporarily disabled due to technical issues (Google verification in progress). It will be restored soon.
 							</p>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={connect}
-								disabled={busy || connections.loading}
+							<div
+								className="group relative inline-block cursor-not-allowed"
+								title="Google Calendar connection is temporarily disabled due to technical issues (Google verification in progress). It will be fixed soon."
 							>
-								{connections.data?.connections?.length
-									? "Reconnect Google Calendar"
-									: "Connect Google Calendar"}
-							</Button>
+								<Button
+									variant="outline"
+									size="sm"
+									disabled
+									className="pointer-events-none opacity-50"
+								>
+									Connect Google Calendar
+								</Button>
+								<div className="pointer-events-none absolute bottom-full left-0 mb-2 hidden w-64 rounded-md border border-border bg-popover p-2 text-xs text-popover-foreground shadow-md group-hover:block z-50">
+									Temporarily disabled due to technical issues (Google verification in progress). It will be fixed soon.
+								</div>
+							</div>
 						</section>
 						<section className="workspace-settings-section">
 							<h3 className="mb-5 text-sm font-medium">Event types</h3>
