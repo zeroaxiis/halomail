@@ -301,17 +301,17 @@ function Booking() {
                 <span className="font-medium text-foreground">{email}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-border/60">
-                <span className="text-muted-foreground">Conferencing</span>
-                <span className="text-brand font-medium">Google Meet</span>
+                <span className="text-muted-foreground">Status</span>
+                <span className="text-emerald-400 font-medium">Confirmed</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-muted-foreground">Calendar Event</span>
-                <span className="text-emerald-400 font-medium">Synced with Google Calendar</span>
+                <span className="text-muted-foreground">Confirmation</span>
+                <span className="text-foreground font-medium">Sent to your email</span>
               </div>
             </div>
 
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-              A calendar invite and conferencing link have been emailed to both attendee and host.
+              A booking confirmation has been emailed to both attendee and host.
             </p>
 
             <Button
@@ -403,7 +403,7 @@ function Booking() {
                       </div>
                       <div className="flex items-center gap-2.5">
                         <VideoIcon className="size-4 text-muted-foreground" />
-                        <span>Google Meet Video Conferencing</span>
+                        <span>Online Consultation</span>
                       </div>
                     </div>
                   )}

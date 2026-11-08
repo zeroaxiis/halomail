@@ -77,13 +77,12 @@ export default function OverviewPage() {
 		},
 		{
 			title: "Google Calendar",
-			description: hasCalendar
-				? "Connected to your schedule"
-				: "Connect your primary calendar",
-			done: hasCalendar,
+			description: "Temporarily disabled (verification in progress)",
+			done: false,
+			statusText: "Paused",
 			href: "/dashboard/meetings",
-			loading: connections.loading,
-			error: connections.error,
+			loading: false,
+			error: "",
 		},
 	];
 
@@ -253,9 +252,11 @@ export default function OverviewPage() {
 										? "…"
 										: item.error
 											? "Unavailable"
-											: item.done
-												? "Connected"
-												: "Set up"}
+											: "statusText" in item && item.statusText
+												? item.statusText
+												: item.done
+													? "Connected"
+													: "Set up"}
 								</span>
 							</span>
 							{!item.loading && (item.error || !item.done) && (
